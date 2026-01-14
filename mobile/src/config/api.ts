@@ -9,7 +9,7 @@
 // For iOS simulator: use 'http://localhost:3000'
 // For physical device: use your computer's IP address (e.g., 'http://192.168.1.100:3000')
 export const API_BASE_URL = __DEV__
-  ? 'http://localhost:3000' // Change this to your backend URL
+  ? 'http://10.221.252.34:3000' // Updated for physical device - change if your IP changes
   : 'https://api.safenet.app'; // Production URL
 
 export const API_ENDPOINTS = {

@@ -135,13 +135,36 @@ class ApiService {
    * Get error message from API error
    */
   getErrorMessage(error: any): string {
+    // Network/connection errors
+    if (error.code === 'ECONNREFUSED' || error.code === 'ERR_NETWORK') {
+      return 'Cannot connect to server. Please check your network connection and ensure the backend is running.';
+    }
+    
+    if (error.message?.includes('Network Error') || error.message?.includes('timeout')) {
+      return 'Network error. Please check your connection and try again.';
+    }
+
+    // Server response errors
     if (error.response?.data?.message) {
+      // Handle validation errors
+      if (error.response.data.errors) {
+        const errors = error.response.data.errors;
+        const firstError = Array.isArray(errors) ? errors[0] : Object.values(errors)[0];
+        return typeof firstError === 'string' ? firstError : firstError.msg || error.response.data.message;
+      }
       return error.response.data.message;
     }
+    
+    if (error.response?.data?.error) {
+      return error.response.data.error;
+    }
+
+    // Generic error
     if (error.message) {
       return error.message;
     }
-    return 'An unexpected error occurred';
+    
+    return 'An unexpected error occurred. Please try again.';
   }
 }
 
