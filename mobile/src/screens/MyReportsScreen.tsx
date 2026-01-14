@@ -39,12 +39,18 @@ export const MyReportsScreen: React.FC<MyReportsScreenProps> = ({ navigation }) 
       const response = await incidentService.getMyIncidents(pageNum, 20);
       
       if (reset) {
-        setIncidents(response.incidents);
+        setIncidents(response.incidents || []);
       } else {
-        setIncidents((prev) => [...prev, ...response.incidents]);
+        setIncidents((prev) => [...prev, ...(response.incidents || [])]);
       }
       
-      setHasMore(pageNum < response.pagination.totalPages);
+      // Calculate totalPages from backend response
+      // Backend returns: { incidents, total, page, limit }
+      const limit = response.limit || 20;
+      const total = response.total || 0;
+      const totalPages = Math.ceil(total / limit);
+      
+      setHasMore(pageNum < totalPages);
       setPage(pageNum);
     } catch (err: any) {
       const errorMessage = apiService.getErrorMessage(err);

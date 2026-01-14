@@ -94,7 +94,10 @@ export interface ApiResponse<T> {
 
 export interface PaginatedResponse<T> {
   incidents: T[];
-  pagination: {
+  total: number;
+  page: number;
+  limit: number;
+  pagination?: {
     page: number;
     limit: number;
     total: number;
