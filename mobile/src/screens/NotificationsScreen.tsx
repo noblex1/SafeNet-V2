@@ -1,0 +1,243 @@
+/**
+ * Notifications Screen
+ * Displays user notifications
+ */
+
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+} from 'react-native';
+import { Colors } from '../theme/colors';
+import { Typography } from '../theme/typography';
+import { Spacing, BorderRadius } from '../theme/spacing';
+
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'alert' | 'update' | 'system';
+  read: boolean;
+  createdAt: string;
+}
+
+interface NotificationsScreenProps {
+  navigation: any;
+}
+
+export const NotificationsScreen: React.FC<NotificationsScreenProps> = ({
+  navigation,
+}) => {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  // Mock notifications for now
+  useEffect(() => {
+    setNotifications([
+      {
+        id: '1',
+        title: 'New Alert',
+        message: 'A new incident has been verified in your area',
+        type: 'alert',
+        read: false,
+        createdAt: new Date().toISOString(),
+      },
+      {
+        id: '2',
+        title: 'Report Update',
+        message: 'Your incident report has been verified',
+        type: 'update',
+        read: false,
+        createdAt: new Date(Date.now() - 3600000).toISOString(),
+      },
+      {
+        id: '3',
+        title: 'System Update',
+        message: 'SafeNet app has been updated to version 1.0.0',
+        type: 'system',
+        read: true,
+        createdAt: new Date(Date.now() - 86400000).toISOString(),
+      },
+    ]);
+  }, []);
+
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case 'alert':
+        return '🚨';
+      case 'update':
+        return '✅';
+      case 'system':
+        return 'ℹ️';
+      default:
+        return '📢';
+    }
+  };
+
+  const getTimeAgo = (dateString: string): string => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
+  };
+
+  const renderNotification = ({ item }: { item: Notification }) => (
+    <TouchableOpacity
+      style={[styles.notificationItem, !item.read && styles.unread]}
+    >
+      <View style={styles.notificationIcon}>
+        <Text style={styles.iconText}>{getNotificationIcon(item.type)}</Text>
+      </View>
+      <View style={styles.notificationContent}>
+        <Text style={styles.notificationTitle}>{item.title}</Text>
+        <Text style={styles.notificationMessage}>{item.message}</Text>
+        <Text style={styles.notificationTime}>{getTimeAgo(item.createdAt)}</Text>
+      </View>
+      {!item.read && <View style={styles.unreadDot} />}
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Notifications</Text>
+        {notifications.filter((n) => !n.read).length > 0 && (
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>
+              {notifications.filter((n) => !n.read).length}
+            </Text>
+          </View>
+        )}
+      </View>
+
+      <FlatList
+        data={notifications}
+        keyExtractor={(item) => item.id}
+        renderItem={renderNotification}
+        contentContainerStyle={styles.listContent}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyIcon}>🔔</Text>
+            <Text style={styles.emptyText}>No notifications</Text>
+            <Text style={styles.emptySubtext}>
+              You're all caught up! New alerts will appear here.
+            </Text>
+          </View>
+        }
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: Spacing.lg,
+    paddingTop: Spacing.xxl + Spacing.sm,
+    backgroundColor: Colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  headerTitle: {
+    ...Typography.h2,
+    color: Colors.textPrimary,
+  },
+  badge: {
+    backgroundColor: Colors.error,
+    borderRadius: BorderRadius.full,
+    minWidth: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.sm,
+  },
+  badgeText: {
+    ...Typography.caption,
+    color: Colors.textInverse,
+    fontWeight: '700',
+  },
+  listContent: {
+    padding: Spacing.lg,
+  },
+  notificationItem: {
+    flexDirection: 'row',
+    backgroundColor: Colors.surface,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    marginBottom: Spacing.md,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  unread: {
+    backgroundColor: Colors.primaryLight + '20',
+    borderColor: Colors.primary,
+  },
+  notificationIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: Colors.primaryLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: Spacing.md,
+  },
+  iconText: {
+    fontSize: 24,
+  },
+  notificationContent: {
+    flex: 1,
+  },
+  notificationTitle: {
+    ...Typography.bodyMedium,
+    color: Colors.textPrimary,
+    fontWeight: '600',
+    marginBottom: Spacing.xs,
+  },
+  notificationMessage: {
+    ...Typography.bodySmall,
+    color: Colors.textSecondary,
+    marginBottom: Spacing.xs,
+  },
+  notificationTime: {
+    ...Typography.caption,
+    color: Colors.textTertiary,
+  },
+  unreadDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: Colors.primary,
+    alignSelf: 'center',
+    marginLeft: Spacing.sm,
+  },
+  emptyContainer: {
+    padding: Spacing.xxxl * 2,
+    alignItems: 'center',
+  },
+  emptyIcon: {
+    fontSize: 64,
+    marginBottom: Spacing.lg,
+  },
+  emptyText: {
+    ...Typography.h3,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.sm,
+  },
+  emptySubtext: {
+    ...Typography.bodySmall,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+  },
+});

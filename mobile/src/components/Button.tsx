@@ -18,7 +18,7 @@ import { BorderRadius, Spacing } from '../theme/spacing';
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger';
   loading?: boolean;
   disabled?: boolean;
   style?: ViewStyle;
@@ -50,7 +50,13 @@ export const Button: React.FC<ButtonProps> = ({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'outline' ? '#007AFF' : '#FFFFFF'}
+          color={
+            variant === 'outline'
+              ? Colors.primary
+              : variant === 'danger'
+              ? Colors.textInverse
+              : Colors.textInverse
+          }
         />
       ) : (
         <Text style={[styles.text, styles[`${variant}Text`], textStyle]}>
@@ -81,6 +87,9 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: Colors.primary,
   },
+  danger: {
+    backgroundColor: Colors.error,
+  },
   disabled: {
     opacity: 0.5,
   },
@@ -96,5 +105,8 @@ const styles = StyleSheet.create({
   },
   outlineText: {
     color: Colors.primary,
+  },
+  dangerText: {
+    color: Colors.textInverse,
   },
 });

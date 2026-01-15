@@ -14,7 +14,7 @@ import {
   TextInput,
   ScrollView,
 } from 'react-native';
-import { Incident, IncidentType } from '../types';
+import { Incident, IncidentType, IncidentStatus } from '../types';
 import { incidentService } from '../services/incidentService';
 import { IncidentCard } from '../components/IncidentCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
@@ -22,6 +22,8 @@ import { apiService } from '../services/api';
 import { Colors } from '../theme/colors';
 import { Typography } from '../theme/typography';
 import { Spacing, BorderRadius } from '../theme/spacing';
+import { FilterModal, FilterOptions } from '../components/FilterModal';
+import { MenuDrawer } from '../components/MenuDrawer';
 
 interface HomeScreenProps {
   navigation: any;
@@ -43,6 +45,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'feed' | 'map'>('feed');
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [menuDrawerVisible, setMenuDrawerVisible] = useState(false);
+  const [filters, setFilters] = useState<FilterOptions>({});
 
   const loadIncidents = useCallback(async () => {
     try {
@@ -72,17 +77,51 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     navigation.navigate('IncidentDetail', { incidentId: incident._id });
   };
 
-  // Filter incidents based on category and search
-  const filteredIncidents = incidents.filter((incident) => {
-    const matchesCategory =
-      selectedCategory === 'all' || incident.type === selectedCategory;
-    const matchesSearch =
-      !searchQuery ||
-      incident.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      incident.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      incident.location.address.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  // Filter incidents based on category, search, and filters
+  const filteredIncidents = incidents
+    .filter((incident) => {
+      const matchesCategory =
+        selectedCategory === 'all' || incident.type === selectedCategory;
+      const matchesSearch =
+        !searchQuery ||
+        incident.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        incident.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        incident.location.address.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesStatus = !filters.status || incident.status === filters.status;
+      const matchesType = !filters.type || incident.type === filters.type;
+      const matchesDateRange = !filters.dateRange || checkDateRange(incident, filters.dateRange);
+      return matchesCategory && matchesSearch && matchesStatus && matchesType && matchesDateRange;
+    })
+    .sort((a, b) => {
+      if (filters.sortBy === 'oldest') {
+        return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
+      } else if (filters.sortBy === 'newest') {
+        return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+      }
+      return 0;
+    });
+
+  const checkDateRange = (incident: Incident, range: string): boolean => {
+    if (!incident.createdAt) return false;
+    const incidentDate = new Date(incident.createdAt);
+    const now = new Date();
+    const diffInDays = Math.floor((now.getTime() - incidentDate.getTime()) / (1000 * 60 * 60 * 24));
+
+    switch (range) {
+      case 'today':
+        return diffInDays === 0;
+      case 'week':
+        return diffInDays <= 7;
+      case 'month':
+        return diffInDays <= 30;
+      default:
+        return true;
+    }
+  };
+
+  const handleApplyFilters = (newFilters: FilterOptions) => {
+    setFilters(newFilters);
+  };
 
   if (loading) {
     return <LoadingSpinner />;
@@ -116,10 +155,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <Text style={styles.logoText}>SafeNet</Text>
         </View>
         <View style={styles.topBarActions}>
-          <TouchableOpacity style={styles.iconButton}>
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => navigation.navigate('Notifications')}
+          >
             <Text style={styles.iconText}>🔔</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => setMenuDrawerVisible(true)}
+          >
             <Text style={styles.iconText}>☰</Text>
           </TouchableOpacity>
         </View>
@@ -143,7 +188,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.tab, activeTab === 'map' && styles.tabActive]}
-          onPress={() => setActiveTab('map')}
+          onPress={() => {
+            setActiveTab('map');
+            navigation.navigate('Map');
+          }}
         >
           <Text style={styles.tabIcon}>🗺️</Text>
           <Text
@@ -169,7 +217,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             onChangeText={setSearchQuery}
           />
         </View>
-        <TouchableOpacity style={styles.filterButton}>
+        <TouchableOpacity
+          style={styles.filterButton}
+          onPress={() => setFilterModalVisible(true)}
+        >
           <Text style={styles.filterIcon}>☰</Text>
         </TouchableOpacity>
       </View>
@@ -229,6 +280,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             </Text>
           </View>
         }
+      />
+
+      {/* Filter Modal */}
+      <FilterModal
+        visible={filterModalVisible}
+        onClose={() => setFilterModalVisible(false)}
+        onApply={handleApplyFilters}
+        initialFilters={filters}
+      />
+
+      {/* Menu Drawer */}
+      <MenuDrawer
+        visible={menuDrawerVisible}
+        onClose={() => setMenuDrawerVisible(false)}
+        navigation={navigation}
       />
     </View>
   );
@@ -331,12 +397,18 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderWidth: 1,
+    paddingVertical: Spacing.md,
+    borderWidth: 1.5,
     borderColor: Colors.border,
+    minHeight: 44,
+    shadowColor: Colors.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   searchIcon: {
     fontSize: 16,
@@ -352,10 +424,15 @@ const styles = StyleSheet.create({
     height: 44,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.surface,
     borderRadius: BorderRadius.md,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderColor: Colors.border,
+    shadowColor: Colors.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   filterIcon: {
     fontSize: 18,
@@ -373,25 +450,43 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   categoryPill: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md + 2,
     borderRadius: BorderRadius.full,
-    backgroundColor: Colors.background,
-    marginRight: Spacing.sm,
-    borderWidth: 1,
+    backgroundColor: Colors.surface,
+    marginRight: Spacing.md,
+    borderWidth: 1.5,
     borderColor: Colors.border,
+    minHeight: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: Colors.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   categoryPillActive: {
     backgroundColor: Colors.primary,
     borderColor: Colors.primary,
+    paddingHorizontal: Spacing.xxl,
+    paddingVertical: Spacing.md + 4,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   categoryText: {
-    ...Typography.bodySmall,
+    ...Typography.bodyMedium,
     color: Colors.textSecondary,
     fontWeight: '600',
+    fontSize: 14,
   },
   categoryTextActive: {
     color: Colors.textInverse,
+    fontWeight: '700',
+    fontSize: 15,
   },
   // List
   listContent: {
@@ -400,11 +495,14 @@ const styles = StyleSheet.create({
   emptyContainer: {
     padding: Spacing.xxxl * 2,
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 300,
   },
   emptyText: {
-    ...Typography.body,
-    color: Colors.textTertiary,
+    ...Typography.h4,
+    color: Colors.textSecondary,
     textAlign: 'center',
+    fontWeight: '600',
   },
   // Connectivity Message
   connectivityMessage: {

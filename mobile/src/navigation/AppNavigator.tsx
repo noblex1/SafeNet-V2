@@ -22,7 +22,11 @@ import { HomeScreen } from '../screens/HomeScreen';
 import { ReportIncidentScreen } from '../screens/ReportIncidentScreen';
 import { IncidentDetailScreen } from '../screens/IncidentDetailScreen';
 import { MyReportsScreen } from '../screens/MyReportsScreen';
-import { MapViewScreen } from '../screens/MapViewScreen';
+import MapViewScreen from '../screens/MapViewScreen';
+import { CommunityScreen } from '../screens/CommunityScreen';
+import { ProfileScreen } from '../screens/ProfileScreen';
+import { SettingsScreen } from '../screens/SettingsScreen';
+import { NotificationsScreen } from '../screens/NotificationsScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -123,7 +127,7 @@ const MainTabs = () => {
       />
       <Tab.Screen
         name="Community"
-        component={HomeScreen}
+        component={CommunityScreen}
         options={{
           tabBarLabel: 'Community',
           tabBarIcon: ({ color, focused }) => (
@@ -132,12 +136,12 @@ const MainTabs = () => {
         }}
       />
       <Tab.Screen
-        name="Profile"
-        component={MyReportsScreen}
+        name="Settings"
+        component={SettingsScreen}
         options={{
-          tabBarLabel: 'Profile',
+          tabBarLabel: 'Settings',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon emoji="👤" color={color} focused={focused} />
+            <TabIcon emoji="⚙️" color={color} focused={focused} />
           ),
         }}
       />
@@ -177,6 +181,30 @@ const MainStack = () => {
         component={IncidentDetailScreen}
         options={{
           title: 'Incident Details',
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="Notifications"
+        component={NotificationsScreen}
+        options={{
+          title: 'Notifications',
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="MyReports"
+        component={MyReportsScreen}
+        options={{
+          title: 'My Reports',
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          title: 'Profile',
           headerShown: true,
         }}
       />
