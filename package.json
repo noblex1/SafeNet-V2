@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "lint": "eslint src --ext .ts",
-    "test": "jest"
+    "test": "jest",
+    "create-admin": "ts-node --transpile-only scripts/create-admin.ts"
   },
   "keywords": [
     "safenet",
