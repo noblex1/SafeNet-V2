@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Incident, IncidentType, IncidentStatus } from '../types';
 
 interface IncidentCardProps {
@@ -43,43 +43,69 @@ const getStatusColor = (status: IncidentStatus): string => {
 };
 
 export const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onPress }) => {
+  const hasImages = incident.images && incident.images.length > 0;
+  const firstImage = hasImages ? incident.images[0] : null;
+
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
-      <View style={styles.header}>
-        <View style={styles.typeContainer}>
-          <Text style={styles.typeText}>{getIncidentTypeLabel(incident.type)}</Text>
-        </View>
-        <View
-          style={[
-            styles.statusBadge,
-            { backgroundColor: getStatusColor(incident.status) + '20' },
-          ]}
-        >
-          <Text
-            style={[styles.statusText, { color: getStatusColor(incident.status) }]}
-          >
-            {getStatusLabel(incident.status)}
-          </Text>
-        </View>
-      </View>
-
-      <Text style={styles.title} numberOfLines={2}>
-        {incident.title}
-      </Text>
-
-      <Text style={styles.description} numberOfLines={2}>
-        {incident.description}
-      </Text>
-
-      <View style={styles.footer}>
-        <Text style={styles.location} numberOfLines={1}>
-          📍 {incident.location.address}
-        </Text>
-        {incident.createdAt && (
-          <Text style={styles.date}>
-            {new Date(incident.createdAt).toLocaleDateString()}
-          </Text>
+      <View style={styles.cardContent}>
+        {/* Image Section */}
+        {firstImage && (
+          <Image
+            source={{ uri: firstImage }}
+            style={styles.cardImage}
+            resizeMode="cover"
+          />
         )}
+
+        {/* Content Section */}
+        <View style={styles.contentSection}>
+          <View style={styles.header}>
+            <View style={styles.typeContainer}>
+              <Text style={styles.typeText}>{getIncidentTypeLabel(incident.type)}</Text>
+            </View>
+            <View
+              style={[
+                styles.statusBadge,
+                { backgroundColor: getStatusColor(incident.status) + '20' },
+              ]}
+            >
+              <Text
+                style={[styles.statusText, { color: getStatusColor(incident.status) }]}
+              >
+                {getStatusLabel(incident.status)}
+              </Text>
+            </View>
+          </View>
+
+          <Text style={styles.title} numberOfLines={2}>
+            {incident.title}
+          </Text>
+
+          <Text style={styles.description} numberOfLines={2}>
+            {incident.description}
+          </Text>
+
+          <View style={styles.footer}>
+            <Text style={styles.location} numberOfLines={1}>
+              📍 {incident.location.address}
+            </Text>
+            {incident.createdAt && (
+              <Text style={styles.date}>
+                {new Date(incident.createdAt).toLocaleDateString()}
+              </Text>
+            )}
+          </View>
+
+          {/* Image count badge if multiple images */}
+          {hasImages && incident.images.length > 1 && (
+            <View style={styles.imageCountBadge}>
+              <Text style={styles.imageCountText}>
+                📷 {incident.images.length} photos
+              </Text>
+            </View>
+          )}
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -89,13 +115,25 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#FFF',
     borderRadius: 12,
-    padding: 16,
     marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    overflow: 'hidden',
+  },
+  cardContent: {
+    flexDirection: 'row',
+  },
+  cardImage: {
+    width: 120,
+    height: 120,
+    backgroundColor: '#F0F0F0',
+  },
+  contentSection: {
+    flex: 1,
+    padding: 16,
   },
   header: {
     flexDirection: 'row',
@@ -148,5 +186,18 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 12,
     color: '#999',
+  },
+  imageCountBadge: {
+    marginTop: 8,
+    alignSelf: 'flex-start',
+    backgroundColor: '#F0F0F0',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  imageCountText: {
+    fontSize: 11,
+    color: '#666',
+    fontWeight: '600',
   },
 });
