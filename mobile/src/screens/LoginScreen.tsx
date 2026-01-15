@@ -18,6 +18,9 @@ import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { validateEmail } from '../utils/validation';
 import { apiService } from '../services/api';
+import { Colors } from '../theme/colors';
+import { Typography } from '../theme/typography';
+import { Spacing, BorderRadius } from '../theme/spacing';
 
 interface LoginScreenProps {
   navigation: any;
@@ -70,10 +73,18 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
         <View style={styles.content}>
+          {/* Logo/Icon Section */}
+          <View style={styles.logoContainer}>
+            <View style={styles.logoCircle}>
+              <Text style={styles.logoText}>🛡️</Text>
+            </View>
+          </View>
+
           <Text style={styles.title}>Welcome Back</Text>
-          <Text style={styles.subtitle}>Sign in to continue</Text>
+          <Text style={styles.subtitle}>Sign in to continue using SafeNet</Text>
 
           <View style={styles.form}>
             <Input
@@ -130,47 +141,62 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: Colors.background,
   },
   scrollContent: {
     flexGrow: 1,
   },
   content: {
     flex: 1,
-    padding: 24,
+    padding: Spacing.xxl,
     justifyContent: 'center',
   },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: Spacing.xxl,
+  },
+  logoCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: Colors.primaryLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: Spacing.lg,
+  },
+  logoText: {
+    fontSize: 40,
+  },
   title: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#000',
-    marginBottom: 8,
+    ...Typography.h1,
     textAlign: 'center',
+    marginBottom: Spacing.sm,
+    color: Colors.textPrimary,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 32,
+    ...Typography.bodySmall,
     textAlign: 'center',
+    marginBottom: Spacing.xxxl,
+    color: Colors.textSecondary,
   },
   form: {
     width: '100%',
   },
   loginButton: {
-    marginTop: 8,
+    marginTop: Spacing.sm,
   },
   registerContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 24,
+    marginTop: Spacing.xxl,
   },
   registerText: {
-    fontSize: 14,
-    color: '#666',
+    ...Typography.bodySmall,
+    color: Colors.textSecondary,
   },
   registerLink: {
-    fontSize: 14,
-    color: '#007AFF',
+    ...Typography.bodySmall,
+    color: Colors.primary,
     fontWeight: '600',
   },
 });

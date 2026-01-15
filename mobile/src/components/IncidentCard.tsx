@@ -6,50 +6,66 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Incident, IncidentType, IncidentStatus } from '../types';
+import { StatusBadge } from './StatusBadge';
+import { Colors } from '../theme/colors';
+import { Typography } from '../theme/typography';
+import { Spacing, BorderRadius } from '../theme/spacing';
 
 interface IncidentCardProps {
   incident: Incident;
   onPress: () => void;
 }
 
-const getIncidentTypeLabel = (type: IncidentType): string => {
-  const labels: Record<IncidentType, string> = {
-    [IncidentType.MISSING_PERSON]: 'Missing Person',
-    [IncidentType.KIDNAPPING]: 'Kidnapping',
-    [IncidentType.STOLEN_VEHICLE]: 'Stolen Vehicle',
-    [IncidentType.NATURAL_DISASTER]: 'Natural Disaster',
+const getIncidentTypeConfig = (type: IncidentType) => {
+  const configs: Record<IncidentType, { label: string; icon: string; color: string }> = {
+    [IncidentType.MISSING_PERSON]: {
+      label: 'MISSING PERSON',
+      icon: '🔍',
+      color: Colors.success,
+    },
+    [IncidentType.KIDNAPPING]: {
+      label: 'KIDNAPPING',
+      icon: '🚨',
+      color: Colors.error,
+    },
+    [IncidentType.STOLEN_VEHICLE]: {
+      label: 'TRAFFIC INCIDENT',
+      icon: '🚧',
+      color: Colors.warning,
+    },
+    [IncidentType.NATURAL_DISASTER]: {
+      label: 'URGENT DISASTER',
+      icon: '🏠',
+      color: Colors.error,
+    },
   };
-  return labels[type] || type;
+  return configs[type] || { label: type, icon: '📋', color: Colors.textSecondary };
 };
 
-const getStatusLabel = (status: IncidentStatus): string => {
-  const labels: Record<IncidentStatus, string> = {
-    [IncidentStatus.PENDING]: 'Pending',
-    [IncidentStatus.VERIFIED]: 'Verified',
-    [IncidentStatus.FALSE]: 'False',
-    [IncidentStatus.RESOLVED]: 'Resolved',
-  };
-  return labels[status] || 'Unknown';
+const getTimeAgo = (dateString?: string): string => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  
+  if (diffInSeconds < 60) return `${diffInSeconds}m ago`;
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+  return `${Math.floor(diffInSeconds / 86400)}d ago`;
 };
 
-const getStatusColor = (status: IncidentStatus): string => {
-  const colors: Record<IncidentStatus, string> = {
-    [IncidentStatus.PENDING]: '#FF9500',
-    [IncidentStatus.VERIFIED]: '#34C759',
-    [IncidentStatus.FALSE]: '#FF3B30',
-    [IncidentStatus.RESOLVED]: '#007AFF',
-  };
-  return colors[status] || '#999';
-};
 
 export const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onPress }) => {
   const hasImages = incident.images && incident.images.length > 0;
   const firstImage = hasImages ? incident.images[0] : null;
+  const typeConfig = getIncidentTypeConfig(incident.type);
+  const isVerified = incident.status === IncidentStatus.VERIFIED;
+  const timeAgo = getTimeAgo(incident.createdAt);
 
   return (
     <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
       <View style={styles.cardContent}>
-        {/* Image Section */}
+        {/* Image Section - Only show if image exists */}
         {firstImage && (
           <Image
             source={{ uri: firstImage }}
@@ -59,50 +75,60 @@ export const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onPress })
         )}
 
         {/* Content Section */}
-        <View style={styles.contentSection}>
+        <View style={[styles.contentSection, !firstImage && styles.contentSectionFull]}>
+          {/* Header with Type and Verified Badge */}
           <View style={styles.header}>
-            <View style={styles.typeContainer}>
-              <Text style={styles.typeText}>{getIncidentTypeLabel(incident.type)}</Text>
-            </View>
-            <View
-              style={[
-                styles.statusBadge,
-                { backgroundColor: getStatusColor(incident.status) + '20' },
-              ]}
-            >
-              <Text
-                style={[styles.statusText, { color: getStatusColor(incident.status) }]}
-              >
-                {getStatusLabel(incident.status)}
+            <View style={[styles.typeContainer, { backgroundColor: typeConfig.color + '15' }]}>
+              <Text style={styles.typeIcon}>{typeConfig.icon}</Text>
+              <Text style={[styles.typeText, { color: typeConfig.color }]}>
+                {typeConfig.label}
               </Text>
             </View>
+            {isVerified && (
+              <View style={styles.verifiedBadge}>
+                <Text style={styles.verifiedIcon}>✓</Text>
+                <Text style={styles.verifiedText}>VERIFIED</Text>
+              </View>
+            )}
           </View>
 
+          {/* Title */}
           <Text style={styles.title} numberOfLines={2}>
             {incident.title}
           </Text>
 
-          <Text style={styles.description} numberOfLines={2}>
+          {/* Description */}
+          <Text style={styles.description} numberOfLines={3}>
             {incident.description}
           </Text>
 
+          {/* Footer */}
           <View style={styles.footer}>
-            <Text style={styles.location} numberOfLines={1}>
-              📍 {incident.location.address}
-            </Text>
-            {incident.createdAt && (
-              <Text style={styles.date}>
-                {new Date(incident.createdAt).toLocaleDateString()}
+            <View style={styles.footerLeft}>
+              {timeAgo && (
+                <View style={styles.timeContainer}>
+                  <Text style={styles.timeIcon}>🕐</Text>
+                  <Text style={styles.timeText}>{timeAgo}</Text>
+                </View>
+              )}
+              <View style={styles.locationContainer}>
+                <Text style={styles.locationIcon}>📍</Text>
+                <Text style={styles.location} numberOfLines={1}>
+                  {incident.location.address}
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity onPress={onPress}>
+              <Text style={styles.detailsLink}>
+                {incident.type === IncidentType.STOLEN_VEHICLE ? 'View Map' : 'Details >'}
               </Text>
-            )}
+            </TouchableOpacity>
           </View>
 
-          {/* Image count badge if multiple images */}
-          {hasImages && incident.images.length > 1 && (
-            <View style={styles.imageCountBadge}>
-              <Text style={styles.imageCountText}>
-                📷 {incident.images.length} photos
-              </Text>
+          {/* Active Badge for Missing Person */}
+          {incident.type === IncidentType.MISSING_PERSON && isVerified && (
+            <View style={styles.activeBadge}>
+              <Text style={styles.activeText}>ACTIVE</Text>
             </View>
           )}
         </View>
@@ -113,91 +139,146 @@ export const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onPress })
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#FFF',
-    borderRadius: 12,
-    marginBottom: 12,
-    shadowColor: '#000',
+    backgroundColor: Colors.surface,
+    borderRadius: BorderRadius.lg,
+    marginBottom: Spacing.md,
+    shadowColor: Colors.shadow,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 2,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   cardContent: {
     flexDirection: 'row',
   },
   cardImage: {
     width: 120,
-    height: 120,
-    backgroundColor: '#F0F0F0',
+    height: '100%',
+    minHeight: 140,
+    backgroundColor: Colors.border,
   },
   contentSection: {
     flex: 1,
-    padding: 16,
+    padding: Spacing.lg,
+  },
+  contentSectionFull: {
+    width: '100%',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: Spacing.sm,
+    flexWrap: 'wrap',
   },
   typeContainer: {
-    backgroundColor: '#F0F0F0',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.sm,
+    marginRight: Spacing.sm,
+  },
+  typeIcon: {
+    fontSize: 14,
+    marginRight: Spacing.xs,
   },
   typeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#333',
+    ...Typography.overline,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
-  statusBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+  verifiedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.statusVerified,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.sm,
   },
-  statusText: {
+  verifiedIcon: {
     fontSize: 12,
-    fontWeight: '600',
+    color: Colors.success,
+    marginRight: Spacing.xs,
+    fontWeight: 'bold',
+  },
+  verifiedText: {
+    ...Typography.overline,
+    fontSize: 10,
+    color: Colors.success,
+    fontWeight: '700',
   },
   title: {
-    fontSize: 16,
+    ...Typography.h4,
+    marginBottom: Spacing.sm,
+    color: Colors.textPrimary,
     fontWeight: '700',
-    color: '#000',
-    marginBottom: 8,
   },
   description: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 12,
+    ...Typography.bodySmall,
+    color: Colors.textSecondary,
+    marginBottom: Spacing.md,
     lineHeight: 20,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: Spacing.xs,
   },
-  location: {
+  footerLeft: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: Spacing.sm,
+  },
+  timeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: Spacing.sm,
+  },
+  timeIcon: {
     fontSize: 12,
-    color: '#999',
+    marginRight: 4,
+  },
+  timeText: {
+    ...Typography.caption,
+    color: Colors.textTertiary,
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
   },
-  date: {
+  locationIcon: {
     fontSize: 12,
-    color: '#999',
+    marginRight: 4,
   },
-  imageCountBadge: {
-    marginTop: 8,
-    alignSelf: 'flex-start',
-    backgroundColor: '#F0F0F0',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
+  location: {
+    ...Typography.caption,
+    color: Colors.textTertiary,
+    flex: 1,
   },
-  imageCountText: {
-    fontSize: 11,
-    color: '#666',
+  detailsLink: {
+    ...Typography.bodySmall,
+    color: Colors.primary,
     fontWeight: '600',
+  },
+  activeBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: Colors.success,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.full,
+    marginTop: Spacing.sm,
+  },
+  activeText: {
+    ...Typography.caption,
+    color: Colors.textInverse,
+    fontWeight: '700',
   },
 });

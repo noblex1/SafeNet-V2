@@ -7,9 +7,11 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text, View } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
+import { Colors } from '../theme/colors';
+import { Spacing, BorderRadius } from '../theme/spacing';
 
 // Auth Screens
 import { LoginScreen } from '../screens/LoginScreen';
@@ -39,9 +41,30 @@ const AuthStack = () => {
   );
 };
 
-// Simple Tab Icon Component
-const TabIcon: React.FC<{ emoji: string; color: string }> = ({ emoji }) => {
-  return <Text style={{ fontSize: 24 }}>{emoji}</Text>;
+// Tab Icon Component
+const TabIcon: React.FC<{ emoji: string; color: string; focused?: boolean }> = ({
+  emoji,
+  color,
+  focused,
+}) => {
+  return <Text style={{ fontSize: focused ? 26 : 22 }}>{emoji}</Text>;
+};
+
+// Dummy component for Report tab (button handles navigation)
+const ReportTabScreen = () => {
+  return null;
+};
+
+// Report Tab Button (Special highlighted button)
+const ReportTabButton: React.FC<{ onPress: () => void }> = ({ onPress }) => {
+  return (
+    <TouchableOpacity style={styles.reportButton} onPress={onPress}>
+      <View style={styles.reportButtonInner}>
+        <Text style={styles.reportIcon}>📍</Text>
+      </View>
+      <Text style={styles.reportLabel}>Report</Text>
+    </TouchableOpacity>
+  );
 };
 
 // Main Tab Navigator
@@ -50,12 +73,19 @@ const MainTabs = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#999',
+        tabBarActiveTintColor: Colors.primary,
+        tabBarInactiveTintColor: Colors.textTertiary,
         tabBarStyle: {
-          paddingBottom: 5,
-          paddingTop: 5,
-          height: 60,
+          paddingBottom: Spacing.sm,
+          paddingTop: Spacing.sm,
+          height: 70,
+          backgroundColor: Colors.surface,
+          borderTopWidth: 1,
+          borderTopColor: Colors.border,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '500',
         },
       }}
     >
@@ -63,24 +93,52 @@ const MainTabs = () => {
         name="Home"
         component={HomeScreen}
         options={{
-          tabBarLabel: 'Alerts',
-          tabBarIcon: ({ color }) => <TabIcon emoji="⚠️" color={color} />,
+          tabBarLabel: 'Feed',
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon emoji="📶" color={color} focused={focused} />
+          ),
         }}
       />
       <Tab.Screen
         name="Map"
         component={MapViewScreen}
         options={{
-          tabBarLabel: 'Map',
-          tabBarIcon: ({ color }) => <TabIcon emoji="📍" color={color} />,
+          tabBarLabel: 'Explore',
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon emoji="🗺️" color={color} focused={focused} />
+          ),
         }}
       />
       <Tab.Screen
-        name="MyReports"
+        name="ReportIncidentTab"
+        component={ReportTabScreen}
+        options={({ navigation }) => ({
+          tabBarLabel: '',
+          tabBarButton: (props) => (
+            <ReportTabButton
+              onPress={() => navigation.getParent()?.navigate('ReportIncident')}
+            />
+          ),
+        })}
+      />
+      <Tab.Screen
+        name="Community"
+        component={HomeScreen}
+        options={{
+          tabBarLabel: 'Community',
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon emoji="👥" color={color} focused={focused} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
         component={MyReportsScreen}
         options={{
-          tabBarLabel: 'My Reports',
-          tabBarIcon: ({ color }) => <TabIcon emoji="📋" color={color} />,
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon emoji="👤" color={color} focused={focused} />
+          ),
         }}
       />
     </Tab.Navigator>
@@ -93,9 +151,9 @@ const MainStack = () => {
     <Stack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#007AFF',
+          backgroundColor: Colors.primary,
         },
-        headerTintColor: '#FFF',
+        headerTintColor: Colors.textInverse,
         headerTitleStyle: {
           fontWeight: '600',
         },
@@ -125,6 +183,38 @@ const MainStack = () => {
     </Stack.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  reportButton: {
+    top: -20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 70,
+    height: 70,
+  },
+  reportButtonInner: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: Colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: Colors.shadowDark,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  reportIcon: {
+    fontSize: 24,
+  },
+  reportLabel: {
+    marginTop: 4,
+    fontSize: 12,
+    fontWeight: '600',
+    color: Colors.primary,
+  },
+});
 
 // Root Navigator
 export const AppNavigator: React.FC = () => {

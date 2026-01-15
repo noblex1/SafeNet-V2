@@ -27,6 +27,9 @@ import {
   validateLocation,
 } from '../utils/validation';
 import { apiService } from '../services/api';
+import { Colors } from '../theme/colors';
+import { Typography } from '../theme/typography';
+import { Spacing, BorderRadius } from '../theme/spacing';
 
 interface ReportIncidentScreenProps {
   navigation: any;
@@ -205,16 +208,20 @@ export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
         <View style={styles.content}>
-          <Text style={styles.title}>Report Incident</Text>
-          <Text style={styles.subtitle}>
-            Provide details about the incident you want to report
-          </Text>
+          <View style={styles.headerSection}>
+            <Text style={styles.title}>Report Incident</Text>
+            <Text style={styles.subtitle}>
+              Help keep your community safe by reporting incidents
+            </Text>
+          </View>
 
           <View style={styles.form}>
-            <Text style={styles.label}>Incident Type</Text>
-            <View style={styles.typeContainer}>
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Incident Type</Text>
+              <View style={styles.typeContainer}>
               {INCIDENT_TYPES.map((type) => (
                 <TouchableOpacity
                   key={type.value}
@@ -234,9 +241,11 @@ export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
                   </Text>
                 </TouchableOpacity>
               ))}
+              </View>
             </View>
 
-            <Input
+            <View style={styles.section}>
+              <Input
               label="Title"
               placeholder="Brief title for the incident"
               value={formData.title}
@@ -256,10 +265,11 @@ export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
               textAlignVertical="top"
               maxLength={2000}
             />
+            </View>
 
-            <View style={styles.locationContainer}>
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Location</Text>
               <Input
-                label="Location"
                 placeholder="Enter location address"
                 value={formData.location.address}
                 onChangeText={(text) => updateField('address', text)}
@@ -270,23 +280,28 @@ export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
                 onPress={getCurrentLocation}
                 disabled={gettingLocation}
               >
+                <Text style={styles.locationButtonIcon}>📍</Text>
                 <Text style={styles.locationButtonText}>
                   {gettingLocation ? 'Getting Location...' : 'Use Current Location'}
                 </Text>
               </TouchableOpacity>
             </View>
 
-            <View style={styles.imagesContainer}>
-              <Text style={styles.label}>
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>
                 Images (Optional) {selectedImages.length > 0 && `(${selectedImages.length}/5)`}
               </Text>
               <TouchableOpacity
-                style={styles.addImageButton}
+                style={[
+                  styles.addImageButton,
+                  selectedImages.length >= 5 && styles.addImageButtonDisabled,
+                ]}
                 onPress={pickImages}
                 disabled={selectedImages.length >= 5}
               >
+                <Text style={styles.addImageButtonIcon}>📷</Text>
                 <Text style={styles.addImageButtonText}>
-                  {selectedImages.length >= 5 ? 'Maximum 5 images' : '+ Add Images'}
+                  {selectedImages.length >= 5 ? 'Maximum 5 images' : 'Add Images'}
                 </Text>
               </TouchableOpacity>
 
@@ -323,132 +338,153 @@ export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: Colors.background,
   },
   scrollContent: {
     flexGrow: 1,
-    padding: 16,
+    padding: Spacing.lg,
   },
   content: {
     flex: 1,
   },
+  headerSection: {
+    marginBottom: Spacing.xxl,
+  },
   title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#000',
-    marginBottom: 8,
+    ...Typography.h2,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.sm,
   },
   subtitle: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 24,
+    ...Typography.bodySmall,
+    color: Colors.textSecondary,
   },
   form: {
     width: '100%',
   },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
+  section: {
+    marginBottom: Spacing.xl,
+  },
+  sectionTitle: {
+    ...Typography.label,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.md,
   },
   typeContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: 16,
-    gap: 8,
+    gap: Spacing.sm,
   },
   typeButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 8,
-    backgroundColor: '#F0F0F0',
-    marginRight: 8,
-    marginBottom: 8,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.md,
+    backgroundColor: Colors.border,
+    borderWidth: 1.5,
+    borderColor: Colors.border,
   },
   typeButtonActive: {
-    backgroundColor: '#007AFF',
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
   },
   typeButtonText: {
-    fontSize: 14,
+    ...Typography.bodySmall,
     fontWeight: '600',
-    color: '#333',
+    color: Colors.textSecondary,
   },
   typeButtonTextActive: {
-    color: '#FFF',
-  },
-  locationContainer: {
-    marginBottom: 16,
+    color: Colors.textInverse,
   },
   locationButton: {
-    marginTop: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: '#F0F0F0',
-    borderRadius: 8,
+    marginTop: Spacing.sm,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    backgroundColor: Colors.surface,
+    borderRadius: BorderRadius.md,
+    flexDirection: 'row',
     alignItems: 'center',
-  },
-  locationButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#007AFF',
-  },
-  submitButton: {
-    marginTop: 8,
-  },
-  imagesContainer: {
-    marginBottom: 16,
-  },
-  addImageButton: {
-    marginTop: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: '#F0F0F0',
-    borderRadius: 8,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#DDD',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: Colors.primary,
     borderStyle: 'dashed',
   },
-  addImageButtonText: {
-    fontSize: 14,
+  locationButtonIcon: {
+    fontSize: 16,
+    marginRight: Spacing.sm,
+  },
+  locationButtonText: {
+    ...Typography.bodyMedium,
+    color: Colors.primary,
     fontWeight: '600',
-    color: '#007AFF',
+  },
+  submitButton: {
+    marginTop: Spacing.md,
+  },
+  addImageButton: {
+    marginTop: Spacing.sm,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    backgroundColor: Colors.surface,
+    borderRadius: BorderRadius.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: Colors.primary,
+    borderStyle: 'dashed',
+  },
+  addImageButtonDisabled: {
+    opacity: 0.5,
+    borderColor: Colors.border,
+  },
+  addImageButtonIcon: {
+    fontSize: 16,
+    marginRight: Spacing.sm,
+  },
+  addImageButtonText: {
+    ...Typography.bodyMedium,
+    color: Colors.primary,
+    fontWeight: '600',
   },
   imagesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: 12,
-    gap: 8,
+    marginTop: Spacing.md,
+    gap: Spacing.sm,
   },
   imageWrapper: {
     position: 'relative',
     width: 100,
     height: 100,
-    marginRight: 8,
-    marginBottom: 8,
+    marginRight: Spacing.sm,
+    marginBottom: Spacing.sm,
   },
   imagePreview: {
     width: '100%',
     height: '100%',
-    borderRadius: 8,
+    borderRadius: BorderRadius.md,
     resizeMode: 'cover',
   },
   removeImageButton: {
     position: 'absolute',
     top: -8,
     right: -8,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#FF3B30',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: Colors.error,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: '#FFF',
+    borderColor: Colors.surface,
+    shadowColor: Colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   removeImageText: {
-    color: '#FFF',
+    color: Colors.textInverse,
     fontSize: 18,
     fontWeight: 'bold',
     lineHeight: 20,

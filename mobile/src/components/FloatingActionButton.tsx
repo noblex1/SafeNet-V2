@@ -9,6 +9,8 @@ import {
   StyleSheet,
   ViewStyle,
 } from 'react-native';
+import { Colors } from '../theme/colors';
+import { Spacing } from '../theme/spacing';
 
 interface FloatingActionButtonProps {
   onPress: () => void;

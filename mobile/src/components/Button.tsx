@@ -11,6 +11,9 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
+import { Colors } from '../theme/colors';
+import { Typography } from '../theme/typography';
+import { BorderRadius, Spacing } from '../theme/spacing';
 
 interface ButtonProps {
   title: string;
@@ -60,38 +63,38 @@ export const Button: React.FC<ButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 8,
+    paddingVertical: Spacing.md + 2,
+    paddingHorizontal: Spacing.xxl,
+    borderRadius: BorderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 48,
+    minHeight: 52,
   },
   primary: {
-    backgroundColor: '#007AFF',
+    backgroundColor: Colors.primary,
   },
   secondary: {
-    backgroundColor: '#34C759',
+    backgroundColor: Colors.success,
   },
   outline: {
     backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: '#007AFF',
+    borderWidth: 1.5,
+    borderColor: Colors.primary,
   },
   disabled: {
     opacity: 0.5,
   },
   text: {
-    fontSize: 16,
+    ...Typography.bodyMedium,
     fontWeight: '600',
   },
   primaryText: {
-    color: '#FFFFFF',
+    color: Colors.textInverse,
   },
   secondaryText: {
-    color: '#FFFFFF',
+    color: Colors.textInverse,
   },
   outlineText: {
-    color: '#007AFF',
+    color: Colors.primary,
   },
 });

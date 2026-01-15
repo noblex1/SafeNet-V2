@@ -19,6 +19,9 @@ import { incidentService } from '../services/incidentService';
 import { IncidentCard } from '../components/IncidentCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { apiService } from '../services/api';
+import { Colors } from '../theme/colors';
+import { Typography } from '../theme/typography';
+import { Spacing, BorderRadius } from '../theme/spacing';
 
 interface MyReportsScreenProps {
   navigation: any;
@@ -126,9 +129,10 @@ export const MyReportsScreen: React.FC<MyReportsScreenProps> = ({ navigation }) 
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <View style={styles.headerTextContainer}>
-            <Text style={styles.title}>My Reports</Text>
+            <Text style={styles.greeting}>My Reports</Text>
+            <Text style={styles.title}>Track Your Incidents</Text>
             <Text style={styles.subtitle}>
-              Track the status of your reported incidents
+              Monitor the status of your reported incidents
             </Text>
           </View>
           <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
@@ -154,7 +158,13 @@ export const MyReportsScreen: React.FC<MyReportsScreenProps> = ({ navigation }) 
         onEndReachedThreshold={0.5}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>You haven't reported any incidents yet</Text>
+            <View style={styles.emptyIconContainer}>
+              <Text style={styles.emptyIcon}>📋</Text>
+            </View>
+            <Text style={styles.emptyTitle}>No Reports Yet</Text>
+            <Text style={styles.emptyText}>
+              You haven't reported any incidents yet. Start by reporting an incident to help keep your community safe.
+            </Text>
             <TouchableOpacity
               style={styles.reportButton}
               onPress={() => navigation.navigate('ReportIncident')}
@@ -178,13 +188,14 @@ export const MyReportsScreen: React.FC<MyReportsScreenProps> = ({ navigation }) 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: Colors.background,
   },
   header: {
-    padding: 20,
-    backgroundColor: '#FFF',
+    padding: Spacing.xl,
+    paddingTop: Spacing.xxl + Spacing.sm,
+    backgroundColor: Colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    borderBottomColor: Colors.border,
   },
   headerTop: {
     flexDirection: 'row',
@@ -194,73 +205,97 @@ const styles = StyleSheet.create({
   headerTextContainer: {
     flex: 1,
   },
+  greeting: {
+    ...Typography.bodySmall,
+    color: Colors.textSecondary,
+    marginBottom: Spacing.xs,
+  },
   title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#000',
-    marginBottom: 4,
+    ...Typography.h1,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.xs,
   },
   subtitle: {
-    fontSize: 14,
-    color: '#666',
+    ...Typography.bodySmall,
+    color: Colors.textSecondary,
+    marginTop: Spacing.xs,
   },
   logoutButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
   },
   logoutText: {
-    fontSize: 14,
-    color: '#FF3B30',
+    ...Typography.bodySmall,
+    color: Colors.error,
     fontWeight: '600',
   },
   listContent: {
-    padding: 16,
+    padding: Spacing.lg,
   },
   emptyContainer: {
-    padding: 40,
+    padding: Spacing.xxxl * 2,
     alignItems: 'center',
   },
-  emptyText: {
-    fontSize: 16,
-    color: '#999',
+  emptyIconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: Colors.primaryLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: Spacing.xl,
+  },
+  emptyIcon: {
+    fontSize: 40,
+  },
+  emptyTitle: {
+    ...Typography.h3,
+    color: Colors.textPrimary,
+    marginBottom: Spacing.sm,
     textAlign: 'center',
-    marginBottom: 16,
+  },
+  emptyText: {
+    ...Typography.bodySmall,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: Spacing.xl,
+    lineHeight: 20,
   },
   reportButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
+    paddingHorizontal: Spacing.xxl,
+    paddingVertical: Spacing.md,
+    backgroundColor: Colors.primary,
+    borderRadius: BorderRadius.md,
   },
   reportButtonText: {
-    color: '#FFF',
-    fontSize: 16,
+    ...Typography.bodyMedium,
+    color: Colors.textInverse,
     fontWeight: '600',
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: Spacing.xxl,
   },
   errorText: {
-    fontSize: 16,
-    color: '#FF3B30',
+    ...Typography.body,
+    color: Colors.error,
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: Spacing.lg,
   },
   retryButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
+    paddingHorizontal: Spacing.xxl,
+    paddingVertical: Spacing.md,
+    backgroundColor: Colors.primary,
+    borderRadius: BorderRadius.md,
   },
   retryButtonText: {
-    color: '#FFF',
-    fontSize: 16,
+    ...Typography.bodyMedium,
+    color: Colors.textInverse,
     fontWeight: '600',
   },
   footerLoader: {
-    paddingVertical: 20,
+    paddingVertical: Spacing.xl,
   },
 });
