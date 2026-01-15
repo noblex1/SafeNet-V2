@@ -106,11 +106,14 @@ export class BlockchainService {
       const tx = new Transaction();
 
       // Call submit_incident function
+      // Convert Uint8Array to Array for vector<u8>
+      const hashArray = Array.from(hashBytes);
+      
       tx.moveCall({
         target: `${this.packageId}::incident_registry::submit_incident`,
         arguments: [
           tx.object(this.registryId), // Registry shared object
-          tx.pure(hashBytes), // Incident hash as bytes
+          tx.pure.vector('u8', hashArray), // Incident hash as vector<u8>
         ],
       });
 

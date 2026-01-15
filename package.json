@@ -9,7 +9,10 @@
     "start": "node dist/server.js",
     "lint": "eslint src --ext .ts",
     "test": "jest",
-    "create-admin": "ts-node --transpile-only scripts/create-admin.ts"
+    "create-admin": "ts-node --transpile-only scripts/create-admin.ts",
+    "check-blockchain": "ts-node --transpile-only scripts/check-blockchain.ts",
+    "view-tx": "ts-node --transpile-only scripts/view-transaction.ts",
+    "submit-pending": "ts-node --transpile-only scripts/submit-pending-to-blockchain.ts"
   },
   "keywords": [
     "safenet",
