@@ -66,6 +66,7 @@ export interface Incident {
   description: string;
   location: Location;
   status: IncidentStatus;
+  images?: string[];
   incidentHash?: string;
   blockchainTxId?: string;
   blockchainRecordId?: string;
@@ -82,6 +83,7 @@ export interface CreateIncidentData {
   title: string;
   description: string;
   location: Location;
+  images?: string[];
   metadata?: Record<string, any>;
 }
 

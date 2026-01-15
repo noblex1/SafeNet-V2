@@ -82,6 +82,10 @@ const IncidentSchema: Schema = new Schema(
       trim: true,
       maxlength: 500,
     },
+    images: {
+      type: [String],
+      default: [],
+    },
     metadata: {
       type: Schema.Types.Mixed,
       default: {},

@@ -13,8 +13,10 @@ import {
   Platform,
   Alert,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import * as Location from 'expo-location';
+import * as ImagePicker from 'expo-image-picker';
 import { IncidentType, CreateIncidentData } from '../types';
 import { incidentService } from '../services/incidentService';
 import { Button } from '../components/Button';
@@ -51,6 +53,7 @@ export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
   const [loading, setLoading] = useState(false);
   const [gettingLocation, setGettingLocation] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
 
   const updateField = (field: string, value: any) => {
     if (field === 'address') {
@@ -64,6 +67,47 @@ export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
     if (errors[field]) {
       setErrors({ ...errors, [field]: '' });
     }
+  };
+
+  const pickImages = async () => {
+    try {
+      // Request permissions
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permission Denied',
+          'Camera roll permission is required to add images'
+        );
+        return;
+      }
+
+      // Check how many images can still be added
+      const remainingSlots = 5 - selectedImages.length;
+      if (remainingSlots <= 0) {
+        Alert.alert('Limit Reached', 'You can add a maximum of 5 images');
+        return;
+      }
+
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsMultipleSelection: true,
+        quality: 0.8,
+        selectionLimit: remainingSlots,
+      });
+
+      if (!result.canceled && result.assets) {
+        const newImages = result.assets.map((asset) => asset.uri);
+        setSelectedImages([...selectedImages, ...newImages].slice(0, 5));
+      }
+    } catch (error) {
+      console.error('Error picking images:', error);
+      Alert.alert('Error', 'Failed to pick images');
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setSelectedImages(selectedImages.filter((_, i) => i !== index));
   };
 
   const getCurrentLocation = async () => {
@@ -134,7 +178,7 @@ export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
 
     setLoading(true);
     try {
-      await incidentService.createIncident(formData);
+      await incidentService.createIncident(formData, selectedImages.length > 0 ? selectedImages : undefined);
       Alert.alert(
         'Success',
         'Incident reported successfully. It will be reviewed by authorities.',
@@ -232,6 +276,37 @@ export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
               </TouchableOpacity>
             </View>
 
+            <View style={styles.imagesContainer}>
+              <Text style={styles.label}>
+                Images (Optional) {selectedImages.length > 0 && `(${selectedImages.length}/5)`}
+              </Text>
+              <TouchableOpacity
+                style={styles.addImageButton}
+                onPress={pickImages}
+                disabled={selectedImages.length >= 5}
+              >
+                <Text style={styles.addImageButtonText}>
+                  {selectedImages.length >= 5 ? 'Maximum 5 images' : '+ Add Images'}
+                </Text>
+              </TouchableOpacity>
+
+              {selectedImages.length > 0 && (
+                <View style={styles.imagesGrid}>
+                  {selectedImages.map((uri, index) => (
+                    <View key={index} style={styles.imageWrapper}>
+                      <Image source={{ uri }} style={styles.imagePreview} />
+                      <TouchableOpacity
+                        style={styles.removeImageButton}
+                        onPress={() => removeImage(index)}
+                      >
+                        <Text style={styles.removeImageText}>×</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </View>
+
             <Button
               title="Submit Report"
               onPress={handleSubmit}
@@ -320,5 +395,62 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     marginTop: 8,
+  },
+  imagesContainer: {
+    marginBottom: 16,
+  },
+  addImageButton: {
+    marginTop: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: '#F0F0F0',
+    borderRadius: 8,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderStyle: 'dashed',
+  },
+  addImageButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#007AFF',
+  },
+  imagesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 12,
+    gap: 8,
+  },
+  imageWrapper: {
+    position: 'relative',
+    width: 100,
+    height: 100,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  imagePreview: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+    resizeMode: 'cover',
+  },
+  removeImageButton: {
+    position: 'absolute',
+    top: -8,
+    right: -8,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#FF3B30',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#FFF',
+  },
+  removeImageText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+    lineHeight: 20,
   },
 });

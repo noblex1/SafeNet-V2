@@ -115,6 +115,25 @@ class ApiService {
   }
 
   /**
+   * POST request with FormData (for file uploads)
+   */
+  async postFormData<T>(url: string, formData: FormData): Promise<T> {
+    try {
+      const token = await getAccessToken();
+      const response = await this.client.post<ApiResponse<T>>(url, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      });
+      return response.data.data;
+    } catch (error) {
+      this.handleError(error);
+      throw error;
+    }
+  }
+
+  /**
    * Handle API errors
    */
   private handleError(error: any): void {

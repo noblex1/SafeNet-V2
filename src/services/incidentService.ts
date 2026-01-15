@@ -18,6 +18,7 @@ interface CreateIncidentData {
       lng: number;
     };
   };
+  images?: string[];
   metadata?: Record<string, any>;
 }
 

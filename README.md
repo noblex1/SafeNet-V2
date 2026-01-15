@@ -67,6 +67,9 @@ npm start
 See `.env.example` for required environment variables:
 
 - `MONGODB_URI` - MongoDB connection string
+- `CLOUDINARY_CLOUD_NAME` - Cloudinary cloud name
+- `CLOUDINARY_API_KEY` - Cloudinary API key
+- `CLOUDINARY_API_SECRET` - Cloudinary API secret
 - `JWT_SECRET` - Secret for access tokens
 - `JWT_REFRESH_SECRET` - Secret for refresh tokens
 - `PORT` - Server port (default: 3000)

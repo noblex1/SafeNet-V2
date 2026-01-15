@@ -45,6 +45,7 @@ export interface IIncident {
     };
   };
   status: IncidentStatus;
+  images?: string[]; // Array of image URLs/paths
   incidentHash?: string;
   blockchainTxId?: string;
   blockchainRecordId?: string; // Sui IncidentRecord object ID

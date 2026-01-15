@@ -4,6 +4,8 @@ import { AuthRequest } from '../middleware/auth';
 import { IncidentService } from '../services/incidentService';
 import { IncidentType, IncidentStatus } from '../types';
 import { CustomError } from '../middleware/errorHandler';
+import { uploadToCloudinary } from '../config/cloudinary';
+import logger from '../utils/logger';
 
 export class IncidentController {
   static createIncidentValidations = [
@@ -38,7 +40,46 @@ export class IncidentController {
         throw new CustomError('User not authenticated', 401);
       }
 
-      const { type, title, description, location, metadata } = req.body;
+      // Handle both JSON and form-data requests
+      let type, title, description, location, metadata;
+      const images: string[] = [];
+
+      // Check if this is a multipart/form-data request (has files)
+      if (req.files && Array.isArray(req.files) && req.files.length > 0) {
+        // Form-data request - parse string fields
+        type = req.body.type;
+        title = req.body.title;
+        description = req.body.description;
+        location = typeof req.body.location === 'string' ? JSON.parse(req.body.location) : req.body.location;
+        metadata = req.body.metadata ? (typeof req.body.metadata === 'string' ? JSON.parse(req.body.metadata) : req.body.metadata) : undefined;
+        
+        // Upload images to Cloudinary
+        try {
+          const uploadPromises = req.files.map((file: Express.Multer.File) => {
+            if (!file.buffer) {
+              throw new CustomError('File buffer is missing', 400);
+            }
+            return uploadToCloudinary(file.buffer);
+          });
+
+          const uploadResults = await Promise.all(uploadPromises);
+          images.push(...uploadResults.map((result) => result.secure_url));
+          
+          logger.info(`Uploaded ${images.length} images to Cloudinary for incident`, {
+            userId: req.user.userId,
+            imageCount: images.length,
+          });
+        } catch (uploadError: any) {
+          logger.error('Error uploading images to Cloudinary:', uploadError);
+          throw new CustomError(
+            uploadError.message || 'Failed to upload images',
+            500
+          );
+        }
+      } else {
+        // JSON request - use body directly
+        ({ type, title, description, location, metadata } = req.body);
+      }
 
       const incident = await IncidentService.createIncident({
         reporterId: req.user.userId,
@@ -46,6 +87,7 @@ export class IncidentController {
         title,
         description,
         location,
+        images,
         metadata,
       });
 

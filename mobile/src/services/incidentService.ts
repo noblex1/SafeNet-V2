@@ -17,14 +17,48 @@ interface GetIncidentsParams {
 
 class IncidentService {
   /**
-   * Create a new incident
+   * Create a new incident with optional images
    */
-  async createIncident(data: CreateIncidentData): Promise<Incident> {
-    const response = await apiService.post<{ incident: Incident }>(
-      API_ENDPOINTS.INCIDENTS.BASE,
-      data
-    );
-    return response.incident;
+  async createIncident(data: CreateIncidentData, images?: string[]): Promise<Incident> {
+    // If images are provided, use FormData for multipart/form-data
+    if (images && images.length > 0) {
+      const formData = new FormData();
+      
+      // Add text fields
+      formData.append('type', data.type);
+      formData.append('title', data.title);
+      formData.append('description', data.description);
+      formData.append('location', JSON.stringify(data.location));
+      if (data.metadata) {
+        formData.append('metadata', JSON.stringify(data.metadata));
+      }
+      
+      // Add images
+      images.forEach((imageUri, index) => {
+        const filename = imageUri.split('/').pop() || `image-${index}.jpg`;
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1]}` : `image/jpeg`;
+        
+        formData.append('images', {
+          uri: imageUri,
+          type,
+          name: filename,
+        } as any);
+      });
+      
+      const response = await apiService.postFormData<{ incident: Incident }>(
+        API_ENDPOINTS.INCIDENTS.BASE,
+        formData
+      );
+      return response.incident;
+    } else {
+      // No images, use regular JSON
+      const response = await apiService.post<{ incident: Incident }>(
+        API_ENDPOINTS.INCIDENTS.BASE,
+        data
+      );
+      return response.incident;
+    }
   }
 
   /**
