@@ -163,6 +163,40 @@ export const IncidentDetail = () => {
                   )}
                 </dd>
               </div>
+              {incident.images && incident.images.length > 0 && (
+                <div className="sm:col-span-2">
+                  <dt className="text-sm font-medium text-gray-500 mb-2">Images</dt>
+                  <dd className="mt-1">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {incident.images.map((imageUrl, index) => (
+                        <div key={index} className="relative group">
+                          <img
+                            src={imageUrl}
+                            alt={`Incident image ${index + 1}`}
+                            className="w-full h-48 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
+                            onClick={() => window.open(imageUrl, '_blank')}
+                          />
+                          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all rounded-lg flex items-center justify-center">
+                            <svg
+                              className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </dd>
+                </div>
+              )}
               <div>
                 <dt className="text-sm font-medium text-gray-500">Reported</dt>
                 <dd className="mt-1 text-sm text-gray-900">

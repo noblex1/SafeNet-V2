@@ -10,6 +10,10 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
+  Image,
+  TouchableOpacity,
+  Modal,
+  Dimensions,
 } from 'react-native';
 import { Incident, IncidentType, IncidentStatus } from '../types';
 import { incidentService } from '../services/incidentService';
@@ -56,6 +60,7 @@ export const IncidentDetailScreen: React.FC<IncidentDetailScreenProps> = ({
   const [incident, setIncident] = useState<Incident | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     loadIncident();
@@ -142,6 +147,28 @@ export const IncidentDetailScreen: React.FC<IncidentDetailScreenProps> = ({
         </View>
       )}
 
+      {/* Show images only when incident is verified */}
+      {incident.status === IncidentStatus.VERIFIED && incident.images && incident.images.length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Images ({incident.images.length})</Text>
+          <View style={styles.imagesGrid}>
+            {incident.images.map((imageUrl, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => setSelectedImage(imageUrl)}
+                style={styles.imageContainer}
+              >
+                <Image
+                  source={{ uri: imageUrl }}
+                  style={styles.thumbnail}
+                  resizeMode="cover"
+                />
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      )}
+
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Reported</Text>
         <Text style={styles.sectionContent}>
@@ -166,6 +193,30 @@ export const IncidentDetailScreen: React.FC<IncidentDetailScreenProps> = ({
           <Text style={styles.blockchainText}>{incident.blockchainTxId}</Text>
         </View>
       )}
+
+      {/* Image Modal */}
+      <Modal
+        visible={selectedImage !== null}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setSelectedImage(null)}
+      >
+        <View style={styles.modalContainer}>
+          <TouchableOpacity
+            style={styles.modalCloseButton}
+            onPress={() => setSelectedImage(null)}
+          >
+            <Text style={styles.modalCloseText}>✕</Text>
+          </TouchableOpacity>
+          {selectedImage && (
+            <Image
+              source={{ uri: selectedImage }}
+              style={styles.modalImage}
+              resizeMode="contain"
+            />
+          )}
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -248,5 +299,49 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#666',
     fontFamily: 'monospace',
+  },
+  imagesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 8,
+    gap: 8,
+  },
+  imageContainer: {
+    width: (Dimensions.get('window').width - 64) / 3, // 3 columns with padding
+    height: (Dimensions.get('window').width - 64) / 3,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  thumbnail: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.95)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalCloseButton: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    zIndex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalCloseText: {
+    color: '#FFF',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  modalImage: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
   },
 });

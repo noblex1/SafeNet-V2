@@ -46,11 +46,12 @@ export class IncidentController {
 
       // Check if this is a multipart/form-data request (has files)
       if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-        // Form-data request - parse string fields
+        // Form-data request - parse fields
+        // Location is already normalized by normalizeFormDataLocation middleware
         type = req.body.type;
         title = req.body.title;
         description = req.body.description;
-        location = typeof req.body.location === 'string' ? JSON.parse(req.body.location) : req.body.location;
+        location = req.body.location;
         metadata = req.body.metadata ? (typeof req.body.metadata === 'string' ? JSON.parse(req.body.metadata) : req.body.metadata) : undefined;
         
         // Upload images to Cloudinary

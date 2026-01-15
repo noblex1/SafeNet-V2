@@ -28,7 +28,14 @@ class IncidentService {
       formData.append('type', data.type);
       formData.append('title', data.title);
       formData.append('description', data.description);
-      formData.append('location', JSON.stringify(data.location));
+      
+      // Send location as nested object structure for validation
+      formData.append('location[address]', data.location.address);
+      if (data.location.coordinates) {
+        formData.append('location[coordinates][lat]', data.location.coordinates.lat.toString());
+        formData.append('location[coordinates][lng]', data.location.coordinates.lng.toString());
+      }
+      
       if (data.metadata) {
         formData.append('metadata', JSON.stringify(data.metadata));
       }
