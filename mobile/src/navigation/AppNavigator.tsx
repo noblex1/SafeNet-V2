@@ -9,8 +9,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
-import { Colors } from '../theme/colors';
 import { Spacing, BorderRadius } from '../theme/spacing';
 
 // Auth Screens
@@ -61,31 +61,36 @@ const ReportTabScreen = () => {
 
 // Report Tab Button (Special highlighted button)
 const ReportTabButton: React.FC<{ onPress: () => void }> = ({ onPress }) => {
+  const { colors } = useTheme();
+  const dynamicStyles = createReportButtonStyles(colors);
+  
   return (
     <TouchableOpacity style={styles.reportButton} onPress={onPress}>
-      <View style={styles.reportButtonInner}>
+      <View style={dynamicStyles.reportButtonInner}>
         <Text style={styles.reportIcon}>📍</Text>
       </View>
-      <Text style={styles.reportLabel}>Report</Text>
+      <Text style={dynamicStyles.reportLabel}>Report</Text>
     </TouchableOpacity>
   );
 };
 
 // Main Tab Navigator
 const MainTabs = () => {
+  const { colors } = useTheme();
+  
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: Colors.primary,
-        tabBarInactiveTintColor: Colors.textTertiary,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textTertiary,
         tabBarStyle: {
           paddingBottom: Spacing.sm,
           paddingTop: Spacing.sm,
           height: 70,
-          backgroundColor: Colors.surface,
+          backgroundColor: colors.surface,
           borderTopWidth: 1,
-          borderTopColor: Colors.border,
+          borderTopColor: colors.border,
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -151,13 +156,15 @@ const MainTabs = () => {
 
 // Main Stack Navigator (includes tabs and detail screens)
 const MainStack = () => {
+  const { colors } = useTheme();
+  
   return (
     <Stack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: Colors.primary,
+          backgroundColor: colors.primary,
         },
-        headerTintColor: Colors.textInverse,
+        headerTintColor: colors.textInverse,
         headerTitleStyle: {
           fontWeight: '600',
         },
@@ -212,6 +219,28 @@ const MainStack = () => {
   );
 };
 
+const createReportButtonStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
+  reportButtonInner: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: colors.shadowDark,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  reportLabel: {
+    marginTop: 4,
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.primary,
+  },
+});
+
 const styles = StyleSheet.create({
   reportButton: {
     top: -20,
@@ -220,27 +249,8 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
   },
-  reportButtonInner: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: Colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: Colors.shadowDark,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
   reportIcon: {
     fontSize: 24,
-  },
-  reportLabel: {
-    marginTop: 4,
-    fontSize: 12,
-    fontWeight: '600',
-    color: Colors.primary,
   },
 });
 

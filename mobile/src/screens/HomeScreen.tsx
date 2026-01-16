@@ -19,7 +19,7 @@ import { incidentService } from '../services/incidentService';
 import { IncidentCard } from '../components/IncidentCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { apiService } from '../services/api';
-import { Colors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { Typography } from '../theme/typography';
 import { Spacing, BorderRadius } from '../theme/spacing';
 import { FilterModal, FilterOptions } from '../components/FilterModal';

@@ -14,7 +14,8 @@ import {
   Alert,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
-import { Colors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
+import { getColors } from '../theme/colors';
 import { Typography } from '../theme/typography';
 import { Spacing, BorderRadius } from '../theme/spacing';
 import { Button } from '../components/Button';
@@ -27,6 +28,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   navigation,
 }) => {
   const { user, logout } = useAuth();
+  const { theme, colors, toggleTheme } = useTheme();
   
   // Notification settings
   const [emergencyAlerts, setEmergencyAlerts] = useState(true);
@@ -34,7 +36,6 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   const [smsFallback, setSmsFallback] = useState(true);
   
   // General settings
-  const [darkMode, setDarkMode] = useState(false);
   const [language, setLanguage] = useState('English');
 
   const handleLogout = () => {
@@ -64,89 +65,91 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     iconColor?: string;
   }> = ({ icon, title, subtitle, value, onPress, rightComponent, iconColor }) => (
     <TouchableOpacity
-      style={styles.settingItem}
+      style={dynamicStyles.settingItem}
       onPress={onPress}
       disabled={!onPress}
     >
       <View style={styles.settingLeft}>
-        <Text style={[styles.settingIcon, iconColor && { color: iconColor }]}>{icon}</Text>
+        <Text style={[dynamicStyles.settingIcon, iconColor && { color: iconColor }]}>{icon}</Text>
         <View style={styles.settingTextContainer}>
-          <Text style={styles.settingTitle}>{title}</Text>
-          {subtitle && <Text style={styles.settingSubtitle}>{subtitle}</Text>}
+          <Text style={dynamicStyles.settingTitle}>{title}</Text>
+          {subtitle && <Text style={dynamicStyles.settingSubtitle}>{subtitle}</Text>}
         </View>
       </View>
       <View style={styles.settingRight}>
-        {value && <Text style={styles.settingValue}>{value}</Text>}
+        {value && <Text style={dynamicStyles.settingValue}>{value}</Text>}
         {rightComponent}
-        {onPress && <Text style={styles.settingArrow}>›</Text>}
+        {onPress && <Text style={dynamicStyles.settingArrow}>›</Text>}
       </View>
     </TouchableOpacity>
   );
 
+  const dynamicStyles = createStyles(colors);
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Settings</Text>
+    <View style={dynamicStyles.container}>
+      <View style={dynamicStyles.header}>
+        <Text style={dynamicStyles.headerTitle}>Settings</Text>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* User Profile Section */}
-        <View style={styles.profileCard}>
+          <View style={dynamicStyles.profileCard}>
           <View style={styles.avatarContainer}>
             <View style={styles.avatar}>
               <Text style={styles.avatarIcon}>📱</Text>
             </View>
-            <View style={styles.onlineIndicator} />
+            <View style={dynamicStyles.onlineIndicator} />
           </View>
-          <View style={styles.profileInfo}>
-            <Text style={styles.profileName}>
+          <View style={dynamicStyles.profileInfo}>
+            <Text style={dynamicStyles.profileName}>
               {user?.firstName} {user?.lastName}
             </Text>
-            <Text style={styles.profileLocation}>Accra, Ghana</Text>
+            <Text style={dynamicStyles.profileLocation}>Accra, Ghana</Text>
           </View>
-          <TouchableOpacity style={styles.editButton}>
-            <Text style={styles.editButtonText}>Edit</Text>
+          <TouchableOpacity style={dynamicStyles.editButton}>
+            <Text style={dynamicStyles.editButtonText}>Edit</Text>
           </TouchableOpacity>
         </View>
 
         {/* Notifications Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>NOTIFICATIONS</Text>
+          <Text style={dynamicStyles.sectionTitle}>NOTIFICATIONS</Text>
           
-          <View style={styles.sectionCard}>
+          <View style={dynamicStyles.sectionCard}>
             <SettingItem
               icon="📢"
               title="Emergency Alerts"
               subtitle="High priority safety warnings"
-              iconColor={Colors.error}
+              iconColor={colors.error}
               rightComponent={
                 <Switch
                   value={emergencyAlerts}
                   onValueChange={setEmergencyAlerts}
-                  trackColor={{ false: Colors.border, true: Colors.primary }}
-                  thumbColor={Colors.surface}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.surface}
                 />
               }
             />
             
-            <View style={styles.divider} />
+            <View style={dynamicStyles.divider} />
             
             <SettingItem
               icon="🔔"
               title="Community Updates"
               subtitle="Local reports and news"
-              iconColor={Colors.info}
+              iconColor={colors.info}
               rightComponent={
                 <Switch
                   value={communityUpdates}
                   onValueChange={setCommunityUpdates}
-                  trackColor={{ false: Colors.border, true: Colors.primary }}
-                  thumbColor={Colors.surface}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.surface}
                 />
               }
             />
             
-            <View style={styles.divider} />
+            <View style={dynamicStyles.divider} />
             
             <SettingItem
               icon="💬"
@@ -157,8 +160,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
                 <Switch
                   value={smsFallback}
                   onValueChange={setSmsFallback}
-                  trackColor={{ false: Colors.border, true: Colors.primary }}
-                  thumbColor={Colors.surface}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.surface}
                 />
               }
             />
@@ -167,9 +170,9 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
 
         {/* General Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>GENERAL</Text>
+          <Text style={dynamicStyles.sectionTitle}>GENERAL</Text>
           
-          <View style={styles.sectionCard}>
+          <View style={dynamicStyles.sectionCard}>
             <SettingItem
               icon="🌐"
               title="Language"
@@ -179,7 +182,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
               }}
             />
             
-            <View style={styles.divider} />
+            <View style={dynamicStyles.divider} />
             
             <SettingItem
               icon="📍"
@@ -189,17 +192,17 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
               }}
             />
             
-            <View style={styles.divider} />
+            <View style={dynamicStyles.divider} />
             
             <SettingItem
-              icon="🌙"
+              icon={theme === 'dark' ? '🌙' : '☀️'}
               title="Dark Mode"
               rightComponent={
                 <Switch
-                  value={darkMode}
-                  onValueChange={setDarkMode}
-                  trackColor={{ false: Colors.border, true: Colors.primary }}
-                  thumbColor={Colors.surface}
+                  value={theme === 'dark'}
+                  onValueChange={toggleTheme}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.surface}
                 />
               }
             />
@@ -208,9 +211,9 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
 
         {/* App Info Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>APP INFO</Text>
+          <Text style={dynamicStyles.sectionTitle}>APP INFO</Text>
           
-          <View style={styles.sectionCard}>
+          <View style={dynamicStyles.sectionCard}>
             <SettingItem
               icon="ℹ️"
               title="About SafeNet"
@@ -222,7 +225,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
               }}
             />
             
-            <View style={styles.divider} />
+            <View style={dynamicStyles.divider} />
             
             <SettingItem
               icon="🔒"
@@ -232,7 +235,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
               }}
             />
             
-            <View style={styles.divider} />
+            <View style={dynamicStyles.divider} />
             
             <SettingItem
               icon="📱"
@@ -255,35 +258,32 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof getColors>) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   header: {
     padding: Spacing.lg,
     paddingTop: Spacing.xxl + Spacing.sm,
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: colors.border,
   },
   headerTitle: {
     ...Typography.h1,
-    color: Colors.textPrimary,
-  },
-  content: {
-    flex: 1,
+    color: colors.textPrimary,
   },
   // Profile Card
   profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     margin: Spacing.lg,
     padding: Spacing.lg,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: colors.border,
   },
   avatarContainer: {
     position: 'relative',
@@ -307,32 +307,32 @@ const styles = StyleSheet.create({
     width: 14,
     height: 14,
     borderRadius: 7,
-    backgroundColor: Colors.success,
+    backgroundColor: colors.success,
     borderWidth: 2,
-    borderColor: Colors.surface,
+    borderColor: colors.surface,
   },
   profileInfo: {
     flex: 1,
   },
   profileName: {
     ...Typography.h4,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     fontWeight: '700',
     marginBottom: Spacing.xs,
   },
   profileLocation: {
     ...Typography.bodySmall,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   editButton: {
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.sm,
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
   },
   editButtonText: {
     ...Typography.bodySmall,
-    color: Colors.textInverse,
+    color: colors.textInverse,
     fontWeight: '600',
   },
   // Section
@@ -342,18 +342,18 @@ const styles = StyleSheet.create({
   sectionTitle: {
     ...Typography.overline,
     fontSize: 11,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     marginBottom: Spacing.sm,
     marginHorizontal: Spacing.lg,
     fontWeight: '700',
     letterSpacing: 1,
   },
   sectionCard: {
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     marginHorizontal: Spacing.lg,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: colors.border,
     overflow: 'hidden',
   },
   settingItem: {
@@ -377,13 +377,13 @@ const styles = StyleSheet.create({
   },
   settingTitle: {
     ...Typography.bodyMedium,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     fontWeight: '600',
     marginBottom: Spacing.xs / 2,
   },
   settingSubtitle: {
     ...Typography.bodySmall,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     fontSize: 12,
   },
   settingRight: {
@@ -393,18 +393,52 @@ const styles = StyleSheet.create({
   },
   settingValue: {
     ...Typography.bodySmall,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     marginRight: Spacing.xs,
   },
   settingArrow: {
     fontSize: 20,
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
     marginLeft: Spacing.xs,
   },
   divider: {
     height: 1,
-    backgroundColor: Colors.border,
+    backgroundColor: colors.border,
     marginLeft: Spacing.lg + 30 + Spacing.md, // Icon width + margins
+  },
+});
+
+const styles = StyleSheet.create({
+  content: {
+    flex: 1,
+  },
+  // Profile Card
+  avatarContainer: {
+    position: 'relative',
+    marginRight: Spacing.md,
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#FF9500',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  // Section
+  section: {
+    marginBottom: Spacing.lg,
+  },
+  settingItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: Spacing.lg,
+  },
+  settingLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
   },
   // Logout
   logoutSection: {
