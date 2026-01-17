@@ -13,7 +13,7 @@ import {
   Alert,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
-import { Colors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { Typography } from '../theme/typography';
 import { Spacing, BorderRadius } from '../theme/spacing';
 import { Button } from '../components/Button';
@@ -25,6 +25,7 @@ interface ProfileScreenProps {
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   navigation,
 }) => {
+  const { colors } = useTheme();
   const { user, logout } = useAuth();
 
   const handleLogout = () => {
@@ -44,53 +45,55 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
     );
   };
 
+  const dynamicStyles = createStyles(colors);
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Profile</Text>
+    <View style={dynamicStyles.container}>
+      <View style={dynamicStyles.header}>
+        <Text style={dynamicStyles.headerTitle}>Profile</Text>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView style={dynamicStyles.content} showsVerticalScrollIndicator={false}>
         {/* User Info Card */}
-        <View style={styles.userCard}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
+        <View style={dynamicStyles.userCard}>
+          <View style={dynamicStyles.avatar}>
+            <Text style={dynamicStyles.avatarText}>
               {user?.firstName?.[0]?.toUpperCase() || 'U'}
               {user?.lastName?.[0]?.toUpperCase() || ''}
             </Text>
           </View>
-          <Text style={styles.userName}>
+          <Text style={dynamicStyles.userName}>
             {user?.firstName} {user?.lastName}
           </Text>
-          <Text style={styles.userEmail}>{user?.email}</Text>
-          <Text style={styles.userPhone}>{user?.phone}</Text>
-          <TouchableOpacity style={styles.editButton}>
-            <Text style={styles.editButtonText}>Edit Profile</Text>
+          <Text style={dynamicStyles.userEmail}>{user?.email}</Text>
+          <Text style={dynamicStyles.userPhone}>{user?.phone}</Text>
+          <TouchableOpacity style={dynamicStyles.editButton}>
+            <Text style={dynamicStyles.editButtonText}>Edit Profile</Text>
           </TouchableOpacity>
         </View>
 
         {/* Menu Items */}
-        <View style={styles.menuSection}>
+        <View style={dynamicStyles.menuSection}>
           <TouchableOpacity
-            style={styles.menuItem}
+            style={dynamicStyles.menuItem}
             onPress={() => navigation.navigate('MyReports')}
           >
-            <Text style={styles.menuIcon}>📋</Text>
-            <Text style={styles.menuLabel}>My Reports</Text>
-            <Text style={styles.menuArrow}>›</Text>
+            <Text style={dynamicStyles.menuIcon}>📋</Text>
+            <Text style={dynamicStyles.menuLabel}>My Reports</Text>
+            <Text style={dynamicStyles.menuArrow}>›</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.menuItem}
+            style={dynamicStyles.menuItem}
             onPress={() => navigation.navigate('Settings')}
           >
-            <Text style={styles.menuIcon}>⚙️</Text>
-            <Text style={styles.menuLabel}>Settings</Text>
-            <Text style={styles.menuArrow}>›</Text>
+            <Text style={dynamicStyles.menuIcon}>⚙️</Text>
+            <Text style={dynamicStyles.menuLabel}>Settings</Text>
+            <Text style={dynamicStyles.menuArrow}>›</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.menuItem}
+            style={dynamicStyles.menuItem}
             onPress={() =>
               Alert.alert(
                 'Help & Support',
@@ -98,13 +101,13 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               )
             }
           >
-            <Text style={styles.menuIcon}>❓</Text>
-            <Text style={styles.menuLabel}>Help & Support</Text>
-            <Text style={styles.menuArrow}>›</Text>
+            <Text style={dynamicStyles.menuIcon}>❓</Text>
+            <Text style={dynamicStyles.menuLabel}>Help & Support</Text>
+            <Text style={dynamicStyles.menuArrow}>›</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.menuItem}
+            style={dynamicStyles.menuItem}
             onPress={() =>
               Alert.alert(
                 'About',
@@ -112,19 +115,19 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               )
             }
           >
-            <Text style={styles.menuIcon}>ℹ️</Text>
-            <Text style={styles.menuLabel}>About SafeNet</Text>
-            <Text style={styles.menuArrow}>›</Text>
+            <Text style={dynamicStyles.menuIcon}>ℹ️</Text>
+            <Text style={dynamicStyles.menuLabel}>About SafeNet</Text>
+            <Text style={dynamicStyles.menuArrow}>›</Text>
           </TouchableOpacity>
         </View>
 
         {/* Logout Button */}
-        <View style={styles.logoutSection}>
+        <View style={dynamicStyles.logoutSection}>
           <Button
             title="Logout"
             onPress={handleLogout}
             variant="outline"
-            style={styles.logoutButton}
+            style={dynamicStyles.logoutButton}
           />
         </View>
       </ScrollView>
@@ -132,61 +135,61 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   header: {
     padding: Spacing.lg,
     paddingTop: Spacing.xxl + Spacing.sm,
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: colors.border,
   },
   headerTitle: {
     ...Typography.h1,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
   },
   content: {
     flex: 1,
   },
   userCard: {
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     margin: Spacing.lg,
     padding: Spacing.xl,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: colors.border,
   },
   avatar: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: Spacing.md,
   },
   avatarText: {
     ...Typography.h1,
-    color: Colors.textInverse,
+    color: colors.textInverse,
     fontWeight: '700',
   },
   userName: {
     ...Typography.h3,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     marginBottom: Spacing.xs,
   },
   userEmail: {
     ...Typography.bodySmall,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     marginBottom: Spacing.xs,
   },
   userPhone: {
     ...Typography.bodySmall,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     marginBottom: Spacing.md,
   },
   editButton: {
@@ -194,20 +197,20 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: Colors.primary,
+    borderColor: colors.primary,
   },
   editButtonText: {
     ...Typography.bodySmall,
-    color: Colors.primary,
+    color: colors.primary,
     fontWeight: '600',
   },
   menuSection: {
     marginHorizontal: Spacing.lg,
     marginBottom: Spacing.lg,
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: colors.border,
     overflow: 'hidden',
   },
   menuItem: {
@@ -215,7 +218,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: Spacing.lg,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: colors.border,
   },
   menuIcon: {
     fontSize: 24,
@@ -224,18 +227,18 @@ const styles = StyleSheet.create({
   },
   menuLabel: {
     ...Typography.bodyMedium,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     flex: 1,
   },
   menuArrow: {
     fontSize: 20,
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
   },
   logoutSection: {
     padding: Spacing.lg,
     paddingBottom: Spacing.xxl,
   },
   logoutButton: {
-    borderColor: Colors.error,
+    borderColor: colors.error,
   },
 });

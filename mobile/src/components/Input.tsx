@@ -20,28 +20,6 @@ interface InputProps extends TextInputProps {
   containerStyle?: any;
 }
 
-export const Input: React.FC<InputProps> = ({
-  label,
-  error,
-  containerStyle,
-  ...props
-}) => {
-  const { colors } = useTheme();
-  const dynamicStyles = createStyles(colors);
-
-  return (
-    <View style={[dynamicStyles.container, containerStyle]}>
-      {label && <Text style={dynamicStyles.label}>{label}</Text>}
-      <TextInput
-        style={[dynamicStyles.input, error && dynamicStyles.inputError]}
-        placeholderTextColor={colors.textTertiary}
-        {...props}
-      />
-      {error && <Text style={dynamicStyles.errorText}>{error}</Text>}
-    </View>
-  );
-};
-
 const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
   container: {
     marginBottom: Spacing.lg,
@@ -70,3 +48,25 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     marginTop: Spacing.xs,
   },
 });
+
+export const Input: React.FC<InputProps> = ({
+  label,
+  error,
+  containerStyle,
+  ...props
+}) => {
+  const { colors } = useTheme();
+  const dynamicStyles = createStyles(colors);
+
+  return (
+    <View style={[dynamicStyles.container, containerStyle]}>
+      {label && <Text style={dynamicStyles.label}>{label}</Text>}
+      <TextInput
+        style={[dynamicStyles.input, error && dynamicStyles.inputError]}
+        placeholderTextColor={colors.textTertiary}
+        {...props}
+      />
+      {error && <Text style={dynamicStyles.errorText}>{error}</Text>}
+    </View>
+  );
+};

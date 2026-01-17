@@ -59,6 +59,19 @@ const ReportTabScreen = () => {
   return null;
 };
 
+const styles = StyleSheet.create({
+  reportButton: {
+    top: -20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 70,
+    height: 70,
+  },
+  reportIcon: {
+    fontSize: 24,
+  },
+});
+
 // Report Tab Button (Special highlighted button)
 const ReportTabButton: React.FC<{ onPress: () => void }> = ({ onPress }) => {
   const { colors } = useTheme();
@@ -238,19 +251,6 @@ const createReportButtonStyles = (colors: ReturnType<typeof import('../theme/col
     fontSize: 12,
     fontWeight: '600',
     color: colors.primary,
-  },
-});
-
-const styles = StyleSheet.create({
-  reportButton: {
-    top: -20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 70,
-    height: 70,
-  },
-  reportIcon: {
-    fontSize: 24,
   },
 });
 

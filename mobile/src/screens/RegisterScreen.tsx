@@ -31,8 +31,72 @@ interface RegisterScreenProps {
   navigation: any;
 }
 
+const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+  content: {
+    flex: 1,
+    padding: Spacing.xxl,
+    justifyContent: 'center',
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: Spacing.xxl,
+  },
+  logoCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: colors.primaryLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: Spacing.lg,
+  },
+  logoText: {
+    fontSize: 40,
+  },
+  title: {
+    ...Typography.h1,
+    textAlign: 'center',
+    marginBottom: Spacing.sm,
+    color: colors.textPrimary,
+  },
+  subtitle: {
+    ...Typography.bodySmall,
+    textAlign: 'center',
+    marginBottom: Spacing.xxxl,
+    color: colors.textSecondary,
+  },
+  form: {
+    width: '100%',
+  },
+  registerButton: {
+    marginTop: Spacing.sm,
+  },
+  loginContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: Spacing.xxl,
+  },
+  loginText: {
+    ...Typography.bodySmall,
+    color: colors.textSecondary,
+  },
+  loginLink: {
+    ...Typography.bodySmall,
+    color: colors.primary,
+    fontWeight: '600',
+  },
+});
+
 export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
   const { colors } = useTheme();
+  const dynamicStyles = createStyles(colors);
   const { register } = useAuth();
   const [formData, setFormData] = useState({
     firstName: '',
@@ -119,15 +183,15 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={dynamicStyles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={dynamicStyles.scrollContent}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.content}>
+        <View style={dynamicStyles.content}>
           {/* Logo/Icon Section */}
           <View style={dynamicStyles.logoContainer}>
             <View style={dynamicStyles.logoCircle}>
@@ -219,66 +283,3 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
     </KeyboardAvoidingView>
   );
 };
-
-const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  content: {
-    flex: 1,
-    padding: Spacing.xxl,
-    justifyContent: 'center',
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginBottom: Spacing.xxl,
-  },
-  logoCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: colors.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: Spacing.lg,
-  },
-  logoText: {
-    fontSize: 40,
-  },
-  title: {
-    ...Typography.h1,
-    textAlign: 'center',
-    marginBottom: Spacing.sm,
-    color: colors.textPrimary,
-  },
-  subtitle: {
-    ...Typography.bodySmall,
-    textAlign: 'center',
-    marginBottom: Spacing.xxxl,
-    color: colors.textSecondary,
-  },
-  form: {
-    width: '100%',
-  },
-  registerButton: {
-    marginTop: Spacing.sm,
-  },
-  loginContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: Spacing.xxl,
-  },
-  loginText: {
-    ...Typography.bodySmall,
-    color: colors.textSecondary,
-  },
-  loginLink: {
-    ...Typography.bodySmall,
-    color: colors.primary,
-    fontWeight: '600',
-  },
-});

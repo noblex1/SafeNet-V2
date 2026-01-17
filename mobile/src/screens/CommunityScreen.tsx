@@ -11,7 +11,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import { Colors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { Typography } from '../theme/typography';
 import { Spacing, BorderRadius } from '../theme/spacing';
 
@@ -22,69 +22,72 @@ interface CommunityScreenProps {
 export const CommunityScreen: React.FC<CommunityScreenProps> = ({
   navigation,
 }) => {
+  const { colors } = useTheme();
+  const dynamicStyles = createStyles(colors);
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Community</Text>
-        <Text style={styles.headerSubtitle}>
+    <View style={dynamicStyles.container}>
+      <View style={dynamicStyles.header}>
+        <Text style={dynamicStyles.headerTitle}>Community</Text>
+        <Text style={dynamicStyles.headerSubtitle}>
           Connect with your community and stay safe together
         </Text>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView style={dynamicStyles.content} showsVerticalScrollIndicator={false}>
         {/* Community Stats */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>1,234</Text>
-            <Text style={styles.statLabel}>Active Users</Text>
+        <View style={dynamicStyles.statsContainer}>
+          <View style={dynamicStyles.statCard}>
+            <Text style={dynamicStyles.statNumber}>1,234</Text>
+            <Text style={dynamicStyles.statLabel}>Active Users</Text>
           </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>567</Text>
-            <Text style={styles.statLabel}>Verified Reports</Text>
+          <View style={dynamicStyles.statCard}>
+            <Text style={dynamicStyles.statNumber}>567</Text>
+            <Text style={dynamicStyles.statLabel}>Verified Reports</Text>
           </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>89</Text>
-            <Text style={styles.statLabel}>Resolved</Text>
+          <View style={dynamicStyles.statCard}>
+            <Text style={dynamicStyles.statNumber}>89</Text>
+            <Text style={dynamicStyles.statLabel}>Resolved</Text>
           </View>
         </View>
 
         {/* Quick Actions */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>Quick Actions</Text>
           <TouchableOpacity
-            style={styles.actionCard}
+            style={dynamicStyles.actionCard}
             onPress={() => navigation.navigate('ReportIncident')}
           >
-            <Text style={styles.actionIcon}>📝</Text>
-            <View style={styles.actionContent}>
-              <Text style={styles.actionTitle}>Report an Incident</Text>
-              <Text style={styles.actionDescription}>
+            <Text style={dynamicStyles.actionIcon}>📝</Text>
+            <View style={dynamicStyles.actionContent}>
+              <Text style={dynamicStyles.actionTitle}>Report an Incident</Text>
+              <Text style={dynamicStyles.actionDescription}>
                 Help keep your community safe
               </Text>
             </View>
-            <Text style={styles.actionArrow}>›</Text>
+            <Text style={dynamicStyles.actionArrow}>›</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.actionCard}
+            style={dynamicStyles.actionCard}
             onPress={() => navigation.navigate('Home')}
           >
-            <Text style={styles.actionIcon}>📋</Text>
-            <View style={styles.actionContent}>
-              <Text style={styles.actionTitle}>View All Alerts</Text>
-              <Text style={styles.actionDescription}>
+            <Text style={dynamicStyles.actionIcon}>📋</Text>
+            <View style={dynamicStyles.actionContent}>
+              <Text style={dynamicStyles.actionTitle}>View All Alerts</Text>
+              <Text style={dynamicStyles.actionDescription}>
                 See verified incidents in your area
               </Text>
             </View>
-            <Text style={styles.actionArrow}>›</Text>
+            <Text style={dynamicStyles.actionArrow}>›</Text>
           </TouchableOpacity>
         </View>
 
         {/* Community Guidelines */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Community Guidelines</Text>
-          <View style={styles.guidelineCard}>
-            <Text style={styles.guidelineText}>
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>Community Guidelines</Text>
+          <View style={dynamicStyles.guidelineCard}>
+            <Text style={dynamicStyles.guidelineText}>
               • Report only verified incidents{'\n'}
               • Be respectful and accurate{'\n'}
               • Help verify community reports{'\n'}
@@ -94,11 +97,11 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({
         </View>
 
         {/* Safety Tips */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Safety Tips</Text>
-          <View style={styles.tipCard}>
-            <Text style={styles.tipIcon}>💡</Text>
-            <Text style={styles.tipText}>
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>Safety Tips</Text>
+          <View style={dynamicStyles.tipCard}>
+            <Text style={dynamicStyles.tipIcon}>💡</Text>
+            <Text style={dynamicStyles.tipText}>
               Always verify information before sharing. Report suspicious
               activities immediately to authorities.
             </Text>
@@ -109,26 +112,26 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   header: {
     padding: Spacing.lg,
     paddingTop: Spacing.xxl + Spacing.sm,
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: colors.border,
   },
   headerTitle: {
     ...Typography.h1,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     marginBottom: Spacing.xs,
   },
   headerSubtitle: {
     ...Typography.bodySmall,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   content: {
     flex: 1,
@@ -140,21 +143,21 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: colors.border,
   },
   statNumber: {
     ...Typography.h2,
-    color: Colors.primary,
+    color: colors.primary,
     marginBottom: Spacing.xs,
   },
   statLabel: {
     ...Typography.bodySmall,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   section: {
@@ -162,18 +165,18 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     ...Typography.h3,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     marginBottom: Spacing.md,
   },
   actionCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     marginBottom: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: colors.border,
   },
   actionIcon: {
     fontSize: 32,
@@ -184,37 +187,37 @@ const styles = StyleSheet.create({
   },
   actionTitle: {
     ...Typography.bodyMedium,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     fontWeight: '600',
     marginBottom: Spacing.xs,
   },
   actionDescription: {
     ...Typography.bodySmall,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   actionArrow: {
     fontSize: 24,
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
   },
   guidelineCard: {
-    backgroundColor: Colors.primaryLight + '20',
+    backgroundColor: colors.primaryLight + '20',
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.primaryLight,
+    borderColor: colors.primaryLight,
   },
   guidelineText: {
     ...Typography.bodySmall,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     lineHeight: 24,
   },
   tipCard: {
     flexDirection: 'row',
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: colors.border,
   },
   tipIcon: {
     fontSize: 24,
@@ -222,7 +225,7 @@ const styles = StyleSheet.create({
   },
   tipText: {
     ...Typography.bodySmall,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     flex: 1,
     lineHeight: 20,
   },

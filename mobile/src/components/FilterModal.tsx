@@ -13,7 +13,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { IncidentStatus, IncidentType } from '../types';
-import { Colors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { Typography } from '../theme/typography';
 import { Spacing, BorderRadius } from '../theme/spacing';
 import { Button } from './Button';
@@ -61,13 +61,101 @@ const SORT_OPTIONS = [
   { label: 'Most Relevant', value: 'relevance' },
 ];
 
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+});
+
+const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
+  modalContainer: {
+    backgroundColor: colors.surface,
+    borderTopLeftRadius: BorderRadius.xl,
+    borderTopRightRadius: BorderRadius.xl,
+    maxHeight: '80%',
+    paddingBottom: Spacing.xl,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: Spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  title: {
+    ...Typography.h3,
+    color: colors.textPrimary,
+  },
+  closeButton: {
+    fontSize: 24,
+    color: colors.textSecondary,
+    fontWeight: '300',
+  },
+  content: {
+    padding: Spacing.lg,
+  },
+  section: {
+    marginBottom: Spacing.xl,
+  },
+  sectionTitle: {
+    ...Typography.label,
+    color: colors.textPrimary,
+    marginBottom: Spacing.md,
+  },
+  optionsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+  },
+  optionButton: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    backgroundColor: colors.background,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginRight: Spacing.sm,
+    marginBottom: Spacing.sm,
+  },
+  optionButtonActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  optionText: {
+    ...Typography.bodySmall,
+    color: colors.textSecondary,
+    fontWeight: '600',
+  },
+  optionTextActive: {
+    color: colors.textInverse,
+  },
+  footer: {
+    flexDirection: 'row',
+    padding: Spacing.lg,
+    gap: Spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  resetButton: {
+    flex: 1,
+  },
+  applyButton: {
+    flex: 2,
+  },
+});
+
 export const FilterModal: React.FC<FilterModalProps> = ({
   visible,
   onClose,
   onApply,
   initialFilters = {},
 }) => {
+  const { colors } = useTheme();
   const [filters, setFilters] = useState<FilterOptions>(initialFilters);
+  const dynamicStyles = createStyles(colors);
 
   const handleApply = () => {
     onApply(filters);
@@ -89,25 +177,25 @@ export const FilterModal: React.FC<FilterModalProps> = ({
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
-        <View style={styles.modalContainer}>
-          <View style={styles.header}>
-            <Text style={styles.title}>Filter Alerts</Text>
+        <View style={dynamicStyles.modalContainer}>
+          <View style={dynamicStyles.header}>
+            <Text style={dynamicStyles.title}>Filter Alerts</Text>
             <TouchableOpacity onPress={onClose}>
-              <Text style={styles.closeButton}>✕</Text>
+              <Text style={dynamicStyles.closeButton}>✕</Text>
             </TouchableOpacity>
           </View>
 
-          <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          <ScrollView style={dynamicStyles.content} showsVerticalScrollIndicator={false}>
             {/* Status Filter */}
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Status</Text>
-              <View style={styles.optionsContainer}>
+            <View style={dynamicStyles.section}>
+              <Text style={dynamicStyles.sectionTitle}>Status</Text>
+              <View style={dynamicStyles.optionsContainer}>
                 {STATUS_OPTIONS.map((option) => (
                   <TouchableOpacity
                     key={option.label}
                     style={[
-                      styles.optionButton,
-                      filters.status === option.value && styles.optionButtonActive,
+                      dynamicStyles.optionButton,
+                      filters.status === option.value && dynamicStyles.optionButtonActive,
                     ]}
                     onPress={() =>
                       setFilters({ ...filters, status: option.value })
@@ -115,8 +203,8 @@ export const FilterModal: React.FC<FilterModalProps> = ({
                   >
                     <Text
                       style={[
-                        styles.optionText,
-                        filters.status === option.value && styles.optionTextActive,
+                        dynamicStyles.optionText,
+                        filters.status === option.value && dynamicStyles.optionTextActive,
                       ]}
                     >
                       {option.label}
@@ -127,15 +215,15 @@ export const FilterModal: React.FC<FilterModalProps> = ({
             </View>
 
             {/* Type Filter */}
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Incident Type</Text>
-              <View style={styles.optionsContainer}>
+            <View style={dynamicStyles.section}>
+              <Text style={dynamicStyles.sectionTitle}>Incident Type</Text>
+              <View style={dynamicStyles.optionsContainer}>
                 {TYPE_OPTIONS.map((option) => (
                   <TouchableOpacity
                     key={option.label}
                     style={[
-                      styles.optionButton,
-                      filters.type === option.value && styles.optionButtonActive,
+                      dynamicStyles.optionButton,
+                      filters.type === option.value && dynamicStyles.optionButtonActive,
                     ]}
                     onPress={() =>
                       setFilters({ ...filters, type: option.value })
@@ -143,8 +231,8 @@ export const FilterModal: React.FC<FilterModalProps> = ({
                   >
                     <Text
                       style={[
-                        styles.optionText,
-                        filters.type === option.value && styles.optionTextActive,
+                        dynamicStyles.optionText,
+                        filters.type === option.value && dynamicStyles.optionTextActive,
                       ]}
                     >
                       {option.label}
@@ -155,15 +243,15 @@ export const FilterModal: React.FC<FilterModalProps> = ({
             </View>
 
             {/* Date Range */}
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Date Range</Text>
-              <View style={styles.optionsContainer}>
+            <View style={dynamicStyles.section}>
+              <Text style={dynamicStyles.sectionTitle}>Date Range</Text>
+              <View style={dynamicStyles.optionsContainer}>
                 {DATE_RANGE_OPTIONS.map((option) => (
                   <TouchableOpacity
                     key={option.value}
                     style={[
-                      styles.optionButton,
-                      filters.dateRange === option.value && styles.optionButtonActive,
+                      dynamicStyles.optionButton,
+                      filters.dateRange === option.value && dynamicStyles.optionButtonActive,
                     ]}
                     onPress={() =>
                       setFilters({ ...filters, dateRange: option.value as any })
@@ -171,8 +259,8 @@ export const FilterModal: React.FC<FilterModalProps> = ({
                   >
                     <Text
                       style={[
-                        styles.optionText,
-                        filters.dateRange === option.value && styles.optionTextActive,
+                        dynamicStyles.optionText,
+                        filters.dateRange === option.value && dynamicStyles.optionTextActive,
                       ]}
                     >
                       {option.label}
@@ -183,15 +271,15 @@ export const FilterModal: React.FC<FilterModalProps> = ({
             </View>
 
             {/* Sort By */}
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Sort By</Text>
-              <View style={styles.optionsContainer}>
+            <View style={dynamicStyles.section}>
+              <Text style={dynamicStyles.sectionTitle}>Sort By</Text>
+              <View style={dynamicStyles.optionsContainer}>
                 {SORT_OPTIONS.map((option) => (
                   <TouchableOpacity
                     key={option.value}
                     style={[
-                      styles.optionButton,
-                      filters.sortBy === option.value && styles.optionButtonActive,
+                      dynamicStyles.optionButton,
+                      filters.sortBy === option.value && dynamicStyles.optionButtonActive,
                     ]}
                     onPress={() =>
                       setFilters({ ...filters, sortBy: option.value as any })
@@ -199,8 +287,8 @@ export const FilterModal: React.FC<FilterModalProps> = ({
                   >
                     <Text
                       style={[
-                        styles.optionText,
-                        filters.sortBy === option.value && styles.optionTextActive,
+                        dynamicStyles.optionText,
+                        filters.sortBy === option.value && dynamicStyles.optionTextActive,
                       ]}
                     >
                       {option.label}
@@ -211,17 +299,17 @@ export const FilterModal: React.FC<FilterModalProps> = ({
             </View>
           </ScrollView>
 
-          <View style={styles.footer}>
+          <View style={dynamicStyles.footer}>
             <Button
               title="Reset"
               onPress={handleReset}
               variant="outline"
-              style={styles.resetButton}
+              style={dynamicStyles.resetButton}
             />
             <Button
               title="Apply Filters"
               onPress={handleApply}
-              style={styles.applyButton}
+              style={dynamicStyles.applyButton}
             />
           </View>
         </View>
@@ -229,86 +317,3 @@ export const FilterModal: React.FC<FilterModalProps> = ({
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContainer: {
-    backgroundColor: Colors.surface,
-    borderTopLeftRadius: BorderRadius.xl,
-    borderTopRightRadius: BorderRadius.xl,
-    maxHeight: '80%',
-    paddingBottom: Spacing.xl,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: Spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  title: {
-    ...Typography.h3,
-    color: Colors.textPrimary,
-  },
-  closeButton: {
-    fontSize: 24,
-    color: Colors.textSecondary,
-    fontWeight: '300',
-  },
-  content: {
-    padding: Spacing.lg,
-  },
-  section: {
-    marginBottom: Spacing.xl,
-  },
-  sectionTitle: {
-    ...Typography.label,
-    color: Colors.textPrimary,
-    marginBottom: Spacing.md,
-  },
-  optionsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.sm,
-  },
-  optionButton: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.md,
-    backgroundColor: Colors.background,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    marginRight: Spacing.sm,
-    marginBottom: Spacing.sm,
-  },
-  optionButtonActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
-  optionText: {
-    ...Typography.bodySmall,
-    color: Colors.textSecondary,
-    fontWeight: '600',
-  },
-  optionTextActive: {
-    color: Colors.textInverse,
-  },
-  footer: {
-    flexDirection: 'row',
-    padding: Spacing.lg,
-    gap: Spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: Colors.border,
-  },
-  resetButton: {
-    flex: 1,
-  },
-  applyButton: {
-    flex: 2,
-  },
-});

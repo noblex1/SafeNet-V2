@@ -14,6 +14,30 @@ interface State {
   error: Error | null;
 }
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+    padding: 20,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#FF3B30',
+    marginBottom: 16,
+  },
+  scrollView: {
+    maxHeight: 300,
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#666',
+    fontFamily: 'monospace',
+  },
+});
+
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -51,27 +75,3 @@ export class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5F5F5',
-    padding: 20,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#FF3B30',
-    marginBottom: 16,
-  },
-  scrollView: {
-    maxHeight: 300,
-  },
-  errorText: {
-    fontSize: 14,
-    color: '#666',
-    fontFamily: 'monospace',
-  },
-});

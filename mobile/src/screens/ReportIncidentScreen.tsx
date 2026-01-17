@@ -27,7 +27,7 @@ import {
   validateLocation,
 } from '../utils/validation';
 import { apiService } from '../services/api';
-import { Colors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { Typography } from '../theme/typography';
 import { Spacing, BorderRadius } from '../theme/spacing';
 
@@ -42,9 +42,166 @@ const INCIDENT_TYPES: { label: string; value: IncidentType }[] = [
   { label: 'Natural Disaster', value: IncidentType.NATURAL_DISASTER },
 ];
 
+const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    padding: Spacing.lg,
+  },
+  content: {
+    flex: 1,
+  },
+  headerSection: {
+    marginBottom: Spacing.xxl,
+  },
+  title: {
+    ...Typography.h2,
+    color: colors.textPrimary,
+    marginBottom: Spacing.sm,
+  },
+  subtitle: {
+    ...Typography.bodySmall,
+    color: colors.textSecondary,
+  },
+  form: {
+    width: '100%',
+  },
+  section: {
+    marginBottom: Spacing.xl,
+  },
+  sectionTitle: {
+    ...Typography.label,
+    color: colors.textPrimary,
+    marginBottom: Spacing.md,
+  },
+  typeContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+  },
+  typeButton: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.md,
+    backgroundColor: colors.border,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+  },
+  typeButtonActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  typeButtonText: {
+    ...Typography.bodySmall,
+    fontWeight: '600',
+    color: colors.textSecondary,
+  },
+  typeButtonTextActive: {
+    color: colors.textInverse,
+  },
+  locationButton: {
+    marginTop: Spacing.sm,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    backgroundColor: colors.surface,
+    borderRadius: BorderRadius.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: colors.primary,
+    borderStyle: 'dashed',
+  },
+  locationButtonIcon: {
+    fontSize: 16,
+    marginRight: Spacing.sm,
+  },
+  locationButtonText: {
+    ...Typography.bodyMedium,
+    color: colors.primary,
+    fontWeight: '600',
+  },
+  submitButton: {
+    marginTop: Spacing.md,
+  },
+  addImageButton: {
+    marginTop: Spacing.sm,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    backgroundColor: colors.surface,
+    borderRadius: BorderRadius.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: colors.primary,
+    borderStyle: 'dashed',
+  },
+  addImageButtonDisabled: {
+    opacity: 0.5,
+    borderColor: colors.border,
+  },
+  addImageButtonIcon: {
+    fontSize: 16,
+    marginRight: Spacing.sm,
+  },
+  addImageButtonText: {
+    ...Typography.bodyMedium,
+    color: colors.primary,
+    fontWeight: '600',
+  },
+  imagesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: Spacing.md,
+    gap: Spacing.sm,
+  },
+  imageWrapper: {
+    position: 'relative',
+    width: 100,
+    height: 100,
+    marginRight: Spacing.sm,
+    marginBottom: Spacing.sm,
+  },
+  imagePreview: {
+    width: '100%',
+    height: '100%',
+    borderRadius: BorderRadius.md,
+    resizeMode: 'cover',
+  },
+  removeImageButton: {
+    position: 'absolute',
+    top: -8,
+    right: -8,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: colors.error,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: colors.surface,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  removeImageText: {
+    color: colors.textInverse,
+    fontSize: 18,
+    fontWeight: 'bold',
+    lineHeight: 20,
+  },
+});
+
 export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
   navigation,
 }) => {
+  const { colors } = useTheme();
   const [formData, setFormData] = useState<CreateIncidentData>({
     type: IncidentType.MISSING_PERSON,
     title: '',
@@ -200,41 +357,43 @@ export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
     }
   };
 
+  const dynamicStyles = createStyles(colors);
+
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={dynamicStyles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={dynamicStyles.scrollContent}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.content}>
-          <View style={styles.headerSection}>
-            <Text style={styles.title}>Report Incident</Text>
-            <Text style={styles.subtitle}>
+        <View style={dynamicStyles.content}>
+          <View style={dynamicStyles.headerSection}>
+            <Text style={dynamicStyles.title}>Report Incident</Text>
+            <Text style={dynamicStyles.subtitle}>
               Help keep your community safe by reporting incidents
             </Text>
           </View>
 
-          <View style={styles.form}>
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Incident Type</Text>
-              <View style={styles.typeContainer}>
+          <View style={dynamicStyles.form}>
+            <View style={dynamicStyles.section}>
+              <Text style={dynamicStyles.sectionTitle}>Incident Type</Text>
+              <View style={dynamicStyles.typeContainer}>
               {INCIDENT_TYPES.map((type) => (
                 <TouchableOpacity
                   key={type.value}
                   style={[
-                    styles.typeButton,
-                    formData.type === type.value && styles.typeButtonActive,
+                    dynamicStyles.typeButton,
+                    formData.type === type.value && dynamicStyles.typeButtonActive,
                   ]}
                   onPress={() => updateField('type', type.value)}
                 >
                   <Text
                     style={[
-                      styles.typeButtonText,
-                      formData.type === type.value && styles.typeButtonTextActive,
+                      dynamicStyles.typeButtonText,
+                      formData.type === type.value && dynamicStyles.typeButtonTextActive,
                     ]}
                   >
                     {type.label}
@@ -244,7 +403,7 @@ export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
               </View>
             </View>
 
-            <View style={styles.section}>
+            <View style={dynamicStyles.section}>
               <Input
               label="Title"
               placeholder="Brief title for the incident"
@@ -267,8 +426,8 @@ export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
             />
             </View>
 
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Location</Text>
+            <View style={dynamicStyles.section}>
+              <Text style={dynamicStyles.sectionTitle}>Location</Text>
               <Input
                 placeholder="Enter location address"
                 value={formData.location.address}
@@ -276,45 +435,45 @@ export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
                 error={errors.address}
               />
               <TouchableOpacity
-                style={styles.locationButton}
+                style={dynamicStyles.locationButton}
                 onPress={getCurrentLocation}
                 disabled={gettingLocation}
               >
-                <Text style={styles.locationButtonIcon}>📍</Text>
-                <Text style={styles.locationButtonText}>
+                <Text style={dynamicStyles.locationButtonIcon}>📍</Text>
+                <Text style={dynamicStyles.locationButtonText}>
                   {gettingLocation ? 'Getting Location...' : 'Use Current Location'}
                 </Text>
               </TouchableOpacity>
             </View>
 
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>
+            <View style={dynamicStyles.section}>
+              <Text style={dynamicStyles.sectionTitle}>
                 Images (Optional) {selectedImages.length > 0 && `(${selectedImages.length}/5)`}
               </Text>
               <TouchableOpacity
                 style={[
-                  styles.addImageButton,
-                  selectedImages.length >= 5 && styles.addImageButtonDisabled,
+                  dynamicStyles.addImageButton,
+                  selectedImages.length >= 5 && dynamicStyles.addImageButtonDisabled,
                 ]}
                 onPress={pickImages}
                 disabled={selectedImages.length >= 5}
               >
-                <Text style={styles.addImageButtonIcon}>📷</Text>
-                <Text style={styles.addImageButtonText}>
+                <Text style={dynamicStyles.addImageButtonIcon}>📷</Text>
+                <Text style={dynamicStyles.addImageButtonText}>
                   {selectedImages.length >= 5 ? 'Maximum 5 images' : 'Add Images'}
                 </Text>
               </TouchableOpacity>
 
               {selectedImages.length > 0 && (
-                <View style={styles.imagesGrid}>
+                <View style={dynamicStyles.imagesGrid}>
                   {selectedImages.map((uri, index) => (
-                    <View key={index} style={styles.imageWrapper}>
-                      <Image source={{ uri }} style={styles.imagePreview} />
+                    <View key={index} style={dynamicStyles.imageWrapper}>
+                      <Image source={{ uri }} style={dynamicStyles.imagePreview} />
                       <TouchableOpacity
-                        style={styles.removeImageButton}
+                        style={dynamicStyles.removeImageButton}
                         onPress={() => removeImage(index)}
                       >
-                        <Text style={styles.removeImageText}>×</Text>
+                        <Text style={dynamicStyles.removeImageText}>×</Text>
                       </TouchableOpacity>
                     </View>
                   ))}
@@ -326,7 +485,7 @@ export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
               title="Submit Report"
               onPress={handleSubmit}
               loading={loading}
-              style={styles.submitButton}
+              style={dynamicStyles.submitButton}
             />
           </View>
         </View>
@@ -334,159 +493,3 @@ export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    padding: Spacing.lg,
-  },
-  content: {
-    flex: 1,
-  },
-  headerSection: {
-    marginBottom: Spacing.xxl,
-  },
-  title: {
-    ...Typography.h2,
-    color: Colors.textPrimary,
-    marginBottom: Spacing.sm,
-  },
-  subtitle: {
-    ...Typography.bodySmall,
-    color: Colors.textSecondary,
-  },
-  form: {
-    width: '100%',
-  },
-  section: {
-    marginBottom: Spacing.xl,
-  },
-  sectionTitle: {
-    ...Typography.label,
-    color: Colors.textPrimary,
-    marginBottom: Spacing.md,
-  },
-  typeContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.sm,
-  },
-  typeButton: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    borderRadius: BorderRadius.md,
-    backgroundColor: Colors.border,
-    borderWidth: 1.5,
-    borderColor: Colors.border,
-  },
-  typeButtonActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
-  typeButtonText: {
-    ...Typography.bodySmall,
-    fontWeight: '600',
-    color: Colors.textSecondary,
-  },
-  typeButtonTextActive: {
-    color: Colors.textInverse,
-  },
-  locationButton: {
-    marginTop: Spacing.sm,
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
-    backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1.5,
-    borderColor: Colors.primary,
-    borderStyle: 'dashed',
-  },
-  locationButtonIcon: {
-    fontSize: 16,
-    marginRight: Spacing.sm,
-  },
-  locationButtonText: {
-    ...Typography.bodyMedium,
-    color: Colors.primary,
-    fontWeight: '600',
-  },
-  submitButton: {
-    marginTop: Spacing.md,
-  },
-  addImageButton: {
-    marginTop: Spacing.sm,
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
-    backgroundColor: Colors.surface,
-    borderRadius: BorderRadius.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1.5,
-    borderColor: Colors.primary,
-    borderStyle: 'dashed',
-  },
-  addImageButtonDisabled: {
-    opacity: 0.5,
-    borderColor: Colors.border,
-  },
-  addImageButtonIcon: {
-    fontSize: 16,
-    marginRight: Spacing.sm,
-  },
-  addImageButtonText: {
-    ...Typography.bodyMedium,
-    color: Colors.primary,
-    fontWeight: '600',
-  },
-  imagesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: Spacing.md,
-    gap: Spacing.sm,
-  },
-  imageWrapper: {
-    position: 'relative',
-    width: 100,
-    height: 100,
-    marginRight: Spacing.sm,
-    marginBottom: Spacing.sm,
-  },
-  imagePreview: {
-    width: '100%',
-    height: '100%',
-    borderRadius: BorderRadius.md,
-    resizeMode: 'cover',
-  },
-  removeImageButton: {
-    position: 'absolute',
-    top: -8,
-    right: -8,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: Colors.error,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: Colors.surface,
-    shadowColor: Colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  removeImageText: {
-    color: Colors.textInverse,
-    fontSize: 18,
-    fontWeight: 'bold',
-    lineHeight: 20,
-  },
-});

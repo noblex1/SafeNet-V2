@@ -37,6 +37,253 @@ const INCIDENT_CATEGORIES = [
   { label: 'Kidnapping', value: IncidentType.KIDNAPPING },
 ];
 
+const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  // Top Bar
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.xxl + Spacing.sm,
+    paddingBottom: Spacing.md,
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: Spacing.sm,
+  },
+  logoDot: {
+    fontSize: 20,
+  },
+  logoText: {
+    ...Typography.h3,
+    color: colors.textPrimary,
+    fontWeight: '700',
+  },
+  topBarActions: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+  },
+  iconButton: {
+    width: 36,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconText: {
+    fontSize: 20,
+  },
+  // Tab Navigation
+  tabContainer: {
+    flexDirection: 'row',
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    paddingHorizontal: Spacing.lg,
+  },
+  tab: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    marginRight: Spacing.lg,
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
+  },
+  tabActive: {
+    borderBottomColor: colors.primary,
+  },
+  tabIcon: {
+    fontSize: 18,
+    marginRight: Spacing.xs,
+  },
+  tabLabel: {
+    ...Typography.bodyMedium,
+    color: colors.textSecondary,
+    fontWeight: '600',
+  },
+  tabLabelActive: {
+    color: colors.primary,
+  },
+  // Search
+  searchContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+    gap: Spacing.sm,
+  },
+  searchBar: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderRadius: BorderRadius.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    minHeight: 44,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  searchIcon: {
+    fontSize: 16,
+    marginRight: Spacing.sm,
+  },
+  searchInput: {
+    flex: 1,
+    ...Typography.bodySmall,
+    color: colors.textPrimary,
+  },
+  filterButton: {
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  filterIcon: {
+    fontSize: 18,
+    color: colors.textSecondary,
+  },
+  // Category Filters
+  categoryContainer: {
+    backgroundColor: colors.surface,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  categoryContent: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    gap: Spacing.sm,
+  },
+  categoryPill: {
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md + 2,
+    borderRadius: BorderRadius.full,
+    backgroundColor: colors.surface,
+    marginRight: Spacing.md,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    minHeight: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  categoryPillActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+    paddingHorizontal: Spacing.xxl,
+    paddingVertical: Spacing.md + 4,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  categoryText: {
+    ...Typography.bodyMedium,
+    color: colors.textSecondary,
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  categoryTextActive: {
+    color: colors.textInverse,
+    fontWeight: '700',
+    fontSize: 15,
+  },
+  // List
+  listContent: {
+    padding: Spacing.lg,
+  },
+  emptyContainer: {
+    padding: Spacing.xxxl * 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 300,
+  },
+  emptyText: {
+    ...Typography.h4,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+  // Connectivity Message
+  connectivityMessage: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Spacing.md,
+    backgroundColor: colors.background,
+    marginTop: Spacing.sm,
+  },
+  connectivityIcon: {
+    fontSize: 16,
+    color: colors.textTertiary,
+    marginRight: Spacing.sm,
+  },
+  connectivityText: {
+    ...Typography.caption,
+    color: colors.textTertiary,
+  },
+  // Error States
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.xxl,
+  },
+  errorText: {
+    ...Typography.body,
+    color: colors.error,
+    textAlign: 'center',
+    marginBottom: Spacing.lg,
+  },
+  retryButton: {
+    paddingHorizontal: Spacing.xxl,
+    paddingVertical: Spacing.md,
+    backgroundColor: colors.primary,
+    borderRadius: BorderRadius.md,
+  },
+  retryButtonText: {
+    ...Typography.bodyMedium,
+    color: colors.textInverse,
+    fontWeight: '600',
+  },
+});
+
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const { colors } = useTheme();
   const [incidents, setIncidents] = useState<Incident[]>([]);
@@ -301,250 +548,3 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     </View>
   );
 };
-
-const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  // Top Bar
-  topBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.xxl + Spacing.sm,
-    paddingBottom: Spacing.md,
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  logoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  logoIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: Spacing.sm,
-  },
-  logoDot: {
-    fontSize: 20,
-  },
-  logoText: {
-    ...Typography.h3,
-    color: colors.textPrimary,
-    fontWeight: '700',
-  },
-  topBarActions: {
-    flexDirection: 'row',
-    gap: Spacing.md,
-  },
-  iconButton: {
-    width: 36,
-    height: 36,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  iconText: {
-    fontSize: 20,
-  },
-  // Tab Navigation
-  tabContainer: {
-    flexDirection: 'row',
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    paddingHorizontal: Spacing.lg,
-  },
-  tab: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
-    marginRight: Spacing.lg,
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
-  },
-  tabActive: {
-    borderBottomColor: colors.primary,
-  },
-  tabIcon: {
-    fontSize: 18,
-    marginRight: Spacing.xs,
-  },
-  tabLabel: {
-    ...Typography.bodyMedium,
-    color: colors.textSecondary,
-    fontWeight: '600',
-  },
-  tabLabelActive: {
-    color: colors.primary,
-  },
-  // Search
-  searchContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    gap: Spacing.sm,
-  },
-  searchBar: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: BorderRadius.md,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.md,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    minHeight: 44,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  searchIcon: {
-    fontSize: 16,
-    marginRight: Spacing.sm,
-  },
-  searchInput: {
-    flex: 1,
-    ...Typography.bodySmall,
-    color: colors.textPrimary,
-  },
-  filterButton: {
-    width: 44,
-    height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: BorderRadius.md,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  filterIcon: {
-    fontSize: 18,
-    color: colors.textSecondary,
-  },
-  // Category Filters
-  categoryContainer: {
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  categoryContent: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
-    gap: Spacing.sm,
-  },
-  categoryPill: {
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.md + 2,
-    borderRadius: BorderRadius.full,
-    backgroundColor: colors.surface,
-    marginRight: Spacing.md,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    minHeight: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  categoryPillActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-    paddingHorizontal: Spacing.xxl,
-    paddingVertical: Spacing.md + 4,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  categoryText: {
-    ...Typography.bodyMedium,
-    color: colors.textSecondary,
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  categoryTextActive: {
-    color: colors.textInverse,
-    fontWeight: '700',
-    fontSize: 15,
-  },
-  // List
-  listContent: {
-    padding: Spacing.lg,
-  },
-  emptyContainer: {
-    padding: Spacing.xxxl * 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 300,
-  },
-  emptyText: {
-    ...Typography.h4,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    fontWeight: '600',
-  },
-  // Connectivity Message
-  connectivityMessage: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: Spacing.md,
-    backgroundColor: colors.background,
-    marginTop: Spacing.sm,
-  },
-  connectivityIcon: {
-    fontSize: 16,
-    color: colors.textTertiary,
-    marginRight: Spacing.sm,
-  },
-  connectivityText: {
-    ...Typography.caption,
-    color: colors.textTertiary,
-  },
-  // Error States
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: Spacing.xxl,
-  },
-  errorText: {
-    ...Typography.body,
-    color: colors.error,
-    textAlign: 'center',
-    marginBottom: Spacing.lg,
-  },
-  retryButton: {
-    paddingHorizontal: Spacing.xxl,
-    paddingVertical: Spacing.md,
-    backgroundColor: colors.primary,
-    borderRadius: BorderRadius.md,
-  },
-  retryButtonText: {
-    ...Typography.bodyMedium,
-    color: colors.textInverse,
-    fontWeight: '600',
-  },
-});

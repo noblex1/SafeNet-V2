@@ -9,7 +9,7 @@ import {
   StyleSheet,
   ViewStyle,
 } from 'react-native';
-import { Colors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { Spacing } from '../theme/spacing';
 
 interface FloatingActionButtonProps {
@@ -18,23 +18,7 @@ interface FloatingActionButtonProps {
   children?: React.ReactNode;
 }
 
-export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
-  onPress,
-  style,
-  children,
-}) => {
-  return (
-    <TouchableOpacity
-      style={[styles.fab, style]}
-      onPress={onPress}
-      activeOpacity={0.8}
-    >
-      {children || <Text style={styles.icon}>+</Text>}
-    </TouchableOpacity>
-  );
-};
-
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
   fab: {
     position: 'absolute',
     right: 20,
@@ -42,10 +26,10 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: colors.shadowDark,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -53,7 +37,26 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 32,
-    color: '#FFF',
+    color: colors.textInverse,
     fontWeight: '300',
   },
 });
+
+export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
+  onPress,
+  style,
+  children,
+}) => {
+  const { colors } = useTheme();
+  const dynamicStyles = createStyles(colors);
+
+  return (
+    <TouchableOpacity
+      style={[dynamicStyles.fab, style]}
+      onPress={onPress}
+      activeOpacity={0.8}
+    >
+      {children || <Text style={dynamicStyles.icon}>+</Text>}
+    </TouchableOpacity>
+  );
+};

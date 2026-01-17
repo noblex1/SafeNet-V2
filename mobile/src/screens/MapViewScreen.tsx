@@ -19,6 +19,41 @@ interface MapViewScreenProps {
   navigation: any;
 }
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  map: {
+    flex: 1,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#FF3B30',
+    textAlign: 'center',
+  },
+  legend: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  legendText: {
+    fontSize: 14,
+    color: '#333',
+    fontWeight: '600',
+  },
+});
+
 const MapViewScreen: React.FC<MapViewScreenProps> = ({ navigation }) => {
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
@@ -113,40 +148,5 @@ const MapViewScreen: React.FC<MapViewScreenProps> = ({ navigation }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  map: {
-    flex: 1,
-  },
-  centerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-  },
-  errorText: {
-    fontSize: 16,
-    color: '#FF3B30',
-    textAlign: 'center',
-  },
-  legend: {
-    position: 'absolute',
-    bottom: 20,
-    left: 20,
-    right: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  legendText: {
-    fontSize: 14,
-    color: '#333',
-    fontWeight: '600',
-  },
-});
 
 export default MapViewScreen;

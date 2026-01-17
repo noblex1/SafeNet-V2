@@ -24,240 +24,6 @@ interface SettingsScreenProps {
   navigation: any;
 }
 
-export const SettingsScreen: React.FC<SettingsScreenProps> = ({
-  navigation,
-}) => {
-  const { user, logout } = useAuth();
-  const { theme, colors, toggleTheme } = useTheme();
-  
-  // Notification settings
-  const [emergencyAlerts, setEmergencyAlerts] = useState(true);
-  const [communityUpdates, setCommunityUpdates] = useState(false);
-  const [smsFallback, setSmsFallback] = useState(true);
-  
-  // General settings
-  const [language, setLanguage] = useState('English');
-
-  const handleLogout = () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Logout',
-          style: 'destructive',
-          onPress: async () => {
-            await logout();
-          },
-        },
-      ]
-    );
-  };
-
-  const SettingItem: React.FC<{
-    icon: string;
-    title: string;
-    subtitle?: string;
-    value?: string;
-    onPress?: () => void;
-    rightComponent?: React.ReactNode;
-    iconColor?: string;
-  }> = ({ icon, title, subtitle, value, onPress, rightComponent, iconColor }) => (
-    <TouchableOpacity
-      style={dynamicStyles.settingItem}
-      onPress={onPress}
-      disabled={!onPress}
-    >
-      <View style={styles.settingLeft}>
-        <Text style={[dynamicStyles.settingIcon, iconColor && { color: iconColor }]}>{icon}</Text>
-        <View style={styles.settingTextContainer}>
-          <Text style={dynamicStyles.settingTitle}>{title}</Text>
-          {subtitle && <Text style={dynamicStyles.settingSubtitle}>{subtitle}</Text>}
-        </View>
-      </View>
-      <View style={styles.settingRight}>
-        {value && <Text style={dynamicStyles.settingValue}>{value}</Text>}
-        {rightComponent}
-        {onPress && <Text style={dynamicStyles.settingArrow}>›</Text>}
-      </View>
-    </TouchableOpacity>
-  );
-
-  const dynamicStyles = createStyles(colors);
-
-  return (
-    <View style={dynamicStyles.container}>
-      <View style={dynamicStyles.header}>
-        <Text style={dynamicStyles.headerTitle}>Settings</Text>
-      </View>
-
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* User Profile Section */}
-          <View style={dynamicStyles.profileCard}>
-          <View style={styles.avatarContainer}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarIcon}>📱</Text>
-            </View>
-            <View style={dynamicStyles.onlineIndicator} />
-          </View>
-          <View style={dynamicStyles.profileInfo}>
-            <Text style={dynamicStyles.profileName}>
-              {user?.firstName} {user?.lastName}
-            </Text>
-            <Text style={dynamicStyles.profileLocation}>Accra, Ghana</Text>
-          </View>
-          <TouchableOpacity style={dynamicStyles.editButton}>
-            <Text style={dynamicStyles.editButtonText}>Edit</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Notifications Section */}
-        <View style={styles.section}>
-          <Text style={dynamicStyles.sectionTitle}>NOTIFICATIONS</Text>
-          
-          <View style={dynamicStyles.sectionCard}>
-            <SettingItem
-              icon="📢"
-              title="Emergency Alerts"
-              subtitle="High priority safety warnings"
-              iconColor={colors.error}
-              rightComponent={
-                <Switch
-                  value={emergencyAlerts}
-                  onValueChange={setEmergencyAlerts}
-                  trackColor={{ false: colors.border, true: colors.primary }}
-                  thumbColor={colors.surface}
-                />
-              }
-            />
-            
-            <View style={dynamicStyles.divider} />
-            
-            <SettingItem
-              icon="🔔"
-              title="Community Updates"
-              subtitle="Local reports and news"
-              iconColor={colors.info}
-              rightComponent={
-                <Switch
-                  value={communityUpdates}
-                  onValueChange={setCommunityUpdates}
-                  trackColor={{ false: colors.border, true: colors.primary }}
-                  thumbColor={colors.surface}
-                />
-              }
-            />
-            
-            <View style={dynamicStyles.divider} />
-            
-            <SettingItem
-              icon="💬"
-              title="SMS Fallback"
-              subtitle="Receive alerts via SMS if offline"
-              iconColor="#FF9500"
-              rightComponent={
-                <Switch
-                  value={smsFallback}
-                  onValueChange={setSmsFallback}
-                  trackColor={{ false: colors.border, true: colors.primary }}
-                  thumbColor={colors.surface}
-                />
-              }
-            />
-          </View>
-        </View>
-
-        {/* General Section */}
-        <View style={styles.section}>
-          <Text style={dynamicStyles.sectionTitle}>GENERAL</Text>
-          
-          <View style={dynamicStyles.sectionCard}>
-            <SettingItem
-              icon="🌐"
-              title="Language"
-              value={language}
-              onPress={() => {
-                Alert.alert('Language', 'Language selection coming soon!');
-              }}
-            />
-            
-            <View style={dynamicStyles.divider} />
-            
-            <SettingItem
-              icon="📍"
-              title="Location Permissions"
-              onPress={() => {
-                Alert.alert('Location Permissions', 'Manage location permissions in device settings');
-              }}
-            />
-            
-            <View style={dynamicStyles.divider} />
-            
-            <SettingItem
-              icon={theme === 'dark' ? '🌙' : '☀️'}
-              title="Dark Mode"
-              rightComponent={
-                <Switch
-                  value={theme === 'dark'}
-                  onValueChange={toggleTheme}
-                  trackColor={{ false: colors.border, true: colors.primary }}
-                  thumbColor={colors.surface}
-                />
-              }
-            />
-          </View>
-        </View>
-
-        {/* App Info Section */}
-        <View style={styles.section}>
-          <Text style={dynamicStyles.sectionTitle}>APP INFO</Text>
-          
-          <View style={dynamicStyles.sectionCard}>
-            <SettingItem
-              icon="ℹ️"
-              title="About SafeNet"
-              onPress={() => {
-                Alert.alert(
-                  'About SafeNet',
-                  'SafeNet v1.2.4 (Beta)\n\nA public safety alert platform for African communities.'
-                );
-              }}
-            />
-            
-            <View style={dynamicStyles.divider} />
-            
-            <SettingItem
-              icon="🔒"
-              title="Privacy Policy"
-              onPress={() => {
-                Alert.alert('Privacy Policy', 'Privacy policy coming soon!');
-              }}
-            />
-            
-            <View style={dynamicStyles.divider} />
-            
-            <SettingItem
-              icon="📱"
-              title="Version"
-              value="v1.2.4 (Beta)"
-            />
-          </View>
-        </View>
-
-        {/* Logout Button */}
-        <View style={styles.logoutSection}>
-          <Button
-            title="Log Out"
-            onPress={handleLogout}
-            variant="danger"
-          />
-        </View>
-      </ScrollView>
-    </View>
-  );
-};
-
 const createStyles = (colors: ReturnType<typeof getColors>) => StyleSheet.create({
   container: {
     flex: 1,
@@ -273,6 +39,9 @@ const createStyles = (colors: ReturnType<typeof getColors>) => StyleSheet.create
   headerTitle: {
     ...Typography.h1,
     color: colors.textPrimary,
+  },
+  content: {
+    flex: 1,
   },
   // Profile Card
   profileCard: {
@@ -367,13 +136,18 @@ const createStyles = (colors: ReturnType<typeof getColors>) => StyleSheet.create
     alignItems: 'center',
     flex: 1,
   },
+  settingTextContainer: {
+    flex: 1,
+  },
+  settingRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
   settingIcon: {
     fontSize: 24,
     marginRight: Spacing.md,
     width: 30,
-  },
-  settingTextContainer: {
-    flex: 1,
   },
   settingTitle: {
     ...Typography.bodyMedium,
@@ -385,11 +159,6 @@ const createStyles = (colors: ReturnType<typeof getColors>) => StyleSheet.create
     ...Typography.bodySmall,
     color: colors.textSecondary,
     fontSize: 12,
-  },
-  settingRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
   },
   settingValue: {
     ...Typography.bodySmall,
@@ -408,11 +177,243 @@ const createStyles = (colors: ReturnType<typeof getColors>) => StyleSheet.create
   },
 });
 
+export const SettingsScreen: React.FC<SettingsScreenProps> = ({
+  navigation,
+}) => {
+  const { user, logout } = useAuth();
+  const { theme, colors, toggleTheme } = useTheme();
+  const dynamicStyles = createStyles(colors);
+  
+  // Notification settings
+  const [emergencyAlerts, setEmergencyAlerts] = useState(true);
+  const [communityUpdates, setCommunityUpdates] = useState(false);
+  const [smsFallback, setSmsFallback] = useState(true);
+  
+  // General settings
+  const [language, setLanguage] = useState('English');
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to logout?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Logout',
+          style: 'destructive',
+          onPress: async () => {
+            await logout();
+          },
+        },
+      ]
+    );
+  };
+
+  const SettingItem: React.FC<{
+    icon: string;
+    title: string;
+    subtitle?: string;
+    value?: string;
+    onPress?: () => void;
+    rightComponent?: React.ReactNode;
+    iconColor?: string;
+  }> = ({ icon, title, subtitle, value, onPress, rightComponent, iconColor }) => (
+    <TouchableOpacity
+      style={dynamicStyles.settingItem}
+      onPress={onPress}
+      disabled={!onPress}
+    >
+      <View style={dynamicStyles.settingLeft}>
+        <Text style={[dynamicStyles.settingIcon, iconColor && { color: iconColor }]}>{icon}</Text>
+        <View style={dynamicStyles.settingTextContainer}>
+          <Text style={dynamicStyles.settingTitle}>{title}</Text>
+          {subtitle && <Text style={dynamicStyles.settingSubtitle}>{subtitle}</Text>}
+        </View>
+      </View>
+      <View style={dynamicStyles.settingRight}>
+        {value && <Text style={dynamicStyles.settingValue}>{value}</Text>}
+        {rightComponent}
+        {onPress && <Text style={dynamicStyles.settingArrow}>›</Text>}
+      </View>
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={dynamicStyles.container}>
+      <View style={dynamicStyles.header}>
+        <Text style={dynamicStyles.headerTitle}>Settings</Text>
+      </View>
+
+      <ScrollView style={dynamicStyles.content} showsVerticalScrollIndicator={false}>
+        {/* User Profile Section */}
+          <View style={dynamicStyles.profileCard}>
+          <View style={dynamicStyles.avatarContainer}>
+            <View style={dynamicStyles.avatar}>
+              <Text style={dynamicStyles.avatarIcon}>📱</Text>
+            </View>
+            <View style={dynamicStyles.onlineIndicator} />
+          </View>
+          <View style={dynamicStyles.profileInfo}>
+            <Text style={dynamicStyles.profileName}>
+              {user?.firstName} {user?.lastName}
+            </Text>
+            <Text style={dynamicStyles.profileLocation}>Accra, Ghana</Text>
+          </View>
+          <TouchableOpacity style={dynamicStyles.editButton}>
+            <Text style={dynamicStyles.editButtonText}>Edit</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Notifications Section */}
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>NOTIFICATIONS</Text>
+          
+          <View style={dynamicStyles.sectionCard}>
+            <SettingItem
+              icon="📢"
+              title="Emergency Alerts"
+              subtitle="High priority safety warnings"
+              iconColor={colors.error}
+              rightComponent={
+                <Switch
+                  value={emergencyAlerts}
+                  onValueChange={setEmergencyAlerts}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.surface}
+                />
+              }
+            />
+            
+            <View style={dynamicStyles.divider} />
+            
+            <SettingItem
+              icon="🔔"
+              title="Community Updates"
+              subtitle="Local reports and news"
+              iconColor={colors.info}
+              rightComponent={
+                <Switch
+                  value={communityUpdates}
+                  onValueChange={setCommunityUpdates}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.surface}
+                />
+              }
+            />
+            
+            <View style={dynamicStyles.divider} />
+            
+            <SettingItem
+              icon="💬"
+              title="SMS Fallback"
+              subtitle="Receive alerts via SMS if offline"
+              iconColor="#FF9500"
+              rightComponent={
+                <Switch
+                  value={smsFallback}
+                  onValueChange={setSmsFallback}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.surface}
+                />
+              }
+            />
+          </View>
+        </View>
+
+        {/* General Section */}
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>GENERAL</Text>
+          
+          <View style={dynamicStyles.sectionCard}>
+            <SettingItem
+              icon="🌐"
+              title="Language"
+              value={language}
+              onPress={() => {
+                Alert.alert('Language', 'Language selection coming soon!');
+              }}
+            />
+            
+            <View style={dynamicStyles.divider} />
+            
+            <SettingItem
+              icon="📍"
+              title="Location Permissions"
+              onPress={() => {
+                Alert.alert('Location Permissions', 'Manage location permissions in device settings');
+              }}
+            />
+            
+            <View style={dynamicStyles.divider} />
+            
+            <SettingItem
+              icon={theme === 'dark' ? '🌙' : '☀️'}
+              title="Dark Mode"
+              rightComponent={
+                <Switch
+                  value={theme === 'dark'}
+                  onValueChange={toggleTheme}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.surface}
+                />
+              }
+            />
+          </View>
+        </View>
+
+        {/* App Info Section */}
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>APP INFO</Text>
+          
+          <View style={dynamicStyles.sectionCard}>
+            <SettingItem
+              icon="ℹ️"
+              title="About SafeNet"
+              onPress={() => {
+                Alert.alert(
+                  'About SafeNet',
+                  'SafeNet v1.2.4 (Beta)\n\nA public safety alert platform for African communities.'
+                );
+              }}
+            />
+            
+            <View style={dynamicStyles.divider} />
+            
+            <SettingItem
+              icon="🔒"
+              title="Privacy Policy"
+              onPress={() => {
+                Alert.alert('Privacy Policy', 'Privacy policy coming soon!');
+              }}
+            />
+            
+            <View style={dynamicStyles.divider} />
+            
+            <SettingItem
+              icon="📱"
+              title="Version"
+              value="v1.2.4 (Beta)"
+            />
+          </View>
+        </View>
+
+        {/* Logout Button */}
+        <View style={dynamicStyles.logoutSection}>
+          <Button
+            title="Log Out"
+            onPress={handleLogout}
+            variant="danger"
+          />
+        </View>
+      </ScrollView>
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-  // Profile Card
   avatarContainer: {
     position: 'relative',
     marginRight: Spacing.md,
@@ -425,22 +426,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  // Section
   section: {
     marginBottom: Spacing.lg,
   },
-  settingItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: Spacing.lg,
-  },
-  settingLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  // Logout
   logoutSection: {
     padding: Spacing.lg,
     paddingBottom: Spacing.xxl,

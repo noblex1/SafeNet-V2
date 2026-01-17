@@ -54,91 +54,6 @@ const getTimeAgo = (dateString?: string): string => {
   return `${Math.floor(diffInSeconds / 86400)}d ago`;
 };
 
-
-export const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onPress }) => {
-  const { colors } = useTheme();
-  const hasImages = incident.images && incident.images.length > 0;
-  const firstImage = hasImages ? incident.images[0] : null;
-  const typeConfig = getIncidentTypeConfig(incident.type, colors);
-  const isVerified = incident.status === IncidentStatus.VERIFIED;
-  const timeAgo = getTimeAgo(incident.createdAt);
-  const dynamicStyles = createStyles(colors);
-
-  return (
-    <TouchableOpacity style={dynamicStyles.card} onPress={onPress} activeOpacity={0.7}>
-      <View style={styles.cardContent}>
-        {/* Image Section - Only show if image exists */}
-        {firstImage && (
-          <Image
-            source={{ uri: firstImage }}
-            style={dynamicStyles.cardImage}
-            resizeMode="cover"
-          />
-        )}
-
-        {/* Content Section */}
-        <View style={[dynamicStyles.contentSection, !firstImage && dynamicStyles.contentSectionFull]}>
-          {/* Header with Type and Verified Badge */}
-          <View style={dynamicStyles.header}>
-            <View style={[dynamicStyles.typeContainer, { backgroundColor: typeConfig.color + '15' }]}>
-              <Text style={dynamicStyles.typeIcon}>{typeConfig.icon}</Text>
-              <Text style={[dynamicStyles.typeText, { color: typeConfig.color }]}>
-                {typeConfig.label}
-              </Text>
-            </View>
-            {isVerified && (
-              <View style={dynamicStyles.verifiedBadge}>
-                <Text style={dynamicStyles.verifiedIcon}>✓</Text>
-                <Text style={dynamicStyles.verifiedText}>VERIFIED</Text>
-              </View>
-            )}
-          </View>
-
-          {/* Title */}
-          <Text style={dynamicStyles.title} numberOfLines={2}>
-            {incident.title}
-          </Text>
-
-          {/* Description */}
-          <Text style={dynamicStyles.description} numberOfLines={3}>
-            {incident.description}
-          </Text>
-
-          {/* Footer */}
-          <View style={dynamicStyles.footer}>
-            <View style={dynamicStyles.footerLeft}>
-              {timeAgo && (
-                <View style={dynamicStyles.timeContainer}>
-                  <Text style={dynamicStyles.timeIcon}>🕐</Text>
-                  <Text style={dynamicStyles.timeText}>{timeAgo}</Text>
-                </View>
-              )}
-              <View style={dynamicStyles.locationContainer}>
-                <Text style={dynamicStyles.locationIcon}>📍</Text>
-                <Text style={dynamicStyles.location} numberOfLines={1}>
-                  {incident.location.address}
-                </Text>
-              </View>
-            </View>
-            <TouchableOpacity onPress={onPress}>
-              <Text style={dynamicStyles.detailsLink}>
-                {incident.type === IncidentType.STOLEN_VEHICLE ? 'View Map' : 'Details >'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Active Badge for Missing Person */}
-          {incident.type === IncidentType.MISSING_PERSON && isVerified && (
-            <View style={dynamicStyles.activeBadge}>
-              <Text style={dynamicStyles.activeText}>ACTIVE</Text>
-            </View>
-          )}
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-};
-
 const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
@@ -284,3 +199,87 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     fontWeight: '700',
   },
 });
+
+export const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onPress }) => {
+  const { colors } = useTheme();
+  const hasImages = incident.images && incident.images.length > 0;
+  const firstImage = hasImages ? incident.images[0] : null;
+  const typeConfig = getIncidentTypeConfig(incident.type, colors);
+  const isVerified = incident.status === IncidentStatus.VERIFIED;
+  const timeAgo = getTimeAgo(incident.createdAt);
+  const dynamicStyles = createStyles(colors);
+
+  return (
+    <TouchableOpacity style={dynamicStyles.card} onPress={onPress} activeOpacity={0.7}>
+      <View style={dynamicStyles.cardContent}>
+        {/* Image Section - Only show if image exists */}
+        {firstImage && (
+          <Image
+            source={{ uri: firstImage }}
+            style={dynamicStyles.cardImage}
+            resizeMode="cover"
+          />
+        )}
+
+        {/* Content Section */}
+        <View style={[dynamicStyles.contentSection, !firstImage && dynamicStyles.contentSectionFull]}>
+          {/* Header with Type and Verified Badge */}
+          <View style={dynamicStyles.header}>
+            <View style={[dynamicStyles.typeContainer, { backgroundColor: typeConfig.color + '15' }]}>
+              <Text style={dynamicStyles.typeIcon}>{typeConfig.icon}</Text>
+              <Text style={[dynamicStyles.typeText, { color: typeConfig.color }]}>
+                {typeConfig.label}
+              </Text>
+            </View>
+            {isVerified && (
+              <View style={dynamicStyles.verifiedBadge}>
+                <Text style={dynamicStyles.verifiedIcon}>✓</Text>
+                <Text style={dynamicStyles.verifiedText}>VERIFIED</Text>
+              </View>
+            )}
+          </View>
+
+          {/* Title */}
+          <Text style={dynamicStyles.title} numberOfLines={2}>
+            {incident.title}
+          </Text>
+
+          {/* Description */}
+          <Text style={dynamicStyles.description} numberOfLines={3}>
+            {incident.description}
+          </Text>
+
+          {/* Footer */}
+          <View style={dynamicStyles.footer}>
+            <View style={dynamicStyles.footerLeft}>
+              {timeAgo && (
+                <View style={dynamicStyles.timeContainer}>
+                  <Text style={dynamicStyles.timeIcon}>🕐</Text>
+                  <Text style={dynamicStyles.timeText}>{timeAgo}</Text>
+                </View>
+              )}
+              <View style={dynamicStyles.locationContainer}>
+                <Text style={dynamicStyles.locationIcon}>📍</Text>
+                <Text style={dynamicStyles.location} numberOfLines={1}>
+                  {incident.location.address}
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity onPress={onPress}>
+              <Text style={dynamicStyles.detailsLink}>
+                {incident.type === IncidentType.STOLEN_VEHICLE ? 'View Map' : 'Details >'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Active Badge for Missing Person */}
+          {incident.type === IncidentType.MISSING_PERSON && isVerified && (
+            <View style={dynamicStyles.activeBadge}>
+              <Text style={dynamicStyles.activeText}>ACTIVE</Text>
+            </View>
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};

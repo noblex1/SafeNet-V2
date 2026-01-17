@@ -11,7 +11,7 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
-import { Colors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { Typography } from '../theme/typography';
 import { Spacing, BorderRadius } from '../theme/spacing';
 
@@ -31,6 +31,7 @@ interface NotificationsScreenProps {
 export const NotificationsScreen: React.FC<NotificationsScreenProps> = ({
   navigation,
 }) => {
+  const { colors } = useTheme();
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   // Mock notifications for now
@@ -87,29 +88,31 @@ export const NotificationsScreen: React.FC<NotificationsScreenProps> = ({
     return `${Math.floor(diffInSeconds / 86400)}d ago`;
   };
 
+  const dynamicStyles = createStyles(colors);
+
   const renderNotification = ({ item }: { item: Notification }) => (
     <TouchableOpacity
-      style={[styles.notificationItem, !item.read && styles.unread]}
+      style={[dynamicStyles.notificationItem, !item.read && dynamicStyles.unread]}
     >
-      <View style={styles.notificationIcon}>
-        <Text style={styles.iconText}>{getNotificationIcon(item.type)}</Text>
+      <View style={dynamicStyles.notificationIcon}>
+        <Text style={dynamicStyles.iconText}>{getNotificationIcon(item.type)}</Text>
       </View>
-      <View style={styles.notificationContent}>
-        <Text style={styles.notificationTitle}>{item.title}</Text>
-        <Text style={styles.notificationMessage}>{item.message}</Text>
-        <Text style={styles.notificationTime}>{getTimeAgo(item.createdAt)}</Text>
+      <View style={dynamicStyles.notificationContent}>
+        <Text style={dynamicStyles.notificationTitle}>{item.title}</Text>
+        <Text style={dynamicStyles.notificationMessage}>{item.message}</Text>
+        <Text style={dynamicStyles.notificationTime}>{getTimeAgo(item.createdAt)}</Text>
       </View>
-      {!item.read && <View style={styles.unreadDot} />}
+      {!item.read && <View style={dynamicStyles.unreadDot} />}
     </TouchableOpacity>
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Notifications</Text>
+    <View style={dynamicStyles.container}>
+      <View style={dynamicStyles.header}>
+        <Text style={dynamicStyles.headerTitle}>Notifications</Text>
         {notifications.filter((n) => !n.read).length > 0 && (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>
+          <View style={dynamicStyles.badge}>
+            <Text style={dynamicStyles.badgeText}>
               {notifications.filter((n) => !n.read).length}
             </Text>
           </View>
@@ -120,12 +123,12 @@ export const NotificationsScreen: React.FC<NotificationsScreenProps> = ({
         data={notifications}
         keyExtractor={(item) => item.id}
         renderItem={renderNotification}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={dynamicStyles.listContent}
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyIcon}>🔔</Text>
-            <Text style={styles.emptyText}>No notifications</Text>
-            <Text style={styles.emptySubtext}>
+          <View style={dynamicStyles.emptyContainer}>
+            <Text style={dynamicStyles.emptyIcon}>🔔</Text>
+            <Text style={dynamicStyles.emptyText}>No notifications</Text>
+            <Text style={dynamicStyles.emptySubtext}>
               You're all caught up! New alerts will appear here.
             </Text>
           </View>
@@ -135,10 +138,10 @@ export const NotificationsScreen: React.FC<NotificationsScreenProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
@@ -146,16 +149,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: Spacing.lg,
     paddingTop: Spacing.xxl + Spacing.sm,
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: colors.border,
   },
   headerTitle: {
     ...Typography.h2,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
   },
   badge: {
-    backgroundColor: Colors.error,
+    backgroundColor: colors.error,
     borderRadius: BorderRadius.full,
     minWidth: 24,
     height: 24,
@@ -165,7 +168,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     ...Typography.caption,
-    color: Colors.textInverse,
+    color: colors.textInverse,
     fontWeight: '700',
   },
   listContent: {
@@ -173,22 +176,22 @@ const styles = StyleSheet.create({
   },
   notificationItem: {
     flexDirection: 'row',
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderRadius: BorderRadius.md,
     padding: Spacing.md,
     marginBottom: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: colors.border,
   },
   unread: {
-    backgroundColor: Colors.primaryLight + '20',
-    borderColor: Colors.primary,
+    backgroundColor: colors.primaryLight + '20',
+    borderColor: colors.primary,
   },
   notificationIcon: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: Colors.primaryLight,
+    backgroundColor: colors.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.md,
@@ -201,24 +204,24 @@ const styles = StyleSheet.create({
   },
   notificationTitle: {
     ...Typography.bodyMedium,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     fontWeight: '600',
     marginBottom: Spacing.xs,
   },
   notificationMessage: {
     ...Typography.bodySmall,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     marginBottom: Spacing.xs,
   },
   notificationTime: {
     ...Typography.caption,
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
   },
   unreadDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     alignSelf: 'center',
     marginLeft: Spacing.sm,
   },
@@ -232,12 +235,12 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     ...Typography.h3,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     marginBottom: Spacing.sm,
   },
   emptySubtext: {
     ...Typography.bodySmall,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
 });

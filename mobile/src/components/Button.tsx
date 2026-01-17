@@ -25,50 +25,6 @@ interface ButtonProps {
   textStyle?: TextStyle;
 }
 
-export const Button: React.FC<ButtonProps> = ({
-  title,
-  onPress,
-  variant = 'primary',
-  loading = false,
-  disabled = false,
-  style,
-  textStyle,
-}) => {
-  const { colors } = useTheme();
-  const isDisabled = disabled || loading;
-  const dynamicStyles = createStyles(colors);
-
-  return (
-    <TouchableOpacity
-      style={[
-        dynamicStyles.button,
-        dynamicStyles[variant],
-        isDisabled && dynamicStyles.disabled,
-        style,
-      ]}
-      onPress={onPress}
-      disabled={isDisabled}
-      activeOpacity={0.7}
-    >
-      {loading ? (
-        <ActivityIndicator
-          color={
-            variant === 'outline'
-              ? colors.primary
-              : variant === 'danger'
-              ? colors.textInverse
-              : colors.textInverse
-          }
-        />
-      ) : (
-        <Text style={[dynamicStyles.text, dynamicStyles[`${variant}Text`], textStyle]}>
-          {title}
-        </Text>
-      )}
-    </TouchableOpacity>
-  );
-};
-
 const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
   button: {
     paddingVertical: Spacing.md + 2,
@@ -112,3 +68,47 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     color: colors.textInverse,
   },
 });
+
+export const Button: React.FC<ButtonProps> = ({
+  title,
+  onPress,
+  variant = 'primary',
+  loading = false,
+  disabled = false,
+  style,
+  textStyle,
+}) => {
+  const { colors } = useTheme();
+  const isDisabled = disabled || loading;
+  const dynamicStyles = createStyles(colors);
+
+  return (
+    <TouchableOpacity
+      style={[
+        dynamicStyles.button,
+        dynamicStyles[variant],
+        isDisabled && dynamicStyles.disabled,
+        style,
+      ]}
+      onPress={onPress}
+      disabled={isDisabled}
+      activeOpacity={0.7}
+    >
+      {loading ? (
+        <ActivityIndicator
+          color={
+            variant === 'outline'
+              ? colors.primary
+              : variant === 'danger'
+              ? colors.textInverse
+              : colors.textInverse
+          }
+        />
+      ) : (
+        <Text style={[dynamicStyles.text, dynamicStyles[`${variant}Text`], textStyle]}>
+          {title}
+        </Text>
+      )}
+    </TouchableOpacity>
+  );
+};

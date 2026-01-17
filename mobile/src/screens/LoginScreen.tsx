@@ -122,7 +122,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
               title="Sign In"
               onPress={handleLogin}
               loading={loading}
-              style={styles.loginButton}
+              style={dynamicStyles.loginButton}
             />
 
             <View style={dynamicStyles.registerContainer}>

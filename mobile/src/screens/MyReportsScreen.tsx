@@ -19,7 +19,7 @@ import { incidentService } from '../services/incidentService';
 import { IncidentCard } from '../components/IncidentCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { apiService } from '../services/api';
-import { Colors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { Typography } from '../theme/typography';
 import { Spacing, BorderRadius } from '../theme/spacing';
 
@@ -28,6 +28,7 @@ interface MyReportsScreenProps {
 }
 
 export const MyReportsScreen: React.FC<MyReportsScreenProps> = ({ navigation }) => {
+  const { colors } = useTheme();
   const { user, logout } = useAuth();
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
@@ -86,22 +87,24 @@ export const MyReportsScreen: React.FC<MyReportsScreenProps> = ({ navigation }) 
     navigation.navigate('IncidentDetail', { incidentId: incident._id });
   };
 
+  const dynamicStyles = createStyles(colors);
+
   if (loading && incidents.length === 0) {
     return <LoadingSpinner />;
   }
 
   if (error && incidents.length === 0) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
+      <View style={dynamicStyles.errorContainer}>
+        <Text style={dynamicStyles.errorText}>{error}</Text>
         <TouchableOpacity
-          style={styles.retryButton}
+          style={dynamicStyles.retryButton}
           onPress={() => {
             setLoading(true);
             loadIncidents(1, true);
           }}
         >
-          <Text style={styles.retryButtonText}>Retry</Text>
+          <Text style={dynamicStyles.retryButtonText}>Retry</Text>
         </TouchableOpacity>
       </View>
     );
@@ -125,18 +128,18 @@ export const MyReportsScreen: React.FC<MyReportsScreenProps> = ({ navigation }) 
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <View style={styles.headerTextContainer}>
-            <Text style={styles.greeting}>My Reports</Text>
-            <Text style={styles.title}>Track Your Incidents</Text>
-            <Text style={styles.subtitle}>
+    <View style={dynamicStyles.container}>
+      <View style={dynamicStyles.header}>
+        <View style={dynamicStyles.headerTop}>
+          <View style={dynamicStyles.headerTextContainer}>
+            <Text style={dynamicStyles.greeting}>My Reports</Text>
+            <Text style={dynamicStyles.title}>Track Your Incidents</Text>
+            <Text style={dynamicStyles.subtitle}>
               Monitor the status of your reported incidents
             </Text>
           </View>
-          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-            <Text style={styles.logoutText}>Logout</Text>
+          <TouchableOpacity onPress={handleLogout} style={dynamicStyles.logoutButton}>
+            <Text style={dynamicStyles.logoutText}>Logout</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -150,32 +153,32 @@ export const MyReportsScreen: React.FC<MyReportsScreenProps> = ({ navigation }) 
             onPress={() => handleIncidentPress(item)}
           />
         )}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={dynamicStyles.listContent}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <View style={styles.emptyIconContainer}>
-              <Text style={styles.emptyIcon}>📋</Text>
+          <View style={dynamicStyles.emptyContainer}>
+            <View style={dynamicStyles.emptyIconContainer}>
+              <Text style={dynamicStyles.emptyIcon}>📋</Text>
             </View>
-            <Text style={styles.emptyTitle}>No Reports Yet</Text>
-            <Text style={styles.emptyText}>
+            <Text style={dynamicStyles.emptyTitle}>No Reports Yet</Text>
+            <Text style={dynamicStyles.emptyText}>
               You haven't reported any incidents yet. Start by reporting an incident to help keep your community safe.
             </Text>
             <TouchableOpacity
-              style={styles.reportButton}
+              style={dynamicStyles.reportButton}
               onPress={() => navigation.navigate('ReportIncident')}
             >
-              <Text style={styles.reportButtonText}>Report an Incident</Text>
+              <Text style={dynamicStyles.reportButtonText}>Report an Incident</Text>
             </TouchableOpacity>
           </View>
         }
         ListFooterComponent={
           loading && incidents.length > 0 ? (
-            <View style={styles.footerLoader}>
+            <View style={dynamicStyles.footerLoader}>
               <LoadingSpinner size="small" />
             </View>
           ) : null
@@ -185,17 +188,17 @@ export const MyReportsScreen: React.FC<MyReportsScreenProps> = ({ navigation }) 
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   header: {
     padding: Spacing.xl,
     paddingTop: Spacing.xxl + Spacing.sm,
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: colors.border,
   },
   headerTop: {
     flexDirection: 'row',
@@ -207,17 +210,17 @@ const styles = StyleSheet.create({
   },
   greeting: {
     ...Typography.bodySmall,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     marginBottom: Spacing.xs,
   },
   title: {
     ...Typography.h1,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     marginBottom: Spacing.xs,
   },
   subtitle: {
     ...Typography.bodySmall,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     marginTop: Spacing.xs,
   },
   logoutButton: {
@@ -226,7 +229,7 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     ...Typography.bodySmall,
-    color: Colors.error,
+    color: colors.error,
     fontWeight: '600',
   },
   listContent: {
@@ -240,7 +243,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: Colors.primaryLight,
+    backgroundColor: colors.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: Spacing.xl,
@@ -250,13 +253,13 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     ...Typography.h3,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     marginBottom: Spacing.sm,
     textAlign: 'center',
   },
   emptyText: {
     ...Typography.bodySmall,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: Spacing.xl,
     lineHeight: 20,
@@ -264,12 +267,12 @@ const styles = StyleSheet.create({
   reportButton: {
     paddingHorizontal: Spacing.xxl,
     paddingVertical: Spacing.md,
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     borderRadius: BorderRadius.md,
   },
   reportButtonText: {
     ...Typography.bodyMedium,
-    color: Colors.textInverse,
+    color: colors.textInverse,
     fontWeight: '600',
   },
   errorContainer: {
@@ -280,19 +283,19 @@ const styles = StyleSheet.create({
   },
   errorText: {
     ...Typography.body,
-    color: Colors.error,
+    color: colors.error,
     textAlign: 'center',
     marginBottom: Spacing.lg,
   },
   retryButton: {
     paddingHorizontal: Spacing.xxl,
     paddingVertical: Spacing.md,
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     borderRadius: BorderRadius.md,
   },
   retryButtonText: {
     ...Typography.bodyMedium,
-    color: Colors.textInverse,
+    color: colors.textInverse,
     fontWeight: '600',
   },
   footerLoader: {
