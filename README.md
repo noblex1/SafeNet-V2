@@ -1,83 +1,214 @@
-# SafeNet Backend API
+# SafeNet
 
-Public Safety Alert Platform - Backend API built with Node.js, Express, TypeScript, and MongoDB.
+**SafeNet** is a comprehensive public safety alert platform designed to help communities report, verify, and respond to incidents such as missing persons, kidnappings, stolen vehicles, and natural disasters. The platform combines traditional web technologies with blockchain immutability to provide a secure, transparent, and trusted incident reporting system.
 
-## Architecture Overview
+## 🎯 Overview
+
+SafeNet consists of four main components:
+
+- **Backend API** - RESTful API built with Node.js, Express, and TypeScript
+- **Mobile Application** - Cross-platform mobile app built with React Native and Expo
+- **Web Admin Dashboard** - React-based administrative interface for authorities
+- **Blockchain Smart Contracts** - Sui Move contracts for immutable incident verification
+
+## ✨ Key Features
+
+### For Public Users
+- 📱 **Incident Reporting** - Report incidents with location, photos, and details
+- 🔔 **Verified Alerts Feed** - View verified safety alerts from authorities
+- 🗺️ **Interactive Map View** - Visualize incidents on a map
+- 📋 **My Reports** - Track the status of your reported incidents
+- 🔐 **Secure Authentication** - JWT-based authentication with secure token storage
+
+### For Administrators & Authorities
+- ✅ **Incident Verification** - Verify, reject, or resolve reported incidents
+- 📊 **Dashboard Analytics** - View and filter all incidents with pagination
+- 🔗 **Blockchain Integration** - All verifications recorded immutably on-chain
+- 👥 **User Management** - Manage user accounts and permissions
+- 📝 **Audit Trail** - Complete blockchain audit log for transparency
+
+### Blockchain & Security
+- 🔒 **Immutable Records** - Incident hashes stored on Sui blockchain
+- 🛡️ **Privacy-First** - No personal data stored on-chain, only cryptographic hashes
+- ✅ **Status Verification** - Transparent verification workflow with on-chain status
+- 🔍 **Audit Logging** - Complete transaction history for compliance
+
+## 🏗️ Architecture
 
 ```
-src/
-├── config/          # Database and configuration
-├── controllers/     # Request handlers
-├── middleware/      # Auth, RBAC, validation, error handling
-├── models/          # Mongoose schemas
-├── routes/          # API route definitions
-├── services/        # Business logic layer
-├── types/           # TypeScript type definitions
-├── utils/           # Utility functions (logger, crypto)
-└── server.ts        # Application entry point
+SafeNet/
+├── src/                    # Backend API (Node.js/Express/TypeScript)
+│   ├── config/            # Database and service configuration
+│   ├── controllers/       # Request handlers
+│   ├── middleware/        # Auth, validation, error handling
+│   ├── models/            # Mongoose schemas
+│   ├── routes/            # API route definitions
+│   ├── services/          # Business logic (including blockchain)
+│   ├── types/             # TypeScript type definitions
+│   ├── utils/             # Utilities (logger, crypto)
+│   └── server.ts          # Application entry point
+│
+├── mobile/                 # Mobile App (React Native/Expo)
+│   ├── src/
+│   │   ├── components/    # Reusable UI components
+│   │   ├── screens/       # Screen components
+│   │   ├── services/      # API service layer
+│   │   ├── navigation/    # Navigation setup
+│   │   └── context/       # React Context providers
+│   └── ...
+│
+├── web/                    # Web Admin Dashboard (React/Vite)
+│   ├── src/
+│   │   ├── components/    # Reusable components
+│   │   ├── pages/         # Page components
+│   │   ├── services/      # API services
+│   │   └── context/       # React Context
+│   └── ...
+│
+└── sources/                # Smart Contracts (Sui Move)
+    └── incident_registry.move  # Incident registry contract
 ```
 
-## Features
-
-- ✅ User authentication & authorization (JWT + refresh tokens)
-- ✅ Role-based access control (Public User, Admin, Authority)
-- ✅ Incident CRUD operations
-- ✅ Admin verification workflow
-- ✅ Blockchain hash submission (abstracted service layer)
-- ✅ Rate limiting
-- ✅ Input validation
-- ✅ Centralized error handling
-- ✅ Security best practices (helmet, CORS, password hashing)
-
-## Setup
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18+ 
-- MongoDB 5+
-- npm or yarn
+- **Node.js** 18+ and npm/yarn
+- **MongoDB** 5+ (local or cloud instance)
+- **Sui CLI** (for blockchain deployment)
+- **Expo CLI** (for mobile development) - `npm install -g expo-cli`
 
-### Installation
+### Backend API Setup
 
-```bash
-# Install dependencies
-npm install
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-# Copy environment variables
-cp .env.example .env
+2. **Configure environment variables:**
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Edit `.env` with your configuration:
+   ```env
+   MONGODB_URI=mongodb://localhost:27017/safenet
+   JWT_SECRET=your-secret-key
+   JWT_REFRESH_SECRET=your-refresh-secret
+   CLOUDINARY_CLOUD_NAME=your-cloud-name
+   CLOUDINARY_API_KEY=your-api-key
+   CLOUDINARY_API_SECRET=your-api-secret
+   PORT=3000
+   NODE_ENV=development
+   
+   # Blockchain configuration (optional)
+   SUI_NETWORK=testnet
+   SUI_RPC_URL=https://fullnode.testnet.sui.io:443
+   SUI_PRIVATE_KEY=your-private-key
+   SUI_PACKAGE_ID=your-package-id
+   SUI_REGISTRY_ID=your-registry-id
+   ```
 
-# Edit .env with your configuration
-# Set MONGODB_URI, JWT_SECRET, etc.
+3. **Create logs directory:**
+   ```bash
+   mkdir -p logs
+   ```
 
-# Create logs directory
-mkdir -p logs
+4. **Start the server:**
+   ```bash
+   # Development mode with hot reload
+   npm run dev
+   
+   # Production build
+   npm run build
+   npm start
+   ```
 
-# Run in development mode
-npm run dev
+The API will be available at `http://localhost:3000`
 
-# Build for production
-npm run build
+### Mobile App Setup
 
-# Run production build
-npm start
-```
+1. **Navigate to mobile directory:**
+   ```bash
+   cd mobile
+   ```
 
-## Environment Variables
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-See `.env.example` for required environment variables:
+3. **Configure API endpoint:**
+   
+   Edit `src/config/api.ts` with your backend URL:
+   - Android emulator: `http://10.0.2.2:3000`
+   - iOS simulator: `http://localhost:3000`
+   - Physical device: `http://YOUR_IP_ADDRESS:3000`
 
-- `MONGODB_URI` - MongoDB connection string
-- `CLOUDINARY_CLOUD_NAME` - Cloudinary cloud name
-- `CLOUDINARY_API_KEY` - Cloudinary API key
-- `CLOUDINARY_API_SECRET` - Cloudinary API secret
-- `JWT_SECRET` - Secret for access tokens
-- `JWT_REFRESH_SECRET` - Secret for refresh tokens
-- `PORT` - Server port (default: 3000)
-- `NODE_ENV` - Environment (development/production)
+4. **Start Expo development server:**
+   ```bash
+   npm start
+   ```
 
-## API Endpoints
+5. **Run on device/simulator:**
+   - Press `i` for iOS simulator
+   - Press `a` for Android emulator
+   - Scan QR code with Expo Go app on physical device
 
-### Authentication
+### Web Admin Dashboard Setup
+
+1. **Navigate to web directory:**
+   ```bash
+   cd web
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure API endpoint (optional):**
+   
+   Create `.env` file:
+   ```env
+   VITE_API_BASE_URL=http://localhost:3000
+   ```
+
+4. **Start development server:**
+   ```bash
+   npm run dev
+   ```
+
+The dashboard will be available at `http://localhost:5173`
+
+### Smart Contracts Setup
+
+1. **Install Sui CLI:**
+   ```bash
+   cargo install --locked --git https://github.com/MystenLabs/sui.git --branch devnet sui
+   ```
+
+2. **Publish contract:**
+   ```bash
+   sui client publish --gas-budget 100000000
+   ```
+
+3. **Set environment variables:**
+   - `SUI_PACKAGE_ID` - Package ID from publish output
+   - `SUI_REGISTRY_ID` - Registry object ID from initialization
+
+## 📚 Documentation
+
+Each component has detailed documentation:
+
+- [Backend API Documentation](#backend-api) - API endpoints and usage
+- [Mobile App README](mobile/README.md) - Mobile app setup and features
+- [Web Dashboard README](web/README.md) - Admin dashboard guide
+- [Smart Contracts README](smart-contracts/README.md) - Blockchain contract documentation
+
+## 🔌 Backend API
+
+### Authentication Endpoints
 
 #### Register User
 ```http
@@ -89,31 +220,7 @@ Content-Type: application/json
   "password": "SecurePass123",
   "firstName": "John",
   "lastName": "Doe",
-  "phone": "+233123456789"
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "User registered successfully",
-  "data": {
-    "user": {
-      "_id": "...",
-      "email": "user@example.com",
-      "firstName": "John",
-      "lastName": "Doe",
-      "phone": "+233123456789",
-      "role": "public_user",
-      "isActive": true,
-      "createdAt": "2024-01-01T00:00:00.000Z"
-    },
-    "tokens": {
-      "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-      "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-    }
-  }
+  "phone": "+1234567890"
 }
 ```
 
@@ -128,8 +235,6 @@ Content-Type: application/json
 }
 ```
 
-**Response:** Same structure as register
-
 #### Refresh Token
 ```http
 POST /api/auth/refresh-token
@@ -140,24 +245,7 @@ Content-Type: application/json
 }
 ```
 
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Token refreshed successfully",
-  "data": {
-    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-  }
-}
-```
-
-#### Get Current User
-```http
-GET /api/auth/me
-Authorization: Bearer <accessToken>
-```
-
-### Incidents
+### Incident Endpoints
 
 #### Create Incident
 ```http
@@ -168,9 +256,9 @@ Content-Type: application/json
 {
   "type": "missing_person",
   "title": "Missing Child - Age 5",
-  "description": "Last seen at Accra Mall wearing red shirt and blue jeans...",
+  "description": "Last seen at location...",
   "location": {
-    "address": "Accra Mall, Accra, Ghana",
+    "address": "123 Main St, City",
     "coordinates": {
       "lat": 5.6037,
       "lng": -0.1870
@@ -183,66 +271,13 @@ Content-Type: application/json
 }
 ```
 
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Incident reported successfully",
-  "data": {
-    "incident": {
-      "_id": "...",
-      "reporterId": "...",
-      "type": "missing_person",
-      "title": "Missing Child - Age 5",
-      "description": "...",
-      "location": {
-        "address": "Accra Mall, Accra, Ghana",
-        "coordinates": {
-          "lat": 5.6037,
-          "lng": -0.1870
-        }
-      },
-      "status": 0,
-      "incidentHash": "a1b2c3d4e5f6...",
-      "createdAt": "2024-01-01T00:00:00.000Z"
-    }
-  }
-}
-```
-
 #### Get Incidents (with filters)
 ```http
 GET /api/incidents?status=1&type=missing_person&page=1&limit=20
 Authorization: Bearer <accessToken>
 ```
 
-**Query Parameters:**
-- `status` - 0 (Pending), 1 (Verified), 2 (False), 3 (Resolved)
-- `type` - missing_person, kidnapping, stolen_vehicle, natural_disaster
-- `page` - Page number (default: 1)
-- `limit` - Items per page (default: 20, max: 100)
-- `reporterId` - Filter by reporter (Admin/Authority only)
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "incidents": [...],
-    "total": 50,
-    "page": 1,
-    "limit": 20
-  }
-}
-```
-
-#### Get Single Incident
-```http
-GET /api/incidents/:id
-Authorization: Bearer <accessToken>
-```
-
-#### Get Verified Alerts (Public - No Auth Required)
+#### Get Verified Alerts (Public - No Auth)
 ```http
 GET /api/incidents/alerts/verified
 ```
@@ -259,58 +294,181 @@ Content-Type: application/json
 }
 ```
 
-**Status Values:**
-- `1` - Verified
-- `2` - False
-- `3` - Resolved
-
-## Incident Status Enum
-
-Global contract used across all systems:
+### Incident Status Enum
 
 - `0` = Pending
 - `1` = Verified
 - `2` = False
 - `3` = Resolved
 
-## User Roles
+### User Roles
 
-- `public_user` - Can report incidents, view verified alerts
-- `admin` - Can verify/reject incidents, view all incidents
-- `authority` - Same as admin (for future differentiation)
+- **`public_user`** - Can report incidents, view verified alerts
+- **`admin`** - Can verify/reject incidents, view all incidents
+- **`authority`** - Same as admin (for future differentiation)
 
-## Security Features
+## 🔒 Security Features
 
-- **Password Hashing**: bcrypt with configurable rounds
-- **JWT Authentication**: Access tokens (15min) + Refresh tokens (7 days)
-- **Rate Limiting**: 
+### Authentication & Authorization
+- **JWT Authentication** - Access tokens (15min) + Refresh tokens (7 days)
+- **Password Hashing** - bcrypt with configurable rounds
+- **Role-Based Access Control (RBAC)** - Admin, Authority, and Public User roles
+
+### API Security
+- **Rate Limiting:**
   - General: 100 requests per 15 minutes
   - Auth: 5 attempts per 15 minutes
   - Incident creation: 10 per hour
-- **Input Validation**: express-validator on all endpoints
-- **Helmet**: Security headers
-- **CORS**: Configurable origins
-- **RBAC**: Role-based access control middleware
+- **Input Validation** - express-validator on all endpoints
+- **Helmet** - Security headers
+- **CORS** - Configurable origins
+- **Error Handling** - Centralized error handling without exposing internals
 
-## Blockchain Integration
+### Blockchain Security
+- **Privacy-First Design** - Only cryptographic hashes stored on-chain
+- **Immutable Audit Trail** - All status changes recorded permanently
+- **Status Validation** - Smart contract enforces valid status transitions
 
-The blockchain service is abstracted in `src/services/blockchainService.ts`.
+## ⛓️ Blockchain Integration
 
-**Important Rules:**
-- Only incident hashes are stored on-chain
-- No personal data on blockchain
-- Blockchain failures don't break the API
-- Currently uses placeholder implementation (ready for Sui SDK integration)
+SafeNet uses **Sui Move** smart contracts to provide an immutable registry for incident verification.
 
-## Error Handling
+### Key Features
+- ✅ Only incident hashes (SHA256) stored on-chain - no personal data
+- ✅ Status transitions enforced by smart contract logic
+- ✅ Complete audit trail for all verifications
+- ✅ Transaction verification and querying capabilities
 
-All errors follow this format:
+### Contract Architecture
+
+The `IncidentRegistry` contract provides:
+- `submit_incident` - Submit incident hash to registry
+- `update_status` - Update verification status (Verified/False/Resolved)
+- View functions for querying incident records
+
+See [smart-contracts/README.md](smart-contracts/README.md) for detailed documentation.
+
+## 🛠️ Tech Stack
+
+### Backend
+- **Runtime:** Node.js 18+
+- **Framework:** Express.js
+- **Language:** TypeScript
+- **Database:** MongoDB with Mongoose
+- **Authentication:** JWT (jsonwebtoken)
+- **Security:** Helmet, CORS, bcrypt
+- **Blockchain:** Sui SDK (@mysten/sui)
+- **File Storage:** Cloudinary
+- **Logging:** Winston
+
+### Mobile
+- **Framework:** React Native (Expo)
+- **Language:** TypeScript
+- **Navigation:** React Navigation
+- **Maps:** React Native Maps
+- **Storage:** Expo SecureStore
+- **API Client:** Axios
+
+### Web
+- **Framework:** React 18
+- **Language:** TypeScript
+- **Build Tool:** Vite
+- **Routing:** React Router
+- **Styling:** Tailwind CSS
+- **API Client:** Axios
+
+### Blockchain
+- **Platform:** Sui Network
+- **Language:** Move
+- **Edition:** 2024.beta
+
+## 📦 Scripts
+
+### Backend
+```bash
+npm run dev              # Start development server
+npm run build            # Build TypeScript
+npm start                # Run production build
+npm run lint             # Lint code
+npm run create-admin     # Create admin user
+npm run check-blockchain # Check blockchain status
+npm run view-tx          # View transaction details
+npm run submit-pending   # Submit pending incidents to blockchain
+```
+
+### Mobile
+```bash
+npm start                # Start Expo dev server
+npm run android          # Run on Android
+npm run ios              # Run on iOS
+npm run web              # Run on web
+```
+
+### Web
+```bash
+npm run dev              # Start development server
+npm run build            # Build for production
+npm run preview          # Preview production build
+npm run lint             # Lint code
+```
+
+## 🧪 Testing
+
+```bash
+# Backend tests
+npm test
+
+# Run integration tests
+./test-integration.js
+
+# Test backend endpoints
+./test-backend.sh
+
+# Validate environment
+node validate-env.js
+```
+
+## 📝 Environment Variables
+
+### Backend Required Variables
+
+```env
+MONGODB_URI=mongodb://localhost:27017/safenet
+JWT_SECRET=your-secret-key
+JWT_REFRESH_SECRET=your-refresh-secret
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+PORT=3000
+NODE_ENV=development
+CORS_ORIGIN=*
+```
+
+### Backend Optional (Blockchain)
+
+```env
+SUI_NETWORK=testnet
+SUI_RPC_URL=https://fullnode.testnet.sui.io:443
+SUI_PRIVATE_KEY=your-private-key-hex
+SUI_PACKAGE_ID=0x...
+SUI_REGISTRY_ID=0x...
+```
+
+### Web Optional
+
+```env
+VITE_API_BASE_URL=http://localhost:3000
+```
+
+## 🐛 Error Handling
+
+All API errors follow a consistent format:
 
 ```json
 {
   "success": false,
   "message": "Error message",
-  "errors": [...] // Validation errors if applicable
+  "errors": [] // Validation errors if applicable
 }
 ```
 
@@ -323,19 +481,25 @@ Common HTTP Status Codes:
 - `404` - Not Found
 - `500` - Internal Server Error
 
-## Development
+## 🤝 Contributing
 
-```bash
-# Run in development mode with hot reload
-npm run dev
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-# Build TypeScript
-npm run build
-
-# Lint code
-npm run lint
-```
-
-## License
+## 📄 License
 
 ISC
+
+## 🆘 Support
+
+For issues, questions, or contributions:
+- Check the component-specific README files for detailed documentation
+- Review the troubleshooting guides in each component
+- Open an issue on the repository
+
+---
+
+**SafeNet** - Building safer communities through transparent, trusted incident reporting.
