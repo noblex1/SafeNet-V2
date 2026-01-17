@@ -10,7 +10,7 @@ import {
   StyleSheet,
   TextInputProps,
 } from 'react-native';
-import { Colors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { Typography } from '../theme/typography';
 import { Spacing, BorderRadius } from '../theme/spacing';
 
@@ -26,43 +26,46 @@ export const Input: React.FC<InputProps> = ({
   containerStyle,
   ...props
 }) => {
+  const { colors } = useTheme();
+  const dynamicStyles = createStyles(colors);
+
   return (
-    <View style={[styles.container, containerStyle]}>
-      {label && <Text style={styles.label}>{label}</Text>}
+    <View style={[dynamicStyles.container, containerStyle]}>
+      {label && <Text style={dynamicStyles.label}>{label}</Text>}
       <TextInput
-        style={[styles.input, error && styles.inputError]}
-        placeholderTextColor="#999"
+        style={[dynamicStyles.input, error && dynamicStyles.inputError]}
+        placeholderTextColor={colors.textTertiary}
         {...props}
       />
-      {error && <Text style={styles.errorText}>{error}</Text>}
+      {error && <Text style={dynamicStyles.errorText}>{error}</Text>}
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
   container: {
     marginBottom: Spacing.lg,
   },
   label: {
     ...Typography.label,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     marginBottom: Spacing.sm,
   },
   input: {
     borderWidth: 1.5,
-    borderColor: Colors.border,
+    borderColor: colors.border,
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     ...Typography.body,
-    backgroundColor: Colors.surface,
-    color: Colors.textPrimary,
+    backgroundColor: colors.surface,
+    color: colors.textPrimary,
   },
   inputError: {
-    borderColor: Colors.error,
+    borderColor: colors.error,
   },
   errorText: {
-    color: Colors.error,
+    color: colors.error,
     ...Typography.caption,
     marginTop: Spacing.xs,
   },

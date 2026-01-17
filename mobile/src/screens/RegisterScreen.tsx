@@ -23,7 +23,7 @@ import {
   validateName,
 } from '../utils/validation';
 import { apiService } from '../services/api';
-import { Colors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { Typography } from '../theme/typography';
 import { Spacing } from '../theme/spacing';
 
@@ -32,6 +32,7 @@ interface RegisterScreenProps {
 }
 
 export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
+  const { colors } = useTheme();
   const { register } = useAuth();
   const [formData, setFormData] = useState({
     firstName: '',
@@ -128,16 +129,16 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
       >
         <View style={styles.content}>
           {/* Logo/Icon Section */}
-          <View style={styles.logoContainer}>
-            <View style={styles.logoCircle}>
-              <Text style={styles.logoText}>🛡️</Text>
+          <View style={dynamicStyles.logoContainer}>
+            <View style={dynamicStyles.logoCircle}>
+              <Text style={dynamicStyles.logoText}>🛡️</Text>
             </View>
           </View>
 
-          <Text style={styles.title}>Create Account</Text>
-          <Text style={styles.subtitle}>Join SafeNet to report incidents</Text>
+          <Text style={dynamicStyles.title}>Create Account</Text>
+          <Text style={dynamicStyles.subtitle}>Join SafeNet to report incidents</Text>
 
-          <View style={styles.form}>
+          <View style={dynamicStyles.form}>
             <Input
               label="First Name"
               placeholder="Enter your first name"
@@ -200,13 +201,13 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
               title="Create Account"
               onPress={handleRegister}
               loading={loading}
-              style={styles.registerButton}
+              style={dynamicStyles.registerButton}
             />
 
-            <View style={styles.loginContainer}>
-              <Text style={styles.loginText}>Already have an account? </Text>
+            <View style={dynamicStyles.loginContainer}>
+              <Text style={dynamicStyles.loginText}>Already have an account? </Text>
               <Text
-                style={styles.loginLink}
+                style={dynamicStyles.loginLink}
                 onPress={() => navigation.navigate('Login')}
               >
                 Sign In
@@ -219,10 +220,10 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -240,7 +241,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: Colors.primaryLight,
+    backgroundColor: colors.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: Spacing.lg,
@@ -252,13 +253,13 @@ const styles = StyleSheet.create({
     ...Typography.h1,
     textAlign: 'center',
     marginBottom: Spacing.sm,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
   },
   subtitle: {
     ...Typography.bodySmall,
     textAlign: 'center',
     marginBottom: Spacing.xxxl,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   form: {
     width: '100%',
@@ -273,11 +274,11 @@ const styles = StyleSheet.create({
   },
   loginText: {
     ...Typography.bodySmall,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   loginLink: {
     ...Typography.bodySmall,
-    color: Colors.primary,
+    color: colors.primary,
     fontWeight: '600',
   },
 });

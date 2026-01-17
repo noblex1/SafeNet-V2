@@ -7,7 +7,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Incident, IncidentType, IncidentStatus } from '../types';
 import { StatusBadge } from './StatusBadge';
-import { Colors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { Typography } from '../theme/typography';
 import { Spacing, BorderRadius } from '../theme/spacing';
 
@@ -16,30 +16,30 @@ interface IncidentCardProps {
   onPress: () => void;
 }
 
-const getIncidentTypeConfig = (type: IncidentType) => {
+const getIncidentTypeConfig = (type: IncidentType, colors: ReturnType<typeof import('../theme/colors').getColors>) => {
   const configs: Record<IncidentType, { label: string; icon: string; color: string }> = {
     [IncidentType.MISSING_PERSON]: {
       label: 'MISSING PERSON',
       icon: '🔍',
-      color: Colors.success,
+      color: colors.success,
     },
     [IncidentType.KIDNAPPING]: {
       label: 'KIDNAPPING',
       icon: '🚨',
-      color: Colors.error,
+      color: colors.error,
     },
     [IncidentType.STOLEN_VEHICLE]: {
       label: 'TRAFFIC INCIDENT',
       icon: '🚧',
-      color: Colors.warning,
+      color: colors.warning,
     },
     [IncidentType.NATURAL_DISASTER]: {
       label: 'URGENT DISASTER',
       icon: '🏠',
-      color: Colors.error,
+      color: colors.error,
     },
   };
-  return configs[type] || { label: type, icon: '📋', color: Colors.textSecondary };
+  return configs[type] || { label: type, icon: '📋', color: colors.textSecondary };
 };
 
 const getTimeAgo = (dateString?: string): string => {
@@ -56,70 +56,72 @@ const getTimeAgo = (dateString?: string): string => {
 
 
 export const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onPress }) => {
+  const { colors } = useTheme();
   const hasImages = incident.images && incident.images.length > 0;
   const firstImage = hasImages ? incident.images[0] : null;
-  const typeConfig = getIncidentTypeConfig(incident.type);
+  const typeConfig = getIncidentTypeConfig(incident.type, colors);
   const isVerified = incident.status === IncidentStatus.VERIFIED;
   const timeAgo = getTimeAgo(incident.createdAt);
+  const dynamicStyles = createStyles(colors);
 
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
+    <TouchableOpacity style={dynamicStyles.card} onPress={onPress} activeOpacity={0.7}>
       <View style={styles.cardContent}>
         {/* Image Section - Only show if image exists */}
         {firstImage && (
           <Image
             source={{ uri: firstImage }}
-            style={styles.cardImage}
+            style={dynamicStyles.cardImage}
             resizeMode="cover"
           />
         )}
 
         {/* Content Section */}
-        <View style={[styles.contentSection, !firstImage && styles.contentSectionFull]}>
+        <View style={[dynamicStyles.contentSection, !firstImage && dynamicStyles.contentSectionFull]}>
           {/* Header with Type and Verified Badge */}
-          <View style={styles.header}>
-            <View style={[styles.typeContainer, { backgroundColor: typeConfig.color + '15' }]}>
-              <Text style={styles.typeIcon}>{typeConfig.icon}</Text>
-              <Text style={[styles.typeText, { color: typeConfig.color }]}>
+          <View style={dynamicStyles.header}>
+            <View style={[dynamicStyles.typeContainer, { backgroundColor: typeConfig.color + '15' }]}>
+              <Text style={dynamicStyles.typeIcon}>{typeConfig.icon}</Text>
+              <Text style={[dynamicStyles.typeText, { color: typeConfig.color }]}>
                 {typeConfig.label}
               </Text>
             </View>
             {isVerified && (
-              <View style={styles.verifiedBadge}>
-                <Text style={styles.verifiedIcon}>✓</Text>
-                <Text style={styles.verifiedText}>VERIFIED</Text>
+              <View style={dynamicStyles.verifiedBadge}>
+                <Text style={dynamicStyles.verifiedIcon}>✓</Text>
+                <Text style={dynamicStyles.verifiedText}>VERIFIED</Text>
               </View>
             )}
           </View>
 
           {/* Title */}
-          <Text style={styles.title} numberOfLines={2}>
+          <Text style={dynamicStyles.title} numberOfLines={2}>
             {incident.title}
           </Text>
 
           {/* Description */}
-          <Text style={styles.description} numberOfLines={3}>
+          <Text style={dynamicStyles.description} numberOfLines={3}>
             {incident.description}
           </Text>
 
           {/* Footer */}
-          <View style={styles.footer}>
-            <View style={styles.footerLeft}>
+          <View style={dynamicStyles.footer}>
+            <View style={dynamicStyles.footerLeft}>
               {timeAgo && (
-                <View style={styles.timeContainer}>
-                  <Text style={styles.timeIcon}>🕐</Text>
-                  <Text style={styles.timeText}>{timeAgo}</Text>
+                <View style={dynamicStyles.timeContainer}>
+                  <Text style={dynamicStyles.timeIcon}>🕐</Text>
+                  <Text style={dynamicStyles.timeText}>{timeAgo}</Text>
                 </View>
               )}
-              <View style={styles.locationContainer}>
-                <Text style={styles.locationIcon}>📍</Text>
-                <Text style={styles.location} numberOfLines={1}>
+              <View style={dynamicStyles.locationContainer}>
+                <Text style={dynamicStyles.locationIcon}>📍</Text>
+                <Text style={dynamicStyles.location} numberOfLines={1}>
                   {incident.location.address}
                 </Text>
               </View>
             </View>
             <TouchableOpacity onPress={onPress}>
-              <Text style={styles.detailsLink}>
+              <Text style={dynamicStyles.detailsLink}>
                 {incident.type === IncidentType.STOLEN_VEHICLE ? 'View Map' : 'Details >'}
               </Text>
             </TouchableOpacity>
@@ -127,8 +129,8 @@ export const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onPress })
 
           {/* Active Badge for Missing Person */}
           {incident.type === IncidentType.MISSING_PERSON && isVerified && (
-            <View style={styles.activeBadge}>
-              <Text style={styles.activeText}>ACTIVE</Text>
+            <View style={dynamicStyles.activeBadge}>
+              <Text style={dynamicStyles.activeText}>ACTIVE</Text>
             </View>
           )}
         </View>
@@ -137,19 +139,19 @@ export const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onPress })
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
   card: {
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderRadius: BorderRadius.lg,
     marginBottom: Spacing.md,
-    shadowColor: Colors.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 2,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: colors.border,
   },
   cardContent: {
     flexDirection: 'row',
@@ -158,7 +160,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: '100%',
     minHeight: 140,
-    backgroundColor: Colors.border,
+    backgroundColor: colors.border,
   },
   contentSection: {
     flex: 1,
@@ -195,32 +197,32 @@ const styles = StyleSheet.create({
   verifiedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.statusVerified,
+    backgroundColor: colors.statusVerified,
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.sm,
   },
   verifiedIcon: {
     fontSize: 12,
-    color: Colors.success,
+    color: colors.success,
     marginRight: Spacing.xs,
     fontWeight: 'bold',
   },
   verifiedText: {
     ...Typography.overline,
     fontSize: 10,
-    color: Colors.success,
+    color: colors.success,
     fontWeight: '700',
   },
   title: {
     ...Typography.h4,
     marginBottom: Spacing.sm,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     fontWeight: '700',
   },
   description: {
     ...Typography.bodySmall,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     marginBottom: Spacing.md,
     lineHeight: 20,
   },
@@ -247,7 +249,7 @@ const styles = StyleSheet.create({
   },
   timeText: {
     ...Typography.caption,
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
   },
   locationContainer: {
     flexDirection: 'row',
@@ -260,17 +262,17 @@ const styles = StyleSheet.create({
   },
   location: {
     ...Typography.caption,
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
     flex: 1,
   },
   detailsLink: {
     ...Typography.bodySmall,
-    color: Colors.primary,
+    color: colors.primary,
     fontWeight: '600',
   },
   activeBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: Colors.success,
+    backgroundColor: colors.success,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.full,
@@ -278,7 +280,7 @@ const styles = StyleSheet.create({
   },
   activeText: {
     ...Typography.caption,
-    color: Colors.textInverse,
+    color: colors.textInverse,
     fontWeight: '700',
   },
 });

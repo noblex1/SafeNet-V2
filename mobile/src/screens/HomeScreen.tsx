@@ -38,6 +38,7 @@ const INCIDENT_CATEGORIES = [
 ];
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
+  const { colors } = useTheme();
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -48,6 +49,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [menuDrawerVisible, setMenuDrawerVisible] = useState(false);
   const [filters, setFilters] = useState<FilterOptions>({});
+  const dynamicStyles = createStyles(colors);
 
   const loadIncidents = useCallback(async () => {
     try {
@@ -129,75 +131,75 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   if (error) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
+      <View style={dynamicStyles.errorContainer}>
+        <Text style={dynamicStyles.errorText}>{error}</Text>
         <TouchableOpacity
-          style={styles.retryButton}
+          style={dynamicStyles.retryButton}
           onPress={() => {
             setLoading(true);
             loadIncidents();
           }}
         >
-          <Text style={styles.retryButtonText}>Retry</Text>
+          <Text style={dynamicStyles.retryButtonText}>Retry</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={dynamicStyles.container}>
       {/* Top Bar */}
-      <View style={styles.topBar}>
-        <View style={styles.logoContainer}>
-          <View style={styles.logoIcon}>
-            <Text style={styles.logoDot}>🛡️</Text>
+      <View style={dynamicStyles.topBar}>
+        <View style={dynamicStyles.logoContainer}>
+          <View style={dynamicStyles.logoIcon}>
+            <Text style={dynamicStyles.logoDot}>🛡️</Text>
           </View>
-          <Text style={styles.logoText}>SafeNet</Text>
+          <Text style={dynamicStyles.logoText}>SafeNet</Text>
         </View>
-        <View style={styles.topBarActions}>
+        <View style={dynamicStyles.topBarActions}>
           <TouchableOpacity
-            style={styles.iconButton}
+            style={dynamicStyles.iconButton}
             onPress={() => navigation.navigate('Notifications')}
           >
-            <Text style={styles.iconText}>🔔</Text>
+            <Text style={dynamicStyles.iconText}>🔔</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.iconButton}
+            style={dynamicStyles.iconButton}
             onPress={() => setMenuDrawerVisible(true)}
           >
-            <Text style={styles.iconText}>☰</Text>
+            <Text style={dynamicStyles.iconText}>☰</Text>
           </TouchableOpacity>
         </View>
       </View>
 
       {/* Tab Navigation */}
-      <View style={styles.tabContainer}>
+      <View style={dynamicStyles.tabContainer}>
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'feed' && styles.tabActive]}
+          style={[dynamicStyles.tab, activeTab === 'feed' && dynamicStyles.tabActive]}
           onPress={() => setActiveTab('feed')}
         >
-          <Text style={styles.tabIcon}>📋</Text>
+          <Text style={dynamicStyles.tabIcon}>📋</Text>
           <Text
             style={[
-              styles.tabLabel,
-              activeTab === 'feed' && styles.tabLabelActive,
+              dynamicStyles.tabLabel,
+              activeTab === 'feed' && dynamicStyles.tabLabelActive,
             ]}
           >
             Feed
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'map' && styles.tabActive]}
+          style={[dynamicStyles.tab, activeTab === 'map' && dynamicStyles.tabActive]}
           onPress={() => {
             setActiveTab('map');
             navigation.navigate('Map');
           }}
         >
-          <Text style={styles.tabIcon}>🗺️</Text>
+          <Text style={dynamicStyles.tabIcon}>🗺️</Text>
           <Text
             style={[
-              styles.tabLabel,
-              activeTab === 'map' && styles.tabLabelActive,
+              dynamicStyles.tabLabel,
+              activeTab === 'map' && dynamicStyles.tabLabelActive,
             ]}
           >
             Map
@@ -206,22 +208,22 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       </View>
 
       {/* Search and Filter */}
-      <View style={styles.searchContainer}>
-        <View style={styles.searchBar}>
-          <Text style={styles.searchIcon}>🔍</Text>
+      <View style={dynamicStyles.searchContainer}>
+        <View style={dynamicStyles.searchBar}>
+          <Text style={dynamicStyles.searchIcon}>🔍</Text>
           <TextInput
-            style={styles.searchInput}
+            style={dynamicStyles.searchInput}
             placeholder="Search alerts or locations..."
-            placeholderTextColor={Colors.textTertiary}
+            placeholderTextColor={colors.textTertiary}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
         </View>
         <TouchableOpacity
-          style={styles.filterButton}
+          style={dynamicStyles.filterButton}
           onPress={() => setFilterModalVisible(true)}
         >
-          <Text style={styles.filterIcon}>☰</Text>
+          <Text style={dynamicStyles.filterIcon}>☰</Text>
         </TouchableOpacity>
       </View>
 
@@ -229,22 +231,22 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        style={styles.categoryContainer}
-        contentContainerStyle={styles.categoryContent}
+        style={dynamicStyles.categoryContainer}
+        contentContainerStyle={dynamicStyles.categoryContent}
       >
         {INCIDENT_CATEGORIES.map((category) => (
           <TouchableOpacity
             key={category.value}
             style={[
-              styles.categoryPill,
-              selectedCategory === category.value && styles.categoryPillActive,
+              dynamicStyles.categoryPill,
+              selectedCategory === category.value && dynamicStyles.categoryPillActive,
             ]}
             onPress={() => setSelectedCategory(category.value)}
           >
             <Text
               style={[
-                styles.categoryText,
-                selectedCategory === category.value && styles.categoryTextActive,
+                dynamicStyles.categoryText,
+                selectedCategory === category.value && dynamicStyles.categoryTextActive,
               ]}
             >
               {category.label}
@@ -263,19 +265,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             onPress={() => handleIncidentPress(item)}
           />
         )}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={dynamicStyles.listContent}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No verified alerts at this time</Text>
+          <View style={dynamicStyles.emptyContainer}>
+            <Text style={dynamicStyles.emptyText}>No verified alerts at this time</Text>
           </View>
         }
         ListFooterComponent={
-          <View style={styles.connectivityMessage}>
-            <Text style={styles.connectivityIcon}>│</Text>
-            <Text style={styles.connectivityText}>
+          <View style={dynamicStyles.connectivityMessage}>
+            <Text style={dynamicStyles.connectivityIcon}>│</Text>
+            <Text style={dynamicStyles.connectivityText}>
               Nearby incidents simplified for slow connection.
             </Text>
           </View>
@@ -300,10 +302,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   // Top Bar
   topBar: {
@@ -313,9 +315,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.xxl + Spacing.sm,
     paddingBottom: Spacing.md,
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: colors.border,
   },
   logoContainer: {
     flexDirection: 'row',
@@ -325,7 +327,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.sm,
@@ -335,7 +337,7 @@ const styles = StyleSheet.create({
   },
   logoText: {
     ...Typography.h3,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
     fontWeight: '700',
   },
   topBarActions: {
@@ -354,9 +356,9 @@ const styles = StyleSheet.create({
   // Tab Navigation
   tabContainer: {
     flexDirection: 'row',
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: colors.border,
     paddingHorizontal: Spacing.lg,
   },
   tab: {
@@ -369,7 +371,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   tabActive: {
-    borderBottomColor: Colors.primary,
+    borderBottomColor: colors.primary,
   },
   tabIcon: {
     fontSize: 18,
@@ -377,34 +379,34 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     ...Typography.bodyMedium,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     fontWeight: '600',
   },
   tabLabelActive: {
-    color: Colors.primary,
+    color: colors.primary,
   },
   // Search
   searchContainer: {
     flexDirection: 'row',
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: colors.border,
     gap: Spacing.sm,
   },
   searchBar: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     borderWidth: 1.5,
-    borderColor: Colors.border,
+    borderColor: colors.border,
     minHeight: 44,
-    shadowColor: Colors.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
@@ -417,18 +419,18 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     ...Typography.bodySmall,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
   },
   filterButton: {
     width: 44,
     height: 44,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderRadius: BorderRadius.md,
     borderWidth: 1.5,
-    borderColor: Colors.border,
-    shadowColor: Colors.shadow,
+    borderColor: colors.border,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
@@ -436,13 +438,13 @@ const styles = StyleSheet.create({
   },
   filterIcon: {
     fontSize: 18,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   // Category Filters
   categoryContainer: {
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: colors.border,
   },
   categoryContent: {
     paddingHorizontal: Spacing.lg,
@@ -453,25 +455,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.md + 2,
     borderRadius: BorderRadius.full,
-    backgroundColor: Colors.surface,
+    backgroundColor: colors.surface,
     marginRight: Spacing.md,
     borderWidth: 1.5,
-    borderColor: Colors.border,
+    borderColor: colors.border,
     minHeight: 44,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: Colors.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
   },
   categoryPillActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
     paddingHorizontal: Spacing.xxl,
     paddingVertical: Spacing.md + 4,
-    shadowColor: Colors.primary,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -479,12 +481,12 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     ...Typography.bodyMedium,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     fontWeight: '600',
     fontSize: 14,
   },
   categoryTextActive: {
-    color: Colors.textInverse,
+    color: colors.textInverse,
     fontWeight: '700',
     fontSize: 15,
   },
@@ -500,7 +502,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     ...Typography.h4,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
     textAlign: 'center',
     fontWeight: '600',
   },
@@ -509,17 +511,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: Spacing.md,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
     marginTop: Spacing.sm,
   },
   connectivityIcon: {
     fontSize: 16,
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
     marginRight: Spacing.sm,
   },
   connectivityText: {
     ...Typography.caption,
-    color: Colors.textTertiary,
+    color: colors.textTertiary,
   },
   // Error States
   errorContainer: {
@@ -530,19 +532,19 @@ const styles = StyleSheet.create({
   },
   errorText: {
     ...Typography.body,
-    color: Colors.error,
+    color: colors.error,
     textAlign: 'center',
     marginBottom: Spacing.lg,
   },
   retryButton: {
     paddingHorizontal: Spacing.xxl,
     paddingVertical: Spacing.md,
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     borderRadius: BorderRadius.md,
   },
   retryButtonText: {
     ...Typography.bodyMedium,
-    color: Colors.textInverse,
+    color: colors.textInverse,
     fontWeight: '600',
   },
 });

@@ -11,7 +11,7 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import { Colors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { Typography } from '../theme/typography';
 import { BorderRadius, Spacing } from '../theme/spacing';
 
@@ -34,14 +34,16 @@ export const Button: React.FC<ButtonProps> = ({
   style,
   textStyle,
 }) => {
+  const { colors } = useTheme();
   const isDisabled = disabled || loading;
+  const dynamicStyles = createStyles(colors);
 
   return (
     <TouchableOpacity
       style={[
-        styles.button,
-        styles[variant],
-        isDisabled && styles.disabled,
+        dynamicStyles.button,
+        dynamicStyles[variant],
+        isDisabled && dynamicStyles.disabled,
         style,
       ]}
       onPress={onPress}
@@ -52,14 +54,14 @@ export const Button: React.FC<ButtonProps> = ({
         <ActivityIndicator
           color={
             variant === 'outline'
-              ? Colors.primary
+              ? colors.primary
               : variant === 'danger'
-              ? Colors.textInverse
-              : Colors.textInverse
+              ? colors.textInverse
+              : colors.textInverse
           }
         />
       ) : (
-        <Text style={[styles.text, styles[`${variant}Text`], textStyle]}>
+        <Text style={[dynamicStyles.text, dynamicStyles[`${variant}Text`], textStyle]}>
           {title}
         </Text>
       )}
@@ -67,7 +69,7 @@ export const Button: React.FC<ButtonProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
   button: {
     paddingVertical: Spacing.md + 2,
     paddingHorizontal: Spacing.xxl,
@@ -77,18 +79,18 @@ const styles = StyleSheet.create({
     minHeight: 52,
   },
   primary: {
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
   },
   secondary: {
-    backgroundColor: Colors.success,
+    backgroundColor: colors.success,
   },
   outline: {
     backgroundColor: 'transparent',
     borderWidth: 1.5,
-    borderColor: Colors.primary,
+    borderColor: colors.primary,
   },
   danger: {
-    backgroundColor: Colors.error,
+    backgroundColor: colors.error,
   },
   disabled: {
     opacity: 0.5,
@@ -98,15 +100,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   primaryText: {
-    color: Colors.textInverse,
+    color: colors.textInverse,
   },
   secondaryText: {
-    color: Colors.textInverse,
+    color: colors.textInverse,
   },
   outlineText: {
-    color: Colors.primary,
+    color: colors.primary,
   },
   dangerText: {
-    color: Colors.textInverse,
+    color: colors.textInverse,
   },
 });

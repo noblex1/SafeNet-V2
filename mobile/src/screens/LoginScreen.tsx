@@ -18,7 +18,7 @@ import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { validateEmail } from '../utils/validation';
 import { apiService } from '../services/api';
-import { Colors } from '../theme/colors';
+import { useTheme } from '../context/ThemeContext';
 import { Typography } from '../theme/typography';
 import { Spacing, BorderRadius } from '../theme/spacing';
 
@@ -27,6 +27,7 @@ interface LoginScreenProps {
 }
 
 export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
+  const { colors } = useTheme();
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -65,28 +66,30 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     }
   };
 
+  const dynamicStyles = createStyles(colors);
+
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={dynamicStyles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={dynamicStyles.scrollContent}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.content}>
+        <View style={dynamicStyles.content}>
           {/* Logo/Icon Section */}
-          <View style={styles.logoContainer}>
-            <View style={styles.logoCircle}>
-              <Text style={styles.logoText}>🛡️</Text>
+          <View style={dynamicStyles.logoContainer}>
+            <View style={dynamicStyles.logoCircle}>
+              <Text style={dynamicStyles.logoText}>🛡️</Text>
             </View>
           </View>
 
-          <Text style={styles.title}>Welcome Back</Text>
-          <Text style={styles.subtitle}>Sign in to continue using SafeNet</Text>
+          <Text style={dynamicStyles.title}>Welcome Back</Text>
+          <Text style={dynamicStyles.subtitle}>Sign in to continue using SafeNet</Text>
 
-          <View style={styles.form}>
+          <View style={dynamicStyles.form}>
             <Input
               label="Email"
               placeholder="Enter your email"
@@ -122,10 +125,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
               style={styles.loginButton}
             />
 
-            <View style={styles.registerContainer}>
-              <Text style={styles.registerText}>Don't have an account? </Text>
+            <View style={dynamicStyles.registerContainer}>
+              <Text style={dynamicStyles.registerText}>Don't have an account? </Text>
               <Text
-                style={styles.registerLink}
+                style={dynamicStyles.registerLink}
                 onPress={() => navigation.navigate('Register')}
               >
                 Sign Up
@@ -138,10 +141,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     flexGrow: 1,
@@ -159,7 +162,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: Colors.primaryLight,
+    backgroundColor: colors.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: Spacing.lg,
@@ -171,13 +174,13 @@ const styles = StyleSheet.create({
     ...Typography.h1,
     textAlign: 'center',
     marginBottom: Spacing.sm,
-    color: Colors.textPrimary,
+    color: colors.textPrimary,
   },
   subtitle: {
     ...Typography.bodySmall,
     textAlign: 'center',
     marginBottom: Spacing.xxxl,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   form: {
     width: '100%',
@@ -192,11 +195,11 @@ const styles = StyleSheet.create({
   },
   registerText: {
     ...Typography.bodySmall,
-    color: Colors.textSecondary,
+    color: colors.textSecondary,
   },
   registerLink: {
     ...Typography.bodySmall,
-    color: Colors.primary,
+    color: colors.primary,
     fontWeight: '600',
   },
 });
