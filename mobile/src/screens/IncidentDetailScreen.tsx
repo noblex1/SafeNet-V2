@@ -19,6 +19,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { Incident, IncidentType, IncidentStatus } from '../types';
 import { incidentService } from '../services/incidentService';
 import { apiService } from '../services/api';
+import { useTheme } from '../context/ThemeContext';
+import { Typography } from '../theme/typography';
+import { Spacing, BorderRadius } from '../theme/spacing';
+import { StatusBadge } from '../components/StatusBadge';
 
 interface IncidentDetailScreenProps {
   route: { params: { incidentId: string } };
@@ -34,158 +38,174 @@ const getIncidentTypeLabel = (type: IncidentType): string => {
   return labels[type] || type;
 };
 
-const getStatusLabel = (status: IncidentStatus): string => {
-  const labels: Record<IncidentStatus, string> = {
-    [IncidentStatus.PENDING]: 'Pending',
-    [IncidentStatus.VERIFIED]: 'Verified',
-    [IncidentStatus.FALSE]: 'False',
-    [IncidentStatus.RESOLVED]: 'Resolved',
+const window = Dimensions.get('window');
+
+const getIncidentTypeConfig = (
+  type: IncidentType,
+  colors: ReturnType<typeof import('../theme/colors').getColors>
+) => {
+  const configs: Record<
+    IncidentType,
+    { label: string; iconName: keyof typeof Ionicons.glyphMap; color: string }
+  > = {
+    [IncidentType.MISSING_PERSON]: {
+      label: 'MISSING PERSON',
+      iconName: 'search-outline',
+      color: colors.success,
+    },
+    [IncidentType.KIDNAPPING]: {
+      label: 'KIDNAPPING',
+      iconName: 'alert-circle-outline',
+      color: colors.error,
+    },
+    [IncidentType.STOLEN_VEHICLE]: {
+      label: 'TRAFFIC INCIDENT',
+      iconName: 'car-outline',
+      color: colors.warning,
+    },
+    [IncidentType.NATURAL_DISASTER]: {
+      label: 'URGENT DISASTER',
+      iconName: 'warning-outline',
+      color: colors.error,
+    },
   };
-  return labels[status] || 'Unknown';
+  return configs[type] || { label: getIncidentTypeLabel(type), iconName: 'document-text-outline', color: colors.textSecondary };
 };
 
-const getStatusColor = (status: IncidentStatus): string => {
-  const colors: Record<IncidentStatus, string> = {
-    [IncidentStatus.PENDING]: '#FF9500',
-    [IncidentStatus.VERIFIED]: '#34C759',
-    [IncidentStatus.FALSE]: '#FF3B30',
-    [IncidentStatus.RESOLVED]: '#007AFF',
-  };
-  return colors[status] || '#999';
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F5F5F5',
-  },
-  content: {
-    padding: 16,
-  },
-  centerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-  },
-  errorText: {
-    fontSize: 16,
-    color: '#FF3B30',
-    textAlign: 'center',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  typeContainer: {
-    backgroundColor: '#F0F0F0',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-  },
-  typeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#333',
-  },
-  statusBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-  },
-  statusText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#000',
-    marginBottom: 24,
-  },
-  section: {
-    backgroundColor: '#FFF',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#666',
-    marginBottom: 8,
-    textTransform: 'uppercase',
-  },
-  sectionContent: {
-    fontSize: 16,
-    color: '#000',
-    lineHeight: 24,
-  },
-  locationRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  coordinates: {
-    fontSize: 12,
-    color: '#999',
-    marginTop: 4,
-  },
-  blockchainText: {
-    fontSize: 12,
-    color: '#666',
-    fontFamily: 'monospace',
-  },
-  imagesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 8,
-    gap: 8,
-  },
-  imageContainer: {
-    width: (Dimensions.get('window').width - 64) / 3, // 3 columns with padding
-    height: (Dimensions.get('window').width - 64) / 3,
-    marginRight: 8,
-    marginBottom: 8,
-  },
-  thumbnail: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 8,
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.95)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalCloseButton: {
-    position: 'absolute',
-    top: 50,
-    right: 20,
-    zIndex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderRadius: 20,
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalCloseText: {
-    color: '#FFF',
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  modalImage: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
-  },
-});
+const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    content: {
+      padding: Spacing.lg,
+      paddingBottom: Spacing.xxxl,
+    },
+    centerContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: Spacing.xxl,
+      backgroundColor: colors.background,
+    },
+    errorText: {
+      ...Typography.body,
+      color: colors.error,
+      textAlign: 'center',
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: Spacing.lg,
+      gap: Spacing.sm,
+    },
+    typePill: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: Spacing.sm,
+      paddingVertical: Spacing.xs,
+      borderRadius: BorderRadius.full,
+      borderWidth: 1,
+      borderColor: colors.glassBorder,
+      backgroundColor: colors.glassBg,
+      flexShrink: 1,
+    },
+    typeText: {
+      ...Typography.overline,
+      fontSize: 10,
+      fontWeight: '700',
+      letterSpacing: 0.5,
+      flexShrink: 1,
+    },
+    title: {
+      ...Typography.h2,
+      color: colors.textPrimary,
+      marginBottom: Spacing.xl,
+    },
+    section: {
+      backgroundColor: colors.glassBg,
+      padding: Spacing.lg,
+      borderRadius: BorderRadius.lg,
+      marginBottom: Spacing.md,
+      borderWidth: 1,
+      borderColor: colors.glassBorder,
+    },
+    sectionTitle: {
+      ...Typography.overline,
+      fontSize: 11,
+      color: colors.textTertiary,
+      marginBottom: Spacing.sm,
+      letterSpacing: 1,
+      fontWeight: '700',
+    },
+    sectionContent: {
+      ...Typography.body,
+      color: colors.textPrimary,
+    },
+    locationRow: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+    },
+    coordinates: {
+      ...Typography.caption,
+      color: colors.textTertiary,
+      marginTop: Spacing.xs,
+    },
+    blockchainText: {
+      ...Typography.caption,
+      color: colors.textSecondary,
+      fontFamily: 'monospace',
+    },
+    imagesGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      marginTop: Spacing.sm,
+      gap: Spacing.sm,
+    },
+    imageContainer: {
+      width: (window.width - (Spacing.lg * 2) - (Spacing.sm * 2)) / 3, // 3 columns + gaps
+      height: (window.width - (Spacing.lg * 2) - (Spacing.sm * 2)) / 3,
+    },
+    thumbnail: {
+      width: '100%',
+      height: '100%',
+      borderRadius: BorderRadius.md,
+      borderWidth: 1,
+      borderColor: colors.glassBorder,
+    },
+    modalContainer: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.94)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    modalCloseButton: {
+      position: 'absolute',
+      top: 50,
+      right: 20,
+      zIndex: 1,
+      backgroundColor: colors.glassBg,
+      borderColor: colors.glassBorder,
+      borderWidth: 1,
+      borderRadius: BorderRadius.full,
+      width: 40,
+      height: 40,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    modalImage: {
+      width: window.width,
+      height: window.height,
+    },
+  });
 
 export const IncidentDetailScreen: React.FC<IncidentDetailScreenProps> = ({
   route,
 }) => {
+  const { colors } = useTheme();
+  const dynamicStyles = createStyles(colors);
   const { incidentId } = route.params;
   const [incident, setIncident] = useState<Incident | null>(null);
   const [loading, setLoading] = useState(true);
@@ -212,57 +232,61 @@ export const IncidentDetailScreen: React.FC<IncidentDetailScreenProps> = ({
 
   if (loading) {
     return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+      <View style={dynamicStyles.centerContainer}>
+        <ActivityIndicator size="large" color={colors.neonCyan} />
       </View>
     );
   }
 
   if (error || !incident) {
     return (
-      <View style={styles.centerContainer}>
-        <Text style={styles.errorText}>{error || 'Incident not found'}</Text>
+      <View style={dynamicStyles.centerContainer}>
+        <Text style={dynamicStyles.errorText}>{error || 'Incident not found'}</Text>
       </View>
     );
   }
 
+  const typeConfig = getIncidentTypeConfig(incident.type, colors);
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <View style={styles.typeContainer}>
-          <Text style={styles.typeText}>
-            {getIncidentTypeLabel(incident.type)}
+    <ScrollView style={dynamicStyles.container} contentContainerStyle={dynamicStyles.content}>
+      <View style={dynamicStyles.header}>
+        <View style={[dynamicStyles.typePill, { backgroundColor: typeConfig.color + '15' }]}>
+          <Ionicons
+            name={typeConfig.iconName}
+            size={14}
+            color={typeConfig.color}
+            style={{ marginRight: Spacing.xs }}
+          />
+          <Text style={[dynamicStyles.typeText, { color: typeConfig.color }]} numberOfLines={1}>
+            {typeConfig.label}
           </Text>
         </View>
-        <View
-          style={[
-            styles.statusBadge,
-            { backgroundColor: getStatusColor(incident.status) + '20' },
-          ]}
-        >
-          <Text
-            style={[styles.statusText, { color: getStatusColor(incident.status) }]}
-          >
-            {getStatusLabel(incident.status)}
+        <StatusBadge status={incident.status} />
+      </View>
+
+      <Text style={dynamicStyles.title}>{incident.title}</Text>
+
+      <View style={dynamicStyles.section}>
+        <Text style={dynamicStyles.sectionTitle}>Description</Text>
+        <Text style={dynamicStyles.sectionContent}>{incident.description}</Text>
+      </View>
+
+      <View style={dynamicStyles.section}>
+        <Text style={dynamicStyles.sectionTitle}>Location</Text>
+        <View style={dynamicStyles.locationRow}>
+          <Ionicons
+            name="location-outline"
+            size={16}
+            color={colors.textTertiary}
+            style={{ marginTop: 2, marginRight: Spacing.sm }}
+          />
+          <Text style={[dynamicStyles.sectionContent, { flex: 1 }]}>
+            {incident.location.address}
           </Text>
-        </View>
-      </View>
-
-      <Text style={styles.title}>{incident.title}</Text>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Description</Text>
-        <Text style={styles.sectionContent}>{incident.description}</Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Location</Text>
-        <View style={styles.locationRow}>
-          <Ionicons name="location-outline" size={16} color="#666" style={{ marginTop: 2, marginRight: 8 }} />
-          <Text style={[styles.sectionContent, { flex: 1 }]}>{incident.location.address}</Text>
         </View>
         {incident.location.coordinates && (
-          <Text style={styles.coordinates}>
+          <Text style={dynamicStyles.coordinates}>
             Coordinates: {incident.location.coordinates.lat.toFixed(6)},{' '}
             {incident.location.coordinates.lng.toFixed(6)}
           </Text>
@@ -270,9 +294,9 @@ export const IncidentDetailScreen: React.FC<IncidentDetailScreenProps> = ({
       </View>
 
       {incident.verificationNotes && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Verification Notes</Text>
-          <Text style={styles.sectionContent}>
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>Verification Notes</Text>
+          <Text style={dynamicStyles.sectionContent}>
             {incident.verificationNotes}
           </Text>
         </View>
@@ -280,18 +304,18 @@ export const IncidentDetailScreen: React.FC<IncidentDetailScreenProps> = ({
 
       {/* Show images only when incident is verified */}
       {incident.status === IncidentStatus.VERIFIED && incident.images && incident.images.length > 0 && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Images ({incident.images.length})</Text>
-          <View style={styles.imagesGrid}>
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>Images ({incident.images.length})</Text>
+          <View style={dynamicStyles.imagesGrid}>
             {incident.images.map((imageUrl, index) => (
               <TouchableOpacity
                 key={index}
                 onPress={() => setSelectedImage(imageUrl)}
-                style={styles.imageContainer}
+                style={dynamicStyles.imageContainer}
               >
                 <Image
                   source={{ uri: imageUrl }}
-                  style={styles.thumbnail}
+                  style={dynamicStyles.thumbnail}
                   resizeMode="cover"
                 />
               </TouchableOpacity>
@@ -300,9 +324,9 @@ export const IncidentDetailScreen: React.FC<IncidentDetailScreenProps> = ({
         </View>
       )}
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Reported</Text>
-        <Text style={styles.sectionContent}>
+      <View style={dynamicStyles.section}>
+        <Text style={dynamicStyles.sectionTitle}>Reported</Text>
+        <Text style={dynamicStyles.sectionContent}>
           {incident.createdAt
             ? new Date(incident.createdAt).toLocaleString()
             : 'Unknown'}
@@ -310,18 +334,18 @@ export const IncidentDetailScreen: React.FC<IncidentDetailScreenProps> = ({
       </View>
 
       {incident.verifiedAt && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Verified</Text>
-          <Text style={styles.sectionContent}>
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>Verified</Text>
+          <Text style={dynamicStyles.sectionContent}>
             {new Date(incident.verifiedAt).toLocaleString()}
           </Text>
         </View>
       )}
 
       {incident.blockchainTxId && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Blockchain Transaction</Text>
-          <Text style={styles.blockchainText}>{incident.blockchainTxId}</Text>
+        <View style={dynamicStyles.section}>
+          <Text style={dynamicStyles.sectionTitle}>Blockchain Transaction</Text>
+          <Text style={dynamicStyles.blockchainText}>{incident.blockchainTxId}</Text>
         </View>
       )}
 
@@ -332,9 +356,9 @@ export const IncidentDetailScreen: React.FC<IncidentDetailScreenProps> = ({
         animationType="fade"
         onRequestClose={() => setSelectedImage(null)}
       >
-        <View style={styles.modalContainer}>
+        <View style={dynamicStyles.modalContainer}>
           <TouchableOpacity
-            style={styles.modalCloseButton}
+            style={dynamicStyles.modalCloseButton}
             onPress={() => setSelectedImage(null)}
           >
             <Ionicons name="close" size={22} color="#fff" />
@@ -342,7 +366,7 @@ export const IncidentDetailScreen: React.FC<IncidentDetailScreenProps> = ({
           {selectedImage && (
             <Image
               source={{ uri: selectedImage }}
-              style={styles.modalImage}
+              style={dynamicStyles.modalImage}
               resizeMode="contain"
             />
           )}
