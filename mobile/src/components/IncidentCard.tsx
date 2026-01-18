@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { Incident, IncidentType, IncidentStatus } from '../types';
 import { StatusBadge } from './StatusBadge';
 import { useTheme } from '../context/ThemeContext';
@@ -49,7 +49,7 @@ const getTimeAgo = (dateString?: string): string => {
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
   
-  if (diffInSeconds < 60) return `${diffInSeconds}m ago`;
+  if (diffInSeconds < 60) return 'Just now';
   if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
   if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
   return `${Math.floor(diffInSeconds / 86400)}d ago`;
@@ -65,23 +65,23 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     borderWidth: 1,
     borderColor: colors.glassBorder,
     // Subtle shadow/glow
-    shadowColor: colors.neonCyan,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
     elevation: 3,
   },
   cardContent: {
     flexDirection: 'row',
   },
   cardImage: {
-    width: 120,
-    minHeight: 140,
+    width: 112,
+    minHeight: 136,
     backgroundColor: colors.border,
   },
   contentSection: {
     flex: 1,
-    padding: Spacing.lg,
+    padding: Spacing.md,
     minWidth: 0, // Allow flex shrink
   },
   contentSectionFull: {
@@ -93,6 +93,10 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     alignItems: 'center',
     marginBottom: Spacing.sm,
     flexWrap: 'wrap',
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   typeContainer: {
     flexDirection: 'row',
@@ -111,26 +115,6 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     fontWeight: '700',
     letterSpacing: 0.5,
   },
-  verifiedBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.statusVerified,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.sm,
-    borderWidth: 1,
-    borderColor: colors.neonCyan + '40', // 40 = ~25% opacity
-  },
-  verifiedIcon: {
-    color: colors.neonCyan,
-    marginRight: Spacing.xs,
-  },
-  verifiedText: {
-    ...Typography.overline,
-    fontSize: 10,
-    color: colors.neonCyan,
-    fontWeight: '700',
-  },
   title: {
     ...Typography.h4,
     marginBottom: Spacing.xs,
@@ -141,13 +125,13 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     ...Typography.bodySmall,
     color: colors.textSecondary,
     marginBottom: Spacing.sm,
-    lineHeight: 20,
+    lineHeight: 19,
     flexWrap: 'wrap',
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     marginTop: Spacing.xs,
     flexWrap: 'wrap',
   },
@@ -190,6 +174,13 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     flex: 1,
     minWidth: 0, // Allow text wrapping
   },
+  detailsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexShrink: 0,
+    paddingVertical: 2,
+    paddingLeft: Spacing.sm,
+  },
   detailsLink: {
     ...Typography.bodySmall,
     color: colors.neonCyan,
@@ -220,9 +211,9 @@ export const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onPress })
   const hasImages = incident.images && incident.images.length > 0;
   const firstImage = hasImages ? incident.images[0] : null;
   const typeConfig = getIncidentTypeConfig(incident.type, colors);
-  const isVerified = incident.status === IncidentStatus.VERIFIED;
   const timeAgo = getTimeAgo(incident.createdAt);
   const dynamicStyles = createStyles(colors);
+  const locationText = incident.location?.address || 'Location not provided';
 
   return (
     <TouchableOpacity style={dynamicStyles.card} onPress={onPress} activeOpacity={0.7}>
@@ -251,17 +242,9 @@ export const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onPress })
                 {typeConfig.label}
               </Text>
             </View>
-            {isVerified && (
-              <View style={dynamicStyles.verifiedBadge}>
-                <Ionicons 
-                  name="checkmark-circle" 
-                  size={12} 
-                  color={colors.neonCyan}
-                  style={dynamicStyles.verifiedIcon}
-                />
-                <Text style={dynamicStyles.verifiedText}>VERIFIED</Text>
-              </View>
-            )}
+            <View style={dynamicStyles.headerRight}>
+              <StatusBadge status={incident.status} size="small" />
+            </View>
           </View>
 
           {/* Title */}
@@ -270,16 +253,16 @@ export const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onPress })
           </Text>
 
           {/* Description - Allow full text with proper wrapping */}
-          <Text style={dynamicStyles.description} numberOfLines={4}>
+          <Text style={dynamicStyles.description} numberOfLines={3}>
             {incident.description}
           </Text>
 
           {/* Footer - Better layout for metadata */}
           <View style={dynamicStyles.footer}>
             <View style={dynamicStyles.footerLeft}>
-              {/* Time and Location in separate rows for better readability */}
-              {timeAgo && (
-                <View style={dynamicStyles.metadataRow}>
+              {/* Time + Location */}
+              <View style={dynamicStyles.metadataRow}>
+                {timeAgo ? (
                   <View style={dynamicStyles.timeContainer}>
                     <Ionicons 
                       name="time-outline" 
@@ -289,21 +272,21 @@ export const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onPress })
                     />
                     <Text style={dynamicStyles.timeText}>{timeAgo}</Text>
                   </View>
+                ) : null}
+                <View style={dynamicStyles.locationContainer}>
+                  <Ionicons 
+                    name="location-outline" 
+                    size={14} 
+                    color={colors.textTertiary}
+                    style={dynamicStyles.locationIcon}
+                  />
+                  <Text style={dynamicStyles.location} numberOfLines={1}>
+                    {locationText}
+                  </Text>
                 </View>
-              )}
-              <View style={dynamicStyles.locationContainer}>
-                <Ionicons 
-                  name="location-outline" 
-                  size={14} 
-                  color={colors.textTertiary}
-                  style={dynamicStyles.locationIcon}
-                />
-                <Text style={dynamicStyles.location} numberOfLines={2}>
-                  {incident.location.address}
-                </Text>
               </View>
             </View>
-            <TouchableOpacity onPress={onPress} style={{ flexShrink: 0 }}>
+            <TouchableOpacity onPress={onPress} style={dynamicStyles.detailsButton} activeOpacity={0.8}>
               <Text style={dynamicStyles.detailsLink}>
                 {incident.type === IncidentType.STOLEN_VEHICLE ? 'View Map' : 'Details'}
               </Text>
@@ -311,13 +294,13 @@ export const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onPress })
                 name="chevron-forward" 
                 size={16} 
                 color={colors.neonCyan}
-                style={{ marginTop: -2 }}
+                style={{ marginLeft: 2 }}
               />
             </TouchableOpacity>
           </View>
 
           {/* Active Badge for Missing Person */}
-          {incident.type === IncidentType.MISSING_PERSON && isVerified && (
+          {incident.type === IncidentType.MISSING_PERSON && incident.status === IncidentStatus.VERIFIED && (
             <View style={dynamicStyles.activeBadge}>
               <Text style={dynamicStyles.activeText}>ACTIVE</Text>
             </View>

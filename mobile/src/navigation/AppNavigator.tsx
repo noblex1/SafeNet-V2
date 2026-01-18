@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
@@ -87,7 +87,8 @@ const ReportTabButton: React.FC<{ onPress: () => void }> = ({ onPress }) => {
 
 // Main Tab Navigator
 const MainTabs = () => {
-  const { colors } = useTheme();
+  const { colors, theme } = useTheme();
+  const tabBarBackgroundColor = theme === 'dark' ? colors.surfaceElevated : colors.surface;
   
   return (
     <Tab.Navigator
@@ -95,13 +96,21 @@ const MainTabs = () => {
         headerShown: false,
         tabBarActiveTintColor: colors.neonCyan,
         tabBarInactiveTintColor: colors.textTertiary,
+        sceneContainerStyle: {
+          backgroundColor: colors.background,
+        },
         tabBarStyle: {
           paddingBottom: Spacing.sm,
-          paddingTop: Spacing.sm,
-          height: 70,
-          backgroundColor: colors.glassBg,
+          paddingTop: Spacing.xs,
+          height: 68,
+          backgroundColor: tabBarBackgroundColor,
           borderTopWidth: 1,
-          borderTopColor: colors.glassBorder,
+          borderTopColor: colors.divider,
+          elevation: 10,
+          shadowColor: colors.shadow,
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.12,
+          shadowRadius: 12,
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -255,6 +264,23 @@ const createReportButtonStyles = (colors: ReturnType<typeof import('../theme/col
 // Root Navigator
 export const AppNavigator: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
+  const { colors, theme } = useTheme();
+
+  const navigationTheme = React.useMemo(
+    () => ({
+      dark: theme === 'dark',
+      colors: {
+        ...DefaultTheme.colors,
+        primary: colors.primary,
+        background: colors.background,
+        card: colors.surface,
+        text: colors.textPrimary,
+        border: colors.border,
+        notification: colors.neonCyan,
+      },
+    }),
+    [colors, theme]
+  );
 
   // Show loading spinner while checking auth
   if (isLoading) {
@@ -263,7 +289,7 @@ export const AppNavigator: React.FC = () => {
 
   // Render navigation
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={navigationTheme}>
       {isAuthenticated ? <MainStack /> : <AuthStack />}
     </NavigationContainer>
   );
