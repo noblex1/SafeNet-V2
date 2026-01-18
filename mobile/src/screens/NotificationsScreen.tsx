@@ -11,6 +11,7 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { Typography } from '../theme/typography';
 import { Spacing, BorderRadius } from '../theme/spacing';
@@ -64,16 +65,18 @@ export const NotificationsScreen: React.FC<NotificationsScreenProps> = ({
     ]);
   }, []);
 
-  const getNotificationIcon = (type: string) => {
+  const getNotificationIcon = (
+    type: Notification['type']
+  ): { name: keyof typeof Ionicons.glyphMap; color: string } => {
     switch (type) {
       case 'alert':
-        return '🚨';
+        return { name: 'alert-circle-outline', color: colors.error };
       case 'update':
-        return '✅';
+        return { name: 'checkmark-circle-outline', color: colors.neonCyan };
       case 'system':
-        return 'ℹ️';
+        return { name: 'information-circle-outline', color: colors.info };
       default:
-        return '📢';
+        return { name: 'megaphone-outline', color: colors.textSecondary };
     }
   };
 
@@ -90,21 +93,24 @@ export const NotificationsScreen: React.FC<NotificationsScreenProps> = ({
 
   const dynamicStyles = createStyles(colors);
 
-  const renderNotification = ({ item }: { item: Notification }) => (
-    <TouchableOpacity
-      style={[dynamicStyles.notificationItem, !item.read && dynamicStyles.unread]}
-    >
-      <View style={dynamicStyles.notificationIcon}>
-        <Text style={dynamicStyles.iconText}>{getNotificationIcon(item.type)}</Text>
-      </View>
+  const renderNotification = ({ item }: { item: Notification }) => {
+    const icon = getNotificationIcon(item.type);
+    return (
+      <TouchableOpacity
+        style={[dynamicStyles.notificationItem, !item.read && dynamicStyles.unread]}
+      >
+        <View style={dynamicStyles.notificationIcon}>
+          <Ionicons name={icon.name} size={22} color={icon.color} />
+        </View>
       <View style={dynamicStyles.notificationContent}>
         <Text style={dynamicStyles.notificationTitle}>{item.title}</Text>
         <Text style={dynamicStyles.notificationMessage}>{item.message}</Text>
         <Text style={dynamicStyles.notificationTime}>{getTimeAgo(item.createdAt)}</Text>
       </View>
       {!item.read && <View style={dynamicStyles.unreadDot} />}
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={dynamicStyles.container}>
@@ -126,7 +132,7 @@ export const NotificationsScreen: React.FC<NotificationsScreenProps> = ({
         contentContainerStyle={dynamicStyles.listContent}
         ListEmptyComponent={
           <View style={dynamicStyles.emptyContainer}>
-            <Text style={dynamicStyles.emptyIcon}>🔔</Text>
+            <Ionicons name="notifications-outline" size={56} color={colors.textTertiary} />
             <Text style={dynamicStyles.emptyText}>No notifications</Text>
             <Text style={dynamicStyles.emptySubtext}>
               You're all caught up! New alerts will appear here.
@@ -196,9 +202,7 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     alignItems: 'center',
     marginRight: Spacing.md,
   },
-  iconText: {
-    fontSize: 24,
-  },
+  iconText: {},
   notificationContent: {
     flex: 1,
   },
@@ -230,7 +234,6 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     alignItems: 'center',
   },
   emptyIcon: {
-    fontSize: 64,
     marginBottom: Spacing.lg,
   },
   emptyText: {

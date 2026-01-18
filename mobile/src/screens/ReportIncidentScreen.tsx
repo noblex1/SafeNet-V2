@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
 import { IncidentType, CreateIncidentData } from '../types';
@@ -116,7 +117,6 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     borderStyle: 'dashed',
   },
   locationButtonIcon: {
-    fontSize: 16,
     marginRight: Spacing.sm,
   },
   locationButtonText: {
@@ -145,7 +145,6 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     borderColor: colors.border,
   },
   addImageButtonIcon: {
-    fontSize: 16,
     marginRight: Spacing.sm,
   },
   addImageButtonText: {
@@ -190,12 +189,7 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     shadowRadius: 4,
     elevation: 3,
   },
-  removeImageText: {
-    color: colors.textInverse,
-    fontSize: 18,
-    fontWeight: 'bold',
-    lineHeight: 20,
-  },
+  removeImageText: {},
 });
 
 export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
@@ -439,7 +433,12 @@ export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
                 onPress={getCurrentLocation}
                 disabled={gettingLocation}
               >
-                <Text style={dynamicStyles.locationButtonIcon}>📍</Text>
+                <Ionicons
+                  name="location-outline"
+                  size={18}
+                  color={colors.neonCyan}
+                  style={dynamicStyles.locationButtonIcon}
+                />
                 <Text style={dynamicStyles.locationButtonText}>
                   {gettingLocation ? 'Getting Location...' : 'Use Current Location'}
                 </Text>
@@ -458,7 +457,12 @@ export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
                 onPress={pickImages}
                 disabled={selectedImages.length >= 5}
               >
-                <Text style={dynamicStyles.addImageButtonIcon}>📷</Text>
+                <Ionicons
+                  name="camera-outline"
+                  size={18}
+                  color={colors.neonCyan}
+                  style={dynamicStyles.addImageButtonIcon}
+                />
                 <Text style={dynamicStyles.addImageButtonText}>
                   {selectedImages.length >= 5 ? 'Maximum 5 images' : 'Add Images'}
                 </Text>
@@ -473,7 +477,7 @@ export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
                         style={dynamicStyles.removeImageButton}
                         onPress={() => removeImage(index)}
                       >
-                        <Text style={dynamicStyles.removeImageText}>×</Text>
+                        <Ionicons name="close" size={18} color={colors.textInverse} />
                       </TouchableOpacity>
                     </View>
                   ))}

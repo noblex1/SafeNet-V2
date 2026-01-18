@@ -11,6 +11,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { Typography } from '../theme/typography';
 import { Spacing, BorderRadius } from '../theme/spacing';
@@ -58,28 +59,38 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({
             style={dynamicStyles.actionCard}
             onPress={() => navigation.navigate('ReportIncident')}
           >
-            <Text style={dynamicStyles.actionIcon}>📝</Text>
+            <Ionicons
+              name="create-outline"
+              size={28}
+              color={colors.neonCyan}
+              style={dynamicStyles.actionIcon}
+            />
             <View style={dynamicStyles.actionContent}>
               <Text style={dynamicStyles.actionTitle}>Report an Incident</Text>
               <Text style={dynamicStyles.actionDescription}>
                 Help keep your community safe
               </Text>
             </View>
-            <Text style={dynamicStyles.actionArrow}>›</Text>
+            <Ionicons name="chevron-forward" size={22} color={colors.textTertiary} />
           </TouchableOpacity>
 
           <TouchableOpacity
             style={dynamicStyles.actionCard}
             onPress={() => navigation.navigate('Home')}
           >
-            <Text style={dynamicStyles.actionIcon}>📋</Text>
+            <Ionicons
+              name="document-text-outline"
+              size={28}
+              color={colors.neonCyan}
+              style={dynamicStyles.actionIcon}
+            />
             <View style={dynamicStyles.actionContent}>
               <Text style={dynamicStyles.actionTitle}>View All Alerts</Text>
               <Text style={dynamicStyles.actionDescription}>
                 See verified incidents in your area
               </Text>
             </View>
-            <Text style={dynamicStyles.actionArrow}>›</Text>
+            <Ionicons name="chevron-forward" size={22} color={colors.textTertiary} />
           </TouchableOpacity>
         </View>
 
@@ -100,7 +111,7 @@ export const CommunityScreen: React.FC<CommunityScreenProps> = ({
         <View style={dynamicStyles.section}>
           <Text style={dynamicStyles.sectionTitle}>Safety Tips</Text>
           <View style={dynamicStyles.tipCard}>
-            <Text style={dynamicStyles.tipIcon}>💡</Text>
+            <Ionicons name="bulb-outline" size={22} color={colors.neonCyan} style={dynamicStyles.tipIcon} />
             <Text style={dynamicStyles.tipText}>
               Always verify information before sharing. Report suspicious
               activities immediately to authorities.
@@ -179,7 +190,6 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     borderColor: colors.border,
   },
   actionIcon: {
-    fontSize: 32,
     marginRight: Spacing.md,
   },
   actionContent: {
@@ -195,10 +205,7 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     ...Typography.bodySmall,
     color: colors.textSecondary,
   },
-  actionArrow: {
-    fontSize: 24,
-    color: colors.textTertiary,
-  },
+  actionArrow: {},
   guidelineCard: {
     backgroundColor: colors.primaryLight + '20',
     borderRadius: BorderRadius.md,
@@ -220,7 +227,6 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     borderColor: colors.border,
   },
   tipIcon: {
-    fontSize: 24,
     marginRight: Spacing.md,
   },
   tipText: {

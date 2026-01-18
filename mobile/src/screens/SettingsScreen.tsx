@@ -13,6 +13,7 @@ import {
   Switch,
   Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { getColors } from '../theme/colors';
@@ -145,7 +146,6 @@ const createStyles = (colors: ReturnType<typeof getColors>) => StyleSheet.create
     gap: Spacing.sm,
   },
   settingIcon: {
-    fontSize: 24,
     marginRight: Spacing.md,
     width: 30,
   },
@@ -210,21 +210,26 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   };
 
   const SettingItem: React.FC<{
-    icon: string;
+    iconName: keyof typeof Ionicons.glyphMap;
     title: string;
     subtitle?: string;
     value?: string;
     onPress?: () => void;
     rightComponent?: React.ReactNode;
     iconColor?: string;
-  }> = ({ icon, title, subtitle, value, onPress, rightComponent, iconColor }) => (
+  }> = ({ iconName, title, subtitle, value, onPress, rightComponent, iconColor }) => (
     <TouchableOpacity
       style={dynamicStyles.settingItem}
       onPress={onPress}
       disabled={!onPress}
     >
       <View style={dynamicStyles.settingLeft}>
-        <Text style={[dynamicStyles.settingIcon, iconColor && { color: iconColor }]}>{icon}</Text>
+        <Ionicons
+          name={iconName}
+          size={24}
+          color={iconColor || colors.textPrimary}
+          style={dynamicStyles.settingIcon}
+        />
         <View style={dynamicStyles.settingTextContainer}>
           <Text style={dynamicStyles.settingTitle}>{title}</Text>
           {subtitle && <Text style={dynamicStyles.settingSubtitle}>{subtitle}</Text>}
@@ -233,7 +238,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
       <View style={dynamicStyles.settingRight}>
         {value && <Text style={dynamicStyles.settingValue}>{value}</Text>}
         {rightComponent}
-        {onPress && <Text style={dynamicStyles.settingArrow}>›</Text>}
+        {onPress && <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />}
       </View>
     </TouchableOpacity>
   );
@@ -249,7 +254,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           <View style={dynamicStyles.profileCard}>
           <View style={dynamicStyles.avatarContainer}>
             <View style={dynamicStyles.avatar}>
-              <Text style={dynamicStyles.avatarIcon}>📱</Text>
+              <Ionicons name="person-outline" size={26} color="#0a0a0a" />
             </View>
             <View style={dynamicStyles.onlineIndicator} />
           </View>
@@ -270,7 +275,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           
           <View style={dynamicStyles.sectionCard}>
             <SettingItem
-              icon="📢"
+              iconName="alert-circle-outline"
               title="Emergency Alerts"
               subtitle="High priority safety warnings"
               iconColor={colors.error}
@@ -287,7 +292,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             <View style={dynamicStyles.divider} />
             
             <SettingItem
-              icon="🔔"
+              iconName="notifications-outline"
               title="Community Updates"
               subtitle="Local reports and news"
               iconColor={colors.info}
@@ -304,7 +309,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             <View style={dynamicStyles.divider} />
             
             <SettingItem
-              icon="💬"
+              iconName="chatbubble-ellipses-outline"
               title="SMS Fallback"
               subtitle="Receive alerts via SMS if offline"
               iconColor="#FF9500"
@@ -326,7 +331,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           
           <View style={dynamicStyles.sectionCard}>
             <SettingItem
-              icon="🌐"
+              iconName="globe-outline"
               title="Language"
               value={language}
               onPress={() => {
@@ -337,7 +342,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             <View style={dynamicStyles.divider} />
             
             <SettingItem
-              icon="📍"
+              iconName="location-outline"
               title="Location Permissions"
               onPress={() => {
                 Alert.alert('Location Permissions', 'Manage location permissions in device settings');
@@ -347,7 +352,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             <View style={dynamicStyles.divider} />
             
             <SettingItem
-              icon={theme === 'dark' ? '🌙' : '☀️'}
+              iconName={theme === 'dark' ? 'moon-outline' : 'sunny-outline'}
               title="Dark Mode"
               rightComponent={
                 <Switch
@@ -367,7 +372,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           
           <View style={dynamicStyles.sectionCard}>
             <SettingItem
-              icon="ℹ️"
+              iconName="information-circle-outline"
               title="About SafeNet"
               onPress={() => {
                 Alert.alert(
@@ -380,7 +385,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             <View style={dynamicStyles.divider} />
             
             <SettingItem
-              icon="🔒"
+              iconName="lock-closed-outline"
               title="Privacy Policy"
               onPress={() => {
                 Alert.alert('Privacy Policy', 'Privacy policy coming soon!');
@@ -390,7 +395,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             <View style={dynamicStyles.divider} />
             
             <SettingItem
-              icon="📱"
+              iconName="phone-portrait-outline"
               title="Version"
               value="v1.2.4 (Beta)"
             />

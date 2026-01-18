@@ -15,6 +15,7 @@ import {
   Modal,
   Dimensions,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Incident, IncidentType, IncidentStatus } from '../types';
 import { incidentService } from '../services/incidentService';
 import { apiService } from '../services/api';
@@ -121,6 +122,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#000',
     lineHeight: 24,
+  },
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
   },
   coordinates: {
     fontSize: 12,
@@ -252,9 +257,10 @@ export const IncidentDetailScreen: React.FC<IncidentDetailScreenProps> = ({
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Location</Text>
-        <Text style={styles.sectionContent}>
-          📍 {incident.location.address}
-        </Text>
+        <View style={styles.locationRow}>
+          <Ionicons name="location-outline" size={16} color="#666" style={{ marginTop: 2, marginRight: 8 }} />
+          <Text style={[styles.sectionContent, { flex: 1 }]}>{incident.location.address}</Text>
+        </View>
         {incident.location.coordinates && (
           <Text style={styles.coordinates}>
             Coordinates: {incident.location.coordinates.lat.toFixed(6)},{' '}
@@ -331,7 +337,7 @@ export const IncidentDetailScreen: React.FC<IncidentDetailScreenProps> = ({
             style={styles.modalCloseButton}
             onPress={() => setSelectedImage(null)}
           >
-            <Text style={styles.modalCloseText}>✕</Text>
+            <Ionicons name="close" size={22} color="#fff" />
           </TouchableOpacity>
           {selectedImage && (
             <Image

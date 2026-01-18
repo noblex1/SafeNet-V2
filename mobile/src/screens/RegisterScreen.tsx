@@ -13,6 +13,7 @@ import {
   Platform,
   Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
@@ -200,7 +201,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
           {/* Logo/Icon Section */}
           <View style={dynamicStyles.logoContainer}>
             <View style={dynamicStyles.logoCircle}>
-              <Text style={dynamicStyles.logoText}>🛡️</Text>
+              <Ionicons name="shield" size={40} color="#0a0a0a" />
             </View>
           </View>
 

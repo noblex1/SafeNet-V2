@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { Incident } from '../types';
 import { incidentService } from '../services/incidentService';
@@ -162,7 +163,7 @@ export const MyReportsScreen: React.FC<MyReportsScreenProps> = ({ navigation }) 
         ListEmptyComponent={
           <View style={dynamicStyles.emptyContainer}>
             <View style={dynamicStyles.emptyIconContainer}>
-              <Text style={dynamicStyles.emptyIcon}>📋</Text>
+              <Ionicons name="document-text-outline" size={40} color={colors.neonCyan} />
             </View>
             <Text style={dynamicStyles.emptyTitle}>No Reports Yet</Text>
             <Text style={dynamicStyles.emptyText}>
@@ -249,7 +250,7 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     marginBottom: Spacing.xl,
   },
   emptyIcon: {
-    fontSize: 40,
+    // kept for compatibility if referenced elsewhere
   },
   emptyTitle: {
     ...Typography.h3,

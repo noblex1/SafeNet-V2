@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Typography } from '../theme/typography';
@@ -78,18 +79,28 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             style={dynamicStyles.menuItem}
             onPress={() => navigation.navigate('MyReports')}
           >
-            <Text style={dynamicStyles.menuIcon}>📋</Text>
+            <Ionicons
+              name="document-text-outline"
+              size={24}
+              color={colors.textPrimary}
+              style={dynamicStyles.menuIcon}
+            />
             <Text style={dynamicStyles.menuLabel}>My Reports</Text>
-            <Text style={dynamicStyles.menuArrow}>›</Text>
+            <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
           </TouchableOpacity>
 
           <TouchableOpacity
             style={dynamicStyles.menuItem}
             onPress={() => navigation.navigate('Settings')}
           >
-            <Text style={dynamicStyles.menuIcon}>⚙️</Text>
+            <Ionicons
+              name="settings-outline"
+              size={24}
+              color={colors.textPrimary}
+              style={dynamicStyles.menuIcon}
+            />
             <Text style={dynamicStyles.menuLabel}>Settings</Text>
-            <Text style={dynamicStyles.menuArrow}>›</Text>
+            <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -101,9 +112,14 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               )
             }
           >
-            <Text style={dynamicStyles.menuIcon}>❓</Text>
+            <Ionicons
+              name="help-circle-outline"
+              size={24}
+              color={colors.textPrimary}
+              style={dynamicStyles.menuIcon}
+            />
             <Text style={dynamicStyles.menuLabel}>Help & Support</Text>
-            <Text style={dynamicStyles.menuArrow}>›</Text>
+            <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -115,9 +131,14 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               )
             }
           >
-            <Text style={dynamicStyles.menuIcon}>ℹ️</Text>
+            <Ionicons
+              name="information-circle-outline"
+              size={24}
+              color={colors.textPrimary}
+              style={dynamicStyles.menuIcon}
+            />
             <Text style={dynamicStyles.menuLabel}>About SafeNet</Text>
-            <Text style={dynamicStyles.menuArrow}>›</Text>
+            <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
           </TouchableOpacity>
         </View>
 
@@ -221,7 +242,6 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     borderBottomColor: colors.border,
   },
   menuIcon: {
-    fontSize: 24,
     marginRight: Spacing.md,
     width: 30,
   },

@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { IncidentStatus, IncidentType } from '../types';
 import { useTheme } from '../context/ThemeContext';
 import { Typography } from '../theme/typography';
@@ -181,7 +182,7 @@ export const FilterModal: React.FC<FilterModalProps> = ({
           <View style={dynamicStyles.header}>
             <Text style={dynamicStyles.title}>Filter Alerts</Text>
             <TouchableOpacity onPress={onClose}>
-              <Text style={dynamicStyles.closeButton}>✕</Text>
+              <Ionicons name="close" size={24} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
