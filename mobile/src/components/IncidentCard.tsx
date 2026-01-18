@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Incident, IncidentType, IncidentStatus } from '../types';
 import { StatusBadge } from './StatusBadge';
 import { useTheme } from '../context/ThemeContext';
@@ -17,29 +18,29 @@ interface IncidentCardProps {
 }
 
 const getIncidentTypeConfig = (type: IncidentType, colors: ReturnType<typeof import('../theme/colors').getColors>) => {
-  const configs: Record<IncidentType, { label: string; icon: string; color: string }> = {
+  const configs: Record<IncidentType, { label: string; iconName: keyof typeof Ionicons.glyphMap; color: string }> = {
     [IncidentType.MISSING_PERSON]: {
       label: 'MISSING PERSON',
-      icon: '🔍',
+      iconName: 'search-outline',
       color: colors.success,
     },
     [IncidentType.KIDNAPPING]: {
       label: 'KIDNAPPING',
-      icon: '🚨',
+      iconName: 'alert-circle-outline',
       color: colors.error,
     },
     [IncidentType.STOLEN_VEHICLE]: {
       label: 'TRAFFIC INCIDENT',
-      icon: '🚧',
+      iconName: 'car-outline',
       color: colors.warning,
     },
     [IncidentType.NATURAL_DISASTER]: {
       label: 'URGENT DISASTER',
-      icon: '🏠',
+      iconName: 'warning-outline',
       color: colors.error,
     },
   };
-  return configs[type] || { label: type, icon: '📋', color: colors.textSecondary };
+  return configs[type] || { label: type, iconName: 'document-text-outline', color: colors.textSecondary };
 };
 
 const getTimeAgo = (dateString?: string): string => {
@@ -56,30 +57,32 @@ const getTimeAgo = (dateString?: string): string => {
 
 const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
   card: {
-    backgroundColor: colors.surface,
-    borderRadius: BorderRadius.lg,
+    // Glassmorphism effect
+    backgroundColor: colors.glassBg,
+    borderRadius: BorderRadius.xl, // Rounded-2xl (20px)
     marginBottom: Spacing.md,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 2,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: colors.glassBorder,
+    // Subtle shadow/glow
+    shadowColor: colors.neonCyan,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
   },
   cardContent: {
     flexDirection: 'row',
   },
   cardImage: {
     width: 120,
-    height: '100%',
     minHeight: 140,
     backgroundColor: colors.border,
   },
   contentSection: {
     flex: 1,
     padding: Spacing.lg,
+    minWidth: 0, // Allow flex shrink
   },
   contentSectionFull: {
     width: '100%',
@@ -100,7 +103,6 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     marginRight: Spacing.sm,
   },
   typeIcon: {
-    fontSize: 14,
     marginRight: Spacing.xs,
   },
   typeText: {
@@ -116,50 +118,56 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    borderColor: colors.neonCyan + '40', // 40 = ~25% opacity
   },
   verifiedIcon: {
-    fontSize: 12,
-    color: colors.success,
+    color: colors.neonCyan,
     marginRight: Spacing.xs,
-    fontWeight: 'bold',
   },
   verifiedText: {
     ...Typography.overline,
     fontSize: 10,
-    color: colors.success,
+    color: colors.neonCyan,
     fontWeight: '700',
   },
   title: {
     ...Typography.h4,
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.xs,
     color: colors.textPrimary,
     fontWeight: '700',
   },
   description: {
     ...Typography.bodySmall,
     color: colors.textSecondary,
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.sm,
     lineHeight: 20,
+    flexWrap: 'wrap',
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     marginTop: Spacing.xs,
+    flexWrap: 'wrap',
   },
   footerLeft: {
     flex: 1,
+    marginRight: Spacing.sm,
+    minWidth: 0, // Allow flex shrink
+  },
+  metadataRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: Spacing.sm,
+    marginBottom: Spacing.xs,
+    flexWrap: 'wrap',
   },
   timeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: Spacing.sm,
+    marginRight: Spacing.md,
   },
   timeIcon: {
-    fontSize: 12,
     marginRight: 4,
   },
   timeText: {
@@ -170,32 +178,39 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
+    minWidth: 0, // Allow flex shrink
   },
   locationIcon: {
-    fontSize: 12,
     marginRight: 4,
+    flexShrink: 0,
   },
   location: {
     ...Typography.caption,
     color: colors.textTertiary,
     flex: 1,
+    minWidth: 0, // Allow text wrapping
   },
   detailsLink: {
     ...Typography.bodySmall,
-    color: colors.primary,
+    color: colors.neonCyan,
     fontWeight: '600',
   },
   activeBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: colors.success,
+    backgroundColor: colors.neonCyan,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.full,
     marginTop: Spacing.sm,
+    shadowColor: colors.neonCyan,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+    elevation: 5,
   },
   activeText: {
     ...Typography.caption,
-    color: colors.textInverse,
+    color: '#0a0a0a', // Dark text on neon
     fontWeight: '700',
   },
 });
@@ -226,14 +241,24 @@ export const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onPress })
           {/* Header with Type and Verified Badge */}
           <View style={dynamicStyles.header}>
             <View style={[dynamicStyles.typeContainer, { backgroundColor: typeConfig.color + '15' }]}>
-              <Text style={dynamicStyles.typeIcon}>{typeConfig.icon}</Text>
+              <Ionicons 
+                name={typeConfig.iconName} 
+                size={14} 
+                color={typeConfig.color}
+                style={dynamicStyles.typeIcon}
+              />
               <Text style={[dynamicStyles.typeText, { color: typeConfig.color }]}>
                 {typeConfig.label}
               </Text>
             </View>
             {isVerified && (
               <View style={dynamicStyles.verifiedBadge}>
-                <Text style={dynamicStyles.verifiedIcon}>✓</Text>
+                <Ionicons 
+                  name="checkmark-circle" 
+                  size={12} 
+                  color={colors.neonCyan}
+                  style={dynamicStyles.verifiedIcon}
+                />
                 <Text style={dynamicStyles.verifiedText}>VERIFIED</Text>
               </View>
             )}
@@ -244,31 +269,50 @@ export const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onPress })
             {incident.title}
           </Text>
 
-          {/* Description */}
-          <Text style={dynamicStyles.description} numberOfLines={3}>
+          {/* Description - Allow full text with proper wrapping */}
+          <Text style={dynamicStyles.description} numberOfLines={4}>
             {incident.description}
           </Text>
 
-          {/* Footer */}
+          {/* Footer - Better layout for metadata */}
           <View style={dynamicStyles.footer}>
             <View style={dynamicStyles.footerLeft}>
+              {/* Time and Location in separate rows for better readability */}
               {timeAgo && (
-                <View style={dynamicStyles.timeContainer}>
-                  <Text style={dynamicStyles.timeIcon}>🕐</Text>
-                  <Text style={dynamicStyles.timeText}>{timeAgo}</Text>
+                <View style={dynamicStyles.metadataRow}>
+                  <View style={dynamicStyles.timeContainer}>
+                    <Ionicons 
+                      name="time-outline" 
+                      size={14} 
+                      color={colors.textTertiary}
+                      style={dynamicStyles.timeIcon}
+                    />
+                    <Text style={dynamicStyles.timeText}>{timeAgo}</Text>
+                  </View>
                 </View>
               )}
               <View style={dynamicStyles.locationContainer}>
-                <Text style={dynamicStyles.locationIcon}>📍</Text>
-                <Text style={dynamicStyles.location} numberOfLines={1}>
+                <Ionicons 
+                  name="location-outline" 
+                  size={14} 
+                  color={colors.textTertiary}
+                  style={dynamicStyles.locationIcon}
+                />
+                <Text style={dynamicStyles.location} numberOfLines={2}>
                   {incident.location.address}
                 </Text>
               </View>
             </View>
-            <TouchableOpacity onPress={onPress}>
+            <TouchableOpacity onPress={onPress} style={{ flexShrink: 0 }}>
               <Text style={dynamicStyles.detailsLink}>
-                {incident.type === IncidentType.STOLEN_VEHICLE ? 'View Map' : 'Details >'}
+                {incident.type === IncidentType.STOLEN_VEHICLE ? 'View Map' : 'Details'}
               </Text>
+              <Ionicons 
+                name="chevron-forward" 
+                size={16} 
+                color={colors.neonCyan}
+                style={{ marginTop: -2 }}
+              />
             </TouchableOpacity>
           </View>
 

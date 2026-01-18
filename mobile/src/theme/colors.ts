@@ -1,85 +1,112 @@
 /**
  * SafeNet Color Palette
- * Calm, trustworthy, safety-oriented colors
- * Supports both light and dark themes
+ * Dark, futuristic cyberpunk/Web3 aesthetic
+ * Glassmorphism with neon cyan accents
  */
 
 export type Theme = 'light' | 'dark';
 
+// Cyberpunk color constants
+const NEON_CYAN = '#00f5ff';
+const NEON_BLUE = '#0066cc';
+const ELECTRIC_PURPLE = '#6366f1';
+const DARK_SLATE_BASE = 'hsl(220, 27%, 8%)'; // HSL: 220° 27% 8%
+const DARK_SLATE_800 = 'hsl(220, 27%, 12%)';
+const DARK_SLATE_900 = 'hsl(220, 27%, 10%)';
+const NEAR_WHITE = 'hsl(210, 20%, 98%)';
+
 const LightColors = {
-  // Primary - Calm safety green/teal
-  primary: '#10B981', // Emerald green - trustworthy, safe
-  primaryDark: '#059669',
-  primaryLight: '#D1FAE5',
+  // Primary - Neon cyan for light mode (darker variant)
+  primary: '#00a8b5', // Darker cyan for light backgrounds
+  primaryDark: '#008a96',
+  primaryLight: '#00e5ff',
   
   // Status Colors
-  success: '#10B981', // Verified
-  warning: '#F59E0B', // Pending - amber
-  error: '#EF4444', // Critical/False
-  info: '#3B82F6', // Resolved - blue
+  success: '#00f5ff', // Neon cyan - Verified
+  warning: '#fbbf24', // Amber - Pending
+  error: '#ef4444', // Red - Critical/False
+  info: '#0066cc', // Electric blue - Resolved
   
-  // Backgrounds
-  background: '#F9FAFB', // Light neutral
-  surface: '#FFFFFF',
-  surfaceElevated: '#FFFFFF',
+  // Backgrounds - Light mode uses lighter slate
+  background: '#f1f5f9', // Light slate
+  surface: '#ffffff',
+  surfaceElevated: '#ffffff',
   
   // Text
-  textPrimary: '#111827', // Dark gray
-  textSecondary: '#6B7280', // Medium gray
-  textTertiary: '#9CA3AF', // Light gray
-  textInverse: '#FFFFFF',
+  textPrimary: '#0f172a', // Dark slate
+  textSecondary: '#475569', // Medium slate
+  textTertiary: '#94a3b8', // Light slate
+  textInverse: '#ffffff',
   
   // Borders & Dividers
-  border: '#E5E7EB',
-  divider: '#E5E7EB',
+  border: '#e2e8f0',
+  divider: '#e2e8f0',
   
   // Shadows
   shadow: 'rgba(0, 0, 0, 0.1)',
   shadowDark: 'rgba(0, 0, 0, 0.15)',
   
+  // Glassmorphism (for light mode - subtle)
+  glassBg: 'rgba(255, 255, 255, 0.7)',
+  glassBorder: 'rgba(255, 255, 255, 0.3)',
+  
+  // Neon glow colors
+  neonCyan: NEON_CYAN,
+  neonBlue: NEON_BLUE,
+  neonPurple: ELECTRIC_PURPLE,
+  
   // Status Badge Backgrounds (with opacity)
-  statusPending: '#FEF3C7', // Amber light
-  statusVerified: '#D1FAE5', // Green light
-  statusFalse: '#FEE2E2', // Red light
-  statusResolved: '#DBEAFE', // Blue light
+  statusPending: 'rgba(251, 191, 36, 0.15)',
+  statusVerified: 'rgba(0, 245, 255, 0.15)',
+  statusFalse: 'rgba(239, 68, 68, 0.15)',
+  statusResolved: 'rgba(0, 102, 204, 0.15)',
 } as const;
 
 const DarkColors = {
-  // Primary - Calm safety green/teal (lighter for dark mode)
-  primary: '#34D399', // Lighter emerald green for dark mode
-  primaryDark: '#10B981',
-  primaryLight: '#064E3B',
+  // Primary - Neon cyan for dark mode
+  primary: NEON_CYAN, // #00f5ff
+  primaryDark: '#00a8b5',
+  primaryLight: '#33ffff',
   
-  // Status Colors (adjusted for dark mode)
-  success: '#34D399',
-  warning: '#FBBF24', // Lighter amber
-  error: '#F87171', // Softer red
-  info: '#60A5FA', // Lighter blue
+  // Status Colors
+  success: NEON_CYAN, // Neon cyan - Verified
+  warning: '#fbbf24', // Amber - Pending
+  error: '#f87171', // Softer red
+  info: '#60a5fa', // Lighter blue
   
-  // Backgrounds
-  background: '#111827', // Dark gray
-  surface: '#1F2937', // Slightly lighter dark gray
-  surfaceElevated: '#374151', // Even lighter for elevated surfaces
+  // Backgrounds - Dark slate base
+  background: DARK_SLATE_BASE, // hsl(220, 27%, 8%)
+  surface: DARK_SLATE_800, // hsl(220, 27%, 12%)
+  surfaceElevated: DARK_SLATE_900, // hsl(220, 27%, 10%)
   
-  // Text (inverted for dark mode)
-  textPrimary: '#F9FAFB', // Light gray
-  textSecondary: '#D1D5DB', // Medium light gray
-  textTertiary: '#9CA3AF', // Same as light mode
-  textInverse: '#111827', // Dark for inverse
+  // Text - Near white hierarchy
+  textPrimary: NEAR_WHITE, // hsl(210, 20%, 98%)
+  textSecondary: 'hsl(210, 20%, 80%)', // Gray-300
+  textTertiary: 'hsl(210, 20%, 65%)', // Gray-400
+  textInverse: DARK_SLATE_BASE,
   
-  // Borders & Dividers (lighter in dark mode)
-  border: '#374151',
-  divider: '#374151',
+  // Borders & Dividers
+  border: 'rgba(255, 255, 255, 0.1)', // border-white/10
+  divider: 'rgba(255, 255, 255, 0.1)',
   
-  // Shadows (lighter shadows in dark mode)
-  shadow: 'rgba(0, 0, 0, 0.3)',
-  shadowDark: 'rgba(0, 0, 0, 0.5)',
+  // Shadows - Cyan glow
+  shadow: 'rgba(0, 245, 255, 0.2)',
+  shadowDark: 'rgba(0, 245, 255, 0.4)',
   
-  // Status Badge Backgrounds (darker for dark mode)
-  statusPending: '#78350F', // Dark amber
-  statusVerified: '#064E3B', // Dark green
-  statusFalse: '#7F1D1D', // Dark red
-  statusResolved: '#1E3A8A', // Dark blue
+  // Glassmorphism - Dark mode signature
+  glassBg: 'rgba(255, 255, 255, 0.05)', // bg-white/5
+  glassBorder: 'rgba(255, 255, 255, 0.1)', // border-white/10
+  
+  // Neon glow colors
+  neonCyan: NEON_CYAN,
+  neonBlue: NEON_BLUE,
+  neonPurple: ELECTRIC_PURPLE,
+  
+  // Status Badge Backgrounds (darker for dark mode with neon tints)
+  statusPending: 'rgba(251, 191, 36, 0.15)',
+  statusVerified: 'rgba(0, 245, 255, 0.15)',
+  statusFalse: 'rgba(248, 113, 113, 0.15)',
+  statusResolved: 'rgba(96, 165, 250, 0.15)',
 } as const;
 
 export const getColors = (theme: Theme) => {

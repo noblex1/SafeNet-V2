@@ -29,24 +29,39 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
   button: {
     paddingVertical: Spacing.md + 2,
     paddingHorizontal: Spacing.xxl,
-    borderRadius: BorderRadius.md,
+    borderRadius: BorderRadius.lg, // Rounded-2xl equivalent (16px)
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 52,
+    overflow: 'hidden',
   },
   primary: {
-    backgroundColor: colors.primary,
+    // Gradient-like effect using background color with glow
+    backgroundColor: colors.neonCyan,
+    shadowColor: colors.neonCyan,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 15,
+    elevation: 8,
   },
   secondary: {
-    backgroundColor: colors.success,
+    // Glass-effect with neon-cyan border
+    backgroundColor: colors.glassBg,
+    borderWidth: 1.5,
+    borderColor: colors.neonCyan,
   },
   outline: {
     backgroundColor: 'transparent',
     borderWidth: 1.5,
-    borderColor: colors.primary,
+    borderColor: colors.neonCyan,
   },
   danger: {
     backgroundColor: colors.error,
+    shadowColor: colors.error,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 6,
   },
   disabled: {
     opacity: 0.5,
@@ -56,13 +71,13 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     fontWeight: '600',
   },
   primaryText: {
-    color: colors.textInverse,
+    color: '#0a0a0a', // Dark text on neon cyan
   },
   secondaryText: {
-    color: colors.textInverse,
+    color: colors.neonCyan,
   },
   outlineText: {
-    color: colors.primary,
+    color: colors.neonCyan,
   },
   dangerText: {
     color: colors.textInverse,

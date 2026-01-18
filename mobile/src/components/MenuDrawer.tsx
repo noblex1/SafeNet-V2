@@ -13,6 +13,7 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Typography } from '../theme/typography';
@@ -26,7 +27,7 @@ interface MenuDrawerProps {
 
 interface MenuItem {
   label: string;
-  icon: string;
+  iconName: keyof typeof Ionicons.glyphMap;
   onPress: () => void;
   danger?: boolean;
 }
@@ -49,18 +50,20 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     bottom: 0,
     width: '75%',
     maxWidth: 320,
-    backgroundColor: colors.surface,
-    shadowColor: colors.shadowDark,
+    backgroundColor: colors.glassBg,
+    borderLeftWidth: 1,
+    borderLeftColor: colors.glassBorder,
+    shadowColor: colors.neonCyan,
     shadowOffset: { width: -2, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 10,
   },
   header: {
     padding: Spacing.lg,
     paddingTop: Spacing.xxl + Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.glassBorder,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
@@ -74,10 +77,15 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.neonCyan,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.md,
+    shadowColor: colors.neonCyan,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 4,
   },
   avatarText: {
     ...Typography.h3,
@@ -100,11 +108,6 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
   closeButton: {
     padding: Spacing.xs,
   },
-  closeIcon: {
-    fontSize: 24,
-    color: colors.textSecondary,
-    fontWeight: '300',
-  },
   menu: {
     flex: 1,
   },
@@ -113,17 +116,16 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     alignItems: 'center',
     padding: Spacing.lg,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.glassBorder,
   },
   menuItemDanger: {
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: colors.glassBorder,
     marginTop: Spacing.md,
   },
   menuIcon: {
-    fontSize: 24,
     marginRight: Spacing.md,
-    width: 30,
+    width: 24,
   },
   menuLabel: {
     ...Typography.bodyMedium,
@@ -168,7 +170,7 @@ export const MenuDrawer: React.FC<MenuDrawerProps> = ({
   const menuItems: MenuItem[] = [
     {
       label: 'My Reports',
-      icon: '📋',
+      iconName: 'document-text-outline',
       onPress: () => {
         navigation.navigate('MyReports');
         onClose();
@@ -176,7 +178,7 @@ export const MenuDrawer: React.FC<MenuDrawerProps> = ({
     },
     {
       label: 'Settings',
-      icon: '⚙️',
+      iconName: 'settings-outline',
       onPress: () => {
         navigation.navigate('Settings');
         onClose();
@@ -184,7 +186,7 @@ export const MenuDrawer: React.FC<MenuDrawerProps> = ({
     },
     {
       label: 'Help & Support',
-      icon: '❓',
+      iconName: 'help-circle-outline',
       onPress: () => {
         Alert.alert('Help & Support', 'Contact support at support@safenet.app');
         onClose();
@@ -192,7 +194,7 @@ export const MenuDrawer: React.FC<MenuDrawerProps> = ({
     },
     {
       label: 'About SafeNet',
-      icon: 'ℹ️',
+      iconName: 'information-circle-outline',
       onPress: () => {
         Alert.alert(
           'About SafeNet',
@@ -203,7 +205,7 @@ export const MenuDrawer: React.FC<MenuDrawerProps> = ({
     },
     {
       label: 'Logout',
-      icon: '🚪',
+      iconName: 'log-out-outline',
       onPress: handleLogout,
       danger: true,
     },
@@ -240,7 +242,7 @@ export const MenuDrawer: React.FC<MenuDrawerProps> = ({
               </View>
             </View>
             <TouchableOpacity onPress={onClose} style={dynamicStyles.closeButton}>
-              <Text style={dynamicStyles.closeIcon}>✕</Text>
+              <Ionicons name="close" size={24} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
@@ -254,7 +256,12 @@ export const MenuDrawer: React.FC<MenuDrawerProps> = ({
                 ]}
                 onPress={item.onPress}
               >
-                <Text style={dynamicStyles.menuIcon}>{item.icon}</Text>
+                <Ionicons 
+                  name={item.iconName} 
+                  size={24} 
+                  color={item.danger ? colors.error : colors.textPrimary}
+                  style={dynamicStyles.menuIcon}
+                />
                 <Text
                   style={[
                     dynamicStyles.menuLabel,
@@ -263,7 +270,7 @@ export const MenuDrawer: React.FC<MenuDrawerProps> = ({
                 >
                   {item.label}
                 </Text>
-                <Text style={dynamicStyles.menuArrow}>›</Text>
+                <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
               </TouchableOpacity>
             ))}
           </ScrollView>

@@ -1,53 +1,51 @@
 /**
  * SafeNet Typography System
- * Clear hierarchy for readability and trust
+ * Inter font with gradient text support for cyberpunk aesthetic
+ * Font weights: 300-700 for body, 900 for headings (Orbitron-style bold)
  */
 
 export const Typography = {
-  // Headings
+  // Headings - Bold, prominent (simulating Orbitron 900 weight)
   h1: {
     fontSize: 32,
-    fontWeight: '700' as const,
+    fontWeight: '900' as const,
     lineHeight: 40,
-    color: '#111827',
+    letterSpacing: -0.5,
   },
   h2: {
     fontSize: 24,
-    fontWeight: '700' as const,
+    fontWeight: '900' as const,
     lineHeight: 32,
-    color: '#111827',
+    letterSpacing: -0.3,
   },
   h3: {
     fontSize: 20,
-    fontWeight: '600' as const,
+    fontWeight: '700' as const,
     lineHeight: 28,
-    color: '#111827',
+    letterSpacing: -0.2,
   },
   h4: {
     fontSize: 18,
-    fontWeight: '600' as const,
+    fontWeight: '700' as const,
     lineHeight: 24,
-    color: '#111827',
+    letterSpacing: -0.1,
   },
   
-  // Body
+  // Body - Inter with 1.6 line-height (24/16 = 1.5, close approximation)
   body: {
     fontSize: 16,
     fontWeight: '400' as const,
-    lineHeight: 24,
-    color: '#111827',
+    lineHeight: 24, // 1.5 ratio
   },
   bodyMedium: {
     fontSize: 16,
     fontWeight: '500' as const,
     lineHeight: 24,
-    color: '#111827',
   },
   bodySmall: {
     fontSize: 14,
     fontWeight: '400' as const,
-    lineHeight: 20,
-    color: '#6B7280',
+    lineHeight: 20, // ~1.43 ratio
   },
   
   // Labels & Meta
@@ -55,19 +53,23 @@ export const Typography = {
     fontSize: 14,
     fontWeight: '600' as const,
     lineHeight: 20,
-    color: '#374151',
   },
   caption: {
     fontSize: 12,
     fontWeight: '400' as const,
     lineHeight: 16,
-    color: '#9CA3AF',
   },
   overline: {
     fontSize: 10,
     fontWeight: '600' as const,
     lineHeight: 16,
-    color: '#6B7280',
     textTransform: 'uppercase' as const,
+    letterSpacing: 0.5,
   },
+} as const;
+
+// Gradient colors for text (used with LinearGradient components)
+export const GradientColors = {
+  cyanToPurple: ['#22d3ee', '#3b82f6', '#6366f1'], // cyan-400 → blue-500 → purple-600
+  cyanToBlue: ['#00f5ff', '#0066cc'], // neon-cyan → electric-blue
 } as const;

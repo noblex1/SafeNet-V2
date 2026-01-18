@@ -21,7 +21,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 const THEME_STORAGE_KEY = '@safenet_theme';
 
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [theme, setThemeState] = useState<ThemeType>('light');
+  const [theme, setThemeState] = useState<ThemeType>('dark'); // Default to dark for cyberpunk aesthetic
   const [isLoading, setIsLoading] = useState(true);
 
   // Load theme from storage on mount

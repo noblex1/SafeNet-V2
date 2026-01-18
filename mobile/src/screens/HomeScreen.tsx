@@ -14,6 +14,7 @@ import {
   TextInput,
   ScrollView,
 } from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Incident, IncidentType, IncidentStatus } from '../types';
 import { incidentService } from '../services/incidentService';
 import { IncidentCard } from '../components/IncidentCard';
@@ -42,7 +43,7 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     flex: 1,
     backgroundColor: colors.background,
   },
-  // Top Bar
+  // Top Bar - Glass effect
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -50,9 +51,9 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.xxl + Spacing.sm,
     paddingBottom: Spacing.md,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.glassBg,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.glassBorder,
   },
   logoContainer: {
     flexDirection: 'row',
@@ -62,17 +63,22 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.neonCyan,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.sm,
+    shadowColor: colors.neonCyan,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 4,
   },
   logoDot: {
     fontSize: 20,
   },
   logoText: {
     ...Typography.h3,
-    color: colors.textPrimary,
+    color: colors.neonCyan, // Gradient-like effect with neon
     fontWeight: '700',
   },
   topBarActions: {
@@ -85,15 +91,12 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     justifyContent: 'center',
     alignItems: 'center',
   },
-  iconText: {
-    fontSize: 20,
-  },
-  // Tab Navigation
+  // Tab Navigation - Glass effect
   tabContainer: {
     flexDirection: 'row',
-    backgroundColor: colors.surface,
+    backgroundColor: colors.glassBg,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.glassBorder,
     paddingHorizontal: Spacing.lg,
   },
   tab: {
@@ -106,10 +109,9 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     borderBottomColor: 'transparent',
   },
   tabActive: {
-    borderBottomColor: colors.primary,
+    borderBottomColor: colors.neonCyan,
   },
   tabIcon: {
-    fontSize: 18,
     marginRight: Spacing.xs,
   },
   tabLabel: {
@@ -118,37 +120,31 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     fontWeight: '600',
   },
   tabLabelActive: {
-    color: colors.primary,
+    color: colors.neonCyan,
   },
-  // Search
+  // Search - Glass effect
   searchContainer: {
     flexDirection: 'row',
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.glassBg,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.glassBorder,
     gap: Spacing.sm,
   },
   searchBar: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
+    backgroundColor: colors.glassBg,
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.md,
     borderWidth: 1.5,
-    borderColor: colors.border,
+    borderColor: colors.glassBorder,
     minHeight: 44,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
   },
   searchIcon: {
-    fontSize: 16,
     marginRight: Spacing.sm,
   },
   searchInput: {
@@ -161,25 +157,16 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     height: 44,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.surface,
+    backgroundColor: colors.glassBg,
     borderRadius: BorderRadius.md,
     borderWidth: 1.5,
-    borderColor: colors.border,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    borderColor: colors.glassBorder,
   },
-  filterIcon: {
-    fontSize: 18,
-    color: colors.textSecondary,
-  },
-  // Category Filters
+  // Category Filters - Glass effect pills
   categoryContainer: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.glassBg,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.glassBorder,
   },
   categoryContent: {
     paddingHorizontal: Spacing.lg,
@@ -190,29 +177,24 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.md + 2,
     borderRadius: BorderRadius.full,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.glassBg,
     marginRight: Spacing.md,
     borderWidth: 1.5,
-    borderColor: colors.border,
+    borderColor: colors.glassBorder,
     minHeight: 44,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
   },
   categoryPillActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: colors.neonCyan,
+    borderColor: colors.neonCyan,
     paddingHorizontal: Spacing.xxl,
     paddingVertical: Spacing.md + 4,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowColor: colors.neonCyan,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 5,
   },
   categoryText: {
     ...Typography.bodyMedium,
@@ -221,7 +203,7 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     fontSize: 14,
   },
   categoryTextActive: {
-    color: colors.textInverse,
+    color: '#0a0a0a', // Dark text on neon
     fontWeight: '700',
     fontSize: 15,
   },
@@ -274,12 +256,17 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
   retryButton: {
     paddingHorizontal: Spacing.xxl,
     paddingVertical: Spacing.md,
-    backgroundColor: colors.primary,
-    borderRadius: BorderRadius.md,
+    backgroundColor: colors.neonCyan,
+    borderRadius: BorderRadius.lg,
+    shadowColor: colors.neonCyan,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 6,
   },
   retryButtonText: {
     ...Typography.bodyMedium,
-    color: colors.textInverse,
+    color: '#0a0a0a',
     fontWeight: '600',
   },
 });
@@ -399,7 +386,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       <View style={dynamicStyles.topBar}>
         <View style={dynamicStyles.logoContainer}>
           <View style={dynamicStyles.logoIcon}>
-            <Text style={dynamicStyles.logoDot}>🛡️</Text>
+            <Ionicons name="shield" size={20} color="#0a0a0a" />
           </View>
           <Text style={dynamicStyles.logoText}>SafeNet</Text>
         </View>
@@ -408,13 +395,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             style={dynamicStyles.iconButton}
             onPress={() => navigation.navigate('Notifications')}
           >
-            <Text style={dynamicStyles.iconText}>🔔</Text>
+            <Ionicons name="notifications-outline" size={22} color={colors.textPrimary} />
           </TouchableOpacity>
           <TouchableOpacity
             style={dynamicStyles.iconButton}
             onPress={() => setMenuDrawerVisible(true)}
           >
-            <Text style={dynamicStyles.iconText}>☰</Text>
+            <Ionicons name="menu" size={24} color={colors.textPrimary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -425,7 +412,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           style={[dynamicStyles.tab, activeTab === 'feed' && dynamicStyles.tabActive]}
           onPress={() => setActiveTab('feed')}
         >
-          <Text style={dynamicStyles.tabIcon}>📋</Text>
+          <Ionicons 
+            name="document-text-outline" 
+            size={18} 
+            color={activeTab === 'feed' ? colors.neonCyan : colors.textSecondary}
+            style={dynamicStyles.tabIcon}
+          />
           <Text
             style={[
               dynamicStyles.tabLabel,
@@ -442,7 +434,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             navigation.navigate('Map');
           }}
         >
-          <Text style={dynamicStyles.tabIcon}>🗺️</Text>
+          <Ionicons 
+            name="map-outline" 
+            size={18} 
+            color={activeTab === 'map' ? colors.neonCyan : colors.textSecondary}
+            style={dynamicStyles.tabIcon}
+          />
           <Text
             style={[
               dynamicStyles.tabLabel,
@@ -457,7 +454,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       {/* Search and Filter */}
       <View style={dynamicStyles.searchContainer}>
         <View style={dynamicStyles.searchBar}>
-          <Text style={dynamicStyles.searchIcon}>🔍</Text>
+          <Ionicons 
+            name="search-outline" 
+            size={18} 
+            color={colors.textTertiary}
+            style={dynamicStyles.searchIcon}
+          />
           <TextInput
             style={dynamicStyles.searchInput}
             placeholder="Search alerts or locations..."
@@ -470,7 +472,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           style={dynamicStyles.filterButton}
           onPress={() => setFilterModalVisible(true)}
         >
-          <Text style={dynamicStyles.filterIcon}>☰</Text>
+          <Ionicons 
+            name="options-outline" 
+            size={20} 
+            color={colors.textSecondary}
+          />
         </TouchableOpacity>
       </View>
 

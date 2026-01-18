@@ -52,10 +52,15 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: colors.primaryLight,
+    backgroundColor: colors.neonCyan,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: Spacing.lg,
+    shadowColor: colors.neonCyan,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
+    elevation: 8,
   },
   logoText: {
     fontSize: 40,
@@ -64,7 +69,7 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     ...Typography.h1,
     textAlign: 'center',
     marginBottom: Spacing.sm,
-    color: colors.textPrimary,
+    color: colors.neonCyan,
   },
   subtitle: {
     ...Typography.bodySmall,
@@ -89,7 +94,7 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
   },
   loginLink: {
     ...Typography.bodySmall,
-    color: colors.primary,
+    color: colors.neonCyan,
     fontWeight: '600',
   },
 });

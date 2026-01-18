@@ -8,6 +8,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
@@ -46,12 +47,12 @@ const AuthStack = () => {
 };
 
 // Tab Icon Component
-const TabIcon: React.FC<{ emoji: string; color: string; focused?: boolean }> = ({
-  emoji,
+const TabIcon: React.FC<{ name: keyof typeof Ionicons.glyphMap; color: string; focused?: boolean }> = ({
+  name,
   color,
   focused,
 }) => {
-  return <Text style={{ fontSize: focused ? 26 : 22 }}>{emoji}</Text>;
+  return <Ionicons name={name} size={focused ? 26 : 22} color={color} />;
 };
 
 // Dummy component for Report tab (button handles navigation)
@@ -67,9 +68,6 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
   },
-  reportIcon: {
-    fontSize: 24,
-  },
 });
 
 // Report Tab Button (Special highlighted button)
@@ -80,7 +78,7 @@ const ReportTabButton: React.FC<{ onPress: () => void }> = ({ onPress }) => {
   return (
     <TouchableOpacity style={styles.reportButton} onPress={onPress}>
       <View style={dynamicStyles.reportButtonInner}>
-        <Text style={styles.reportIcon}>📍</Text>
+        <Ionicons name="add" size={28} color="#0a0a0a" />
       </View>
       <Text style={dynamicStyles.reportLabel}>Report</Text>
     </TouchableOpacity>
@@ -95,15 +93,15 @@ const MainTabs = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary,
+        tabBarActiveTintColor: colors.neonCyan,
         tabBarInactiveTintColor: colors.textTertiary,
         tabBarStyle: {
           paddingBottom: Spacing.sm,
           paddingTop: Spacing.sm,
           height: 70,
-          backgroundColor: colors.surface,
+          backgroundColor: colors.glassBg,
           borderTopWidth: 1,
-          borderTopColor: colors.border,
+          borderTopColor: colors.glassBorder,
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -117,7 +115,7 @@ const MainTabs = () => {
         options={{
           tabBarLabel: 'Feed',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon emoji="📶" color={color} focused={focused} />
+            <TabIcon name="home-outline" color={color} focused={focused} />
           ),
         }}
       />
@@ -127,7 +125,7 @@ const MainTabs = () => {
         options={{
           tabBarLabel: 'Explore',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon emoji="🗺️" color={color} focused={focused} />
+            <TabIcon name="map-outline" color={color} focused={focused} />
           ),
         }}
       />
@@ -149,7 +147,7 @@ const MainTabs = () => {
         options={{
           tabBarLabel: 'Community',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon emoji="👥" color={color} focused={focused} />
+            <TabIcon name="people-outline" color={color} focused={focused} />
           ),
         }}
       />
@@ -159,7 +157,7 @@ const MainTabs = () => {
         options={{
           tabBarLabel: 'Settings',
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon emoji="⚙️" color={color} focused={focused} />
+            <TabIcon name="settings-outline" color={color} focused={focused} />
           ),
         }}
       />
@@ -237,14 +235,14 @@ const createReportButtonStyles = (colors: ReturnType<typeof import('../theme/col
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.neonCyan,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: colors.shadowDark,
+    shadowColor: colors.neonCyan,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+    elevation: 10,
   },
   reportLabel: {
     marginTop: 4,
