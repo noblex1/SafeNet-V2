@@ -171,25 +171,26 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
   categoryContent: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
-    gap: Spacing.sm,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start',
   },
   categoryPill: {
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.md + 2,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm + 2,
     borderRadius: BorderRadius.full,
     backgroundColor: colors.glassBg,
-    marginRight: Spacing.md,
+    marginRight: Spacing.sm,
+    marginBottom: Spacing.sm,
     borderWidth: 1.5,
     borderColor: colors.glassBorder,
-    minHeight: 44,
+    minHeight: 40,
     justifyContent: 'center',
     alignItems: 'center',
   },
   categoryPillActive: {
     backgroundColor: colors.neonCyan,
     borderColor: colors.neonCyan,
-    paddingHorizontal: Spacing.xxl,
-    paddingVertical: Spacing.md + 4,
     shadowColor: colors.neonCyan,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.4,
@@ -481,32 +482,29 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       </View>
 
       {/* Category Filters */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={dynamicStyles.categoryContainer}
-        contentContainerStyle={dynamicStyles.categoryContent}
-      >
-        {INCIDENT_CATEGORIES.map((category) => (
-          <TouchableOpacity
-            key={category.value}
-            style={[
-              dynamicStyles.categoryPill,
-              selectedCategory === category.value && dynamicStyles.categoryPillActive,
-            ]}
-            onPress={() => setSelectedCategory(category.value)}
-          >
-            <Text
+      <View style={dynamicStyles.categoryContainer}>
+        <View style={dynamicStyles.categoryContent}>
+          {INCIDENT_CATEGORIES.map((category) => (
+            <TouchableOpacity
+              key={category.value}
               style={[
-                dynamicStyles.categoryText,
-                selectedCategory === category.value && dynamicStyles.categoryTextActive,
+                dynamicStyles.categoryPill,
+                selectedCategory === category.value && dynamicStyles.categoryPillActive,
               ]}
+              onPress={() => setSelectedCategory(category.value)}
             >
-              {category.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+              <Text
+                style={[
+                  dynamicStyles.categoryText,
+                  selectedCategory === category.value && dynamicStyles.categoryTextActive,
+                ]}
+              >
+                {category.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
 
       {/* Incident List */}
       <FlatList
