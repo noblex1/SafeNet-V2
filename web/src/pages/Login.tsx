@@ -4,7 +4,7 @@
 
 import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { apiService } from '../services/api';
 
 export const Login = () => {
@@ -29,7 +29,7 @@ export const Login = () => {
     try {
       await login(email, password);
       navigate('/dashboard');
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMessage = apiService.getErrorMessage(err);
       setError(errorMessage);
     } finally {
@@ -38,26 +38,32 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            SafeNet Admin Dashboard
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Sign in to manage incidents
-          </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+    <div className="min-h-screen sn-app-bg flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full">
+        <div className="sn-card p-8">
+          <div className="flex items-center gap-3 justify-center">
+            <div className="h-10 w-10 rounded-full bg-neon-cyan shadow-glow-cyan flex items-center justify-center text-black font-black">
+              S
+            </div>
+            <div className="text-left">
+              <div className="text-2xl font-extrabold tracking-tight text-safenet-text-primary">
+                SafeNet <span className="text-neon-cyan">Admin</span>
+              </div>
+              <div className="text-sm sn-text-tertiary">Sign in to manage incidents</div>
+            </div>
+          </div>
+
+          <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            <div className="sn-card border-red-300/20 bg-red-500/10 text-red-200 px-4 py-3 rounded-xl">
               {error}
             </div>
           )}
-          <div className="rounded-md shadow-sm -space-y-px">
+
+          <div className="space-y-3">
             <div>
-              <label htmlFor="email" className="sr-only">
-                Email address
+              <label htmlFor="email" className="block text-sm font-semibold text-safenet-text-secondary mb-2">
+                Email
               </label>
               <input
                 id="email"
@@ -65,14 +71,14 @@ export const Login = () => {
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
+                className="sn-input"
+                placeholder="admin@safenet.app"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div>
-              <label htmlFor="password" className="sr-only">
+              <label htmlFor="password" className="block text-sm font-semibold text-safenet-text-secondary mb-2">
                 Password
               </label>
               <input
@@ -81,8 +87,8 @@ export const Login = () => {
                 type="password"
                 autoComplete="current-password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
+                className="sn-input"
+                placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -93,12 +99,13 @@ export const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+              className="sn-button-primary w-full"
             >
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );

@@ -3,7 +3,8 @@
  */
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
+import { useAuth } from './context/useAuth';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Layout } from './components/Layout';
 import { Login } from './pages/Login';
@@ -18,8 +19,10 @@ const AppRoutes = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Loading...</div>
+      <div className="min-h-screen sn-app-bg flex items-center justify-center">
+        <div className="sn-card px-6 py-4">
+          <div className="text-sm sn-text-tertiary">Loading...</div>
+        </div>
       </div>
     );
   }

@@ -58,13 +58,14 @@ export interface Incident {
   description: string;
   location: Location;
   status: IncidentStatus;
+  images?: string[];
   incidentHash?: string;
   blockchainTxId?: string;
   blockchainRecordId?: string;
   verifiedAt?: string;
   verifiedBy?: string | User;
   verificationNotes?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   createdAt?: string;
   updatedAt?: string;
 }

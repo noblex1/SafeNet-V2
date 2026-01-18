@@ -2,7 +2,7 @@
  * Dashboard - Incident Review
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Incident, IncidentStatus, IncidentType } from '../types';
 import { incidentService } from '../services/incidentService';
@@ -16,10 +16,10 @@ const STATUS_LABELS: Record<IncidentStatus, string> = {
 };
 
 const STATUS_COLORS: Record<IncidentStatus, string> = {
-  [IncidentStatus.PENDING]: 'bg-yellow-100 text-yellow-800',
-  [IncidentStatus.VERIFIED]: 'bg-green-100 text-green-800',
-  [IncidentStatus.FALSE]: 'bg-red-100 text-red-800',
-  [IncidentStatus.RESOLVED]: 'bg-blue-100 text-blue-800',
+  [IncidentStatus.PENDING]: 'sn-badge-pending',
+  [IncidentStatus.VERIFIED]: 'sn-badge-verified',
+  [IncidentStatus.FALSE]: 'sn-badge-false',
+  [IncidentStatus.RESOLVED]: 'sn-badge-resolved',
 };
 
 const TYPE_LABELS: Record<IncidentType, string> = {
@@ -45,19 +45,20 @@ export const Dashboard = () => {
     limit: 20,
   });
 
-  useEffect(() => {
-    loadIncidents();
-  }, [filters]);
-
-  const loadIncidents = async () => {
+  const loadIncidents = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
-      const params: any = {
+      const params: {
+        page: number;
+        limit: number;
+        status?: IncidentStatus;
+        type?: string;
+      } = {
         page: filters.page,
         limit: filters.limit,
       };
-      if (filters.status) params.status = parseInt(filters.status);
+      if (filters.status) params.status = Number(filters.status) as IncidentStatus;
       if (filters.type) params.type = filters.type;
 
       const response = await incidentService.getIncidents(params);
@@ -67,13 +68,17 @@ export const Dashboard = () => {
         page: response.page,
         limit: response.limit,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMessage = apiService.getErrorMessage(err);
       setError(errorMessage);
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters.limit, filters.page, filters.status, filters.type]);
+
+  useEffect(() => {
+    void loadIncidents();
+  }, [loadIncidents]);
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters({ ...filters, [key]: value, page: 1 });
@@ -88,23 +93,23 @@ export const Dashboard = () => {
   return (
     <div className="px-4 py-6 sm:px-0">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Incident Dashboard</h1>
-        <p className="mt-1 text-sm text-gray-600">
+        <h1 className="text-2xl font-extrabold tracking-tight text-safenet-text-primary">Incident Dashboard</h1>
+        <p className="mt-1 text-sm sn-text-tertiary">
           Review and verify reported incidents
         </p>
       </div>
 
       {/* Filters */}
-      <div className="bg-white shadow rounded-lg p-4 mb-6">
+      <div className="sn-card p-5 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold sn-text-secondary mb-2">
               Status
             </label>
             <select
               value={filters.status}
               onChange={(e) => handleFilterChange('status', e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+              className="sn-select"
             >
               <option value="">All Statuses</option>
               {Object.entries(STATUS_LABELS).map(([value, label]) => (
@@ -115,13 +120,13 @@ export const Dashboard = () => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-semibold sn-text-secondary mb-2">
               Type
             </label>
             <select
               value={filters.type}
               onChange={(e) => handleFilterChange('type', e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+              className="sn-select"
             >
               <option value="">All Types</option>
               {Object.entries(TYPE_LABELS).map(([value, label]) => (
@@ -134,7 +139,7 @@ export const Dashboard = () => {
           <div className="flex items-end">
             <button
               onClick={() => setFilters({ ...filters, status: '', type: '', page: 1 })}
-              className="w-full bg-gray-200 text-gray-700 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-300"
+              className="sn-button-ghost w-full"
             >
               Clear Filters
             </button>
@@ -144,7 +149,7 @@ export const Dashboard = () => {
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="sn-card border-red-300/20 bg-red-500/10 text-red-200 px-4 py-3 rounded-xl mb-4">
           {error}
         </div>
       )}
@@ -152,21 +157,21 @@ export const Dashboard = () => {
       {/* Incidents Table */}
       {loading ? (
         <div className="text-center py-12">
-          <div className="text-gray-500">Loading incidents...</div>
+          <div className="sn-text-tertiary">Loading incidents...</div>
         </div>
       ) : incidents.length === 0 ? (
-        <div className="bg-white shadow rounded-lg p-12 text-center">
-          <p className="text-gray-500">No incidents found</p>
+        <div className="sn-card p-12 text-center">
+          <p className="sn-text-tertiary">No incidents found</p>
         </div>
       ) : (
         <>
-          <div className="bg-white shadow overflow-hidden sm:rounded-md">
-            <ul className="divide-y divide-gray-200">
+          <div className="sn-card overflow-hidden">
+            <ul className="divide-y sn-divider">
               {incidents.map((incident) => (
                 <li key={incident._id}>
                   <Link
                     to={`/incidents/${incident._id}`}
-                    className="block hover:bg-gray-50 px-4 py-4 sm:px-6 relative"
+                    className="block hover:bg-white/5 px-4 py-4 sm:px-6 relative transition-colors"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1 min-w-0 flex items-center">
@@ -175,10 +180,10 @@ export const Dashboard = () => {
                             <img
                               src={incident.images[0]}
                               alt="Incident"
-                              className="h-16 w-16 object-cover rounded border border-gray-200"
+                              className="h-16 w-16 object-cover rounded-xl border border-safenet-glass-border"
                             />
                             {incident.images.length > 1 && (
-                              <div className="absolute -bottom-1 -right-1 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                              <div className="absolute -bottom-1 -right-1 bg-neon-cyan text-black text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                                 +{incident.images.length - 1}
                               </div>
                             )}
@@ -186,23 +191,21 @@ export const Dashboard = () => {
                         )}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center">
-                            <p className="text-sm font-medium text-blue-600 truncate">
+                            <p className="text-sm font-semibold text-neon-cyan truncate">
                               {incident.title}
                             </p>
                             <span
-                              className={`ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                STATUS_COLORS[incident.status]
-                              }`}
+                              className={`ml-3 ${STATUS_COLORS[incident.status]}`}
                             >
                               {STATUS_LABELS[incident.status]}
                             </span>
                           </div>
-                          <div className="mt-2 flex items-center text-sm text-gray-500">
-                            <span className="mr-4">
+                          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm sn-text-tertiary">
+                            <span>
                               {TYPE_LABELS[incident.type]}
                             </span>
-                            <span className="mr-4">
-                              📍 {incident.location.address}
+                            <span className="truncate">
+                              <span className="text-safenet-text-secondary">📍</span> {incident.location.address}
                             </span>
                             <span>
                               {new Date(incident.createdAt || '').toLocaleDateString()}
@@ -212,7 +215,7 @@ export const Dashboard = () => {
                       </div>
                       <div className="ml-5 flex-shrink-0">
                         <svg
-                          className="h-5 w-5 text-gray-400"
+                          className="h-5 w-5 text-safenet-text-tertiary"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -234,43 +237,43 @@ export const Dashboard = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-4 rounded-lg shadow">
+            <div className="sn-card px-4 py-3 flex items-center justify-between sm:px-6 mt-4">
               <div className="flex-1 flex justify-between sm:hidden">
                 <button
                   onClick={() => handlePageChange(pagination.page - 1)}
                   disabled={pagination.page === 1}
-                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                  className="sn-button-ghost px-4 py-2"
                 >
                   Previous
                 </button>
                 <button
                   onClick={() => handlePageChange(pagination.page + 1)}
                   disabled={pagination.page === totalPages}
-                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                  className="sn-button-ghost px-4 py-2"
                 >
                   Next
                 </button>
               </div>
               <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-sm text-gray-700">
+                  <p className="text-sm sn-text-tertiary">
                     Showing{' '}
-                    <span className="font-medium">
+                    <span className="font-semibold text-safenet-text-primary">
                       {(pagination.page - 1) * pagination.limit + 1}
                     </span>{' '}
                     to{' '}
-                    <span className="font-medium">
+                    <span className="font-semibold text-safenet-text-primary">
                       {Math.min(pagination.page * pagination.limit, pagination.total)}
                     </span>{' '}
-                    of <span className="font-medium">{pagination.total}</span> results
+                    of <span className="font-semibold text-safenet-text-primary">{pagination.total}</span> results
                   </p>
                 </div>
                 <div>
-                  <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                  <nav className="relative z-0 inline-flex rounded-xl -space-x-px">
                     <button
                       onClick={() => handlePageChange(pagination.page - 1)}
                       disabled={pagination.page === 1}
-                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                      className="sn-button-ghost rounded-r-none px-3 py-2"
                     >
                       Previous
                     </button>
@@ -284,16 +287,16 @@ export const Dashboard = () => {
                       .map((page, index, array) => (
                         <React.Fragment key={page}>
                           {index > 0 && array[index - 1] !== page - 1 && (
-                            <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                            <span className="relative inline-flex items-center px-4 py-2 border border-safenet-glass-border bg-safenet-glass-bg text-sm font-semibold text-safenet-text-secondary">
                               ...
                             </span>
                           )}
                           <button
                             onClick={() => handlePageChange(page)}
-                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-semibold ${
                               page === pagination.page
-                                ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                                : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                                ? 'z-10 bg-white/10 border-neon-cyan/30 text-neon-cyan'
+                                : 'bg-safenet-glass-bg border-safenet-glass-border text-safenet-text-secondary hover:bg-white/10'
                             }`}
                           >
                             {page}
@@ -303,7 +306,7 @@ export const Dashboard = () => {
                     <button
                       onClick={() => handlePageChange(pagination.page + 1)}
                       disabled={pagination.page === totalPages}
-                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                      className="sn-button-ghost rounded-l-none px-3 py-2"
                     >
                       Next
                     </button>

@@ -3,10 +3,13 @@
  * Centralized API client with authentication and error handling
  */
 
-import axios, { AxiosInstance, AxiosError } from 'axios';
+import axios, { AxiosInstance, AxiosError, AxiosRequestConfig } from 'axios';
 import { API_BASE_URL, REQUEST_TIMEOUT } from '../config/api';
 import { getAccessToken, getRefreshToken, clearTokens, storeTokens } from '../utils/storage';
 import { ApiResponse } from '../types';
+
+type RetriableRequestConfig = AxiosRequestConfig & { _retry?: boolean };
+type ApiErrorPayload = { message?: string };
 
 class ApiService {
   private client: AxiosInstance;
@@ -38,7 +41,7 @@ class ApiService {
     this.client.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
-        const originalRequest = error.config as any;
+        const originalRequest = (error.config || {}) as RetriableRequestConfig;
 
         // If 401 and not already retried, try to refresh token
         if (error.response?.status === 401 && !originalRequest._retry) {
@@ -63,7 +66,9 @@ class ApiService {
               refreshToken,
             });
 
-            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+            const headers = (originalRequest.headers ?? {}) as Record<string, string>;
+            headers.Authorization = `Bearer ${accessToken}`;
+            originalRequest.headers = headers;
             return this.client(originalRequest);
           } catch (refreshError) {
             clearTokens();
@@ -80,11 +85,11 @@ class ApiService {
   /**
    * Generic GET request
    */
-  async get<T>(url: string, params?: any): Promise<T> {
+  async get<T>(url: string, params?: AxiosRequestConfig['params']): Promise<T> {
     try {
       const response = await this.client.get<ApiResponse<T>>(url, { params });
       return response.data.data;
-    } catch (error) {
+    } catch (error: unknown) {
       this.handleError(error);
       throw error;
     }
@@ -93,11 +98,11 @@ class ApiService {
   /**
    * Generic POST request
    */
-  async post<T>(url: string, data?: any): Promise<T> {
+  async post<T>(url: string, data?: unknown): Promise<T> {
     try {
       const response = await this.client.post<ApiResponse<T>>(url, data);
       return response.data.data;
-    } catch (error) {
+    } catch (error: unknown) {
       this.handleError(error);
       throw error;
     }
@@ -106,11 +111,11 @@ class ApiService {
   /**
    * Generic PATCH request
    */
-  async patch<T>(url: string, data?: any): Promise<T> {
+  async patch<T>(url: string, data?: unknown): Promise<T> {
     try {
       const response = await this.client.patch<ApiResponse<T>>(url, data);
       return response.data.data;
-    } catch (error) {
+    } catch (error: unknown) {
       this.handleError(error);
       throw error;
     }
@@ -119,24 +124,37 @@ class ApiService {
   /**
    * Handle API errors
    */
-  private handleError(error: any): void {
-    if (error.response) {
-      console.error('API Error:', error.response.data?.message || 'An error occurred');
-    } else if (error.request) {
-      console.error('Network Error: No response from server');
-    } else {
+  private handleError(error: unknown): void {
+    if (axios.isAxiosError<ApiErrorPayload>(error)) {
+      if (error.response) {
+        console.error('API Error:', error.response.data?.message || 'An error occurred');
+        return;
+      }
+      if (error.request) {
+        console.error('Network Error: No response from server');
+        return;
+      }
       console.error('Error:', error.message);
+      return;
     }
+    console.error('Error:', error);
   }
 
   /**
    * Get error message from API error
    */
-  getErrorMessage(error: any): string {
-    if (error.response?.data?.message) {
-      return error.response.data.message;
+  getErrorMessage(error: unknown): string {
+    if (axios.isAxiosError<ApiErrorPayload>(error)) {
+      if (error.response?.data?.message) {
+        return error.response.data.message;
+      }
+      if (error.message) {
+        return error.message;
+      }
+      return 'Network error. Please try again.';
     }
-    if (error.message) {
+
+    if (error instanceof Error) {
       return error.message;
     }
     return 'An unexpected error occurred';
