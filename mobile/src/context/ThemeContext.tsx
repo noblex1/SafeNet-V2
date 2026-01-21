@@ -62,11 +62,8 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   const colors = getColors(theme);
 
-  // Don't render children until theme is loaded to avoid flash
-  if (isLoading) {
-    return null;
-  }
-
+  // Always provide the context, even during loading
+  // This ensures useTheme() works immediately
   const value: ThemeContextType = {
     theme,
     colors,

@@ -40,8 +40,14 @@ class ApiService {
       async (error: AxiosError) => {
         const originalRequest = error.config as any;
 
-        // If 401 and not already retried, try to refresh token
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        // Don't try to refresh token for auth endpoints (login, register, refresh-token)
+        // These endpoints naturally return 401 for invalid credentials
+        const isAuthEndpoint = originalRequest?.url?.includes('/api/auth/login') ||
+                              originalRequest?.url?.includes('/api/auth/register') ||
+                              originalRequest?.url?.includes('/api/auth/refresh-token');
+
+        // If 401 and not already retried, and not an auth endpoint, try to refresh token
+        if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
           originalRequest._retry = true;
 
           try {
@@ -137,17 +143,26 @@ class ApiService {
    * Handle API errors
    */
   private handleError(error: any): void {
+    // Don't log network errors during development - they're expected if backend is unreachable
+    const isNetworkError = 
+      error.code === 'ECONNREFUSED' ||
+      error.code === 'ERR_NETWORK' ||
+      error.message?.includes('Network Error') ||
+      error.message?.includes('No response from server') ||
+      (error.isAxiosError && !error.response && error.request);
+    
     if (error.response) {
       // Server responded with error status
       const message = error.response.data?.message || 'An error occurred';
       console.error('API Error:', message);
-    } else if (error.request) {
-      // Request made but no response
+    } else if (error.request && !isNetworkError) {
+      // Request made but no response (only log if not a common network error)
       console.error('Network Error: No response from server');
-    } else {
+    } else if (!isNetworkError) {
       // Something else happened
       console.error('Error:', error.message);
     }
+    // Silently ignore common network errors during development
   }
 
   /**

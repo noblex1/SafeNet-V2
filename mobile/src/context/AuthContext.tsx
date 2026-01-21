@@ -39,7 +39,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const authenticated = await checkAuth();
       if (authenticated) {
-        await refreshUser();
+        try {
+          await refreshUser();
+        } catch (refreshError: any) {
+          // Network errors during startup shouldn't block the app
+          // Suppress network-related errors (they're expected if backend is unreachable)
+          const isNetworkError = 
+            refreshError?.code === 'ECONNREFUSED' ||
+            refreshError?.code === 'ERR_NETWORK' ||
+            refreshError?.message?.includes('Network Error') ||
+            refreshError?.message?.includes('No response from server') ||
+            (refreshError?.isAxiosError && !refreshError?.response);
+          
+          if (!isNetworkError) {
+            console.error('Error refreshing user:', refreshError);
+          }
+          // Clear tokens if refresh fails (token might be invalid)
+          await clearTokens();
+          setUser(null);
+        }
       }
     } catch (error) {
       console.error('Error checking auth status:', error);
@@ -87,8 +105,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const currentUser = await authService.getCurrentUser();
       setUser(currentUser);
-    } catch (error) {
-      console.error('Error refreshing user:', error);
+    } catch (error: any) {
+      // Suppress network errors - they're expected if backend is unreachable
+      const isNetworkError = 
+        error?.code === 'ECONNREFUSED' ||
+        error?.code === 'ERR_NETWORK' ||
+        error?.message?.includes('Network Error') ||
+        error?.message?.includes('No response from server') ||
+        (error?.isAxiosError && !error?.response);
+      
+      if (!isNetworkError) {
+        console.error('Error refreshing user:', error);
+      }
       setUser(null);
     }
   };

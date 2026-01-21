@@ -9,7 +9,9 @@ import {
   Text,
   StyleSheet,
   TextInputProps,
+  TouchableOpacity,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { Typography } from '../theme/typography';
 import { Spacing, BorderRadius } from '../theme/spacing';
@@ -29,6 +31,9 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     color: colors.textPrimary,
     marginBottom: Spacing.sm,
   },
+  inputContainer: {
+    position: 'relative',
+  },
   input: {
     borderWidth: 1.5,
     borderColor: colors.glassBorder,
@@ -39,6 +44,9 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     // Glassmorphism background
     backgroundColor: colors.glassBg,
     color: colors.textPrimary,
+  },
+  inputWithIcon: {
+    paddingRight: Spacing.xxxl, // Make room for eye icon
   },
   inputFocused: {
     borderColor: colors.neonCyan,
@@ -56,6 +64,15 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     shadowRadius: 6,
     elevation: 3,
   },
+  eyeIcon: {
+    position: 'absolute',
+    right: Spacing.md,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.xs,
+  },
   errorText: {
     color: colors.error,
     ...Typography.caption,
@@ -69,11 +86,14 @@ export const Input: React.FC<InputProps> = ({
   containerStyle,
   onFocus,
   onBlur,
+  secureTextEntry,
   ...props
 }) => {
   const { colors } = useTheme();
   const [isFocused, setIsFocused] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const dynamicStyles = createStyles(colors);
+  const isPasswordField = secureTextEntry === true;
 
   const handleFocus = (e: any) => {
     setIsFocused(true);
@@ -85,20 +105,41 @@ export const Input: React.FC<InputProps> = ({
     onBlur?.(e);
   };
 
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
+
   return (
     <View style={[dynamicStyles.container, containerStyle]}>
       {label && <Text style={dynamicStyles.label}>{label}</Text>}
-      <TextInput
-        style={[
-          dynamicStyles.input,
-          isFocused && !error && dynamicStyles.inputFocused,
-          error && dynamicStyles.inputError,
-        ]}
-        placeholderTextColor={colors.textTertiary}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        {...props}
-      />
+      <View style={dynamicStyles.inputContainer}>
+        <TextInput
+          style={[
+            dynamicStyles.input,
+            isPasswordField && dynamicStyles.inputWithIcon,
+            isFocused && !error && dynamicStyles.inputFocused,
+            error && dynamicStyles.inputError,
+          ]}
+          placeholderTextColor={colors.textTertiary}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          secureTextEntry={isPasswordField && !isPasswordVisible}
+          {...props}
+        />
+        {isPasswordField && (
+          <TouchableOpacity
+            style={dynamicStyles.eyeIcon}
+            onPress={togglePasswordVisibility}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name={isPasswordVisible ? 'eye-outline' : 'eye-off-outline'}
+              size={22}
+              color={colors.textSecondary}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
       {error && <Text style={dynamicStyles.errorText}>{error}</Text>}
     </View>
   );

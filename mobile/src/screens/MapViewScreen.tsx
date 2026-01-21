@@ -9,14 +9,35 @@ import {
   Text,
   StyleSheet,
   ActivityIndicator,
+  Platform,
+  ScrollView,
+  TouchableOpacity,
 } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Incident } from '../types';
 import { incidentService } from '../services/incidentService';
 import { apiService } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
 import { Spacing, BorderRadius } from '../theme/spacing';
 import { Typography } from '../theme/typography';
+import { Ionicons } from '@expo/vector-icons';
+
+// Conditionally import react-native-maps (not available on web)
+let MapView: any = null;
+let Marker: any = null;
+let PROVIDER_GOOGLE: any = null;
+
+if (Platform.OS !== 'web') {
+  try {
+    // @ts-ignore - react-native-maps is not available on web
+    const maps = require('react-native-maps');
+    MapView = maps.default || maps;
+    Marker = maps.Marker;
+    PROVIDER_GOOGLE = maps.PROVIDER_GOOGLE;
+  } catch (e) {
+    // react-native-maps not available (e.g., on web)
+    console.warn('react-native-maps not available:', e);
+  }
+}
 
 interface MapViewScreenProps {
   navigation: any;
@@ -124,6 +145,64 @@ const MapViewScreen: React.FC<MapViewScreenProps> = ({ navigation }) => {
     );
   }
 
+  // Web fallback: Show list view instead of map
+  if (Platform.OS === 'web' || !MapView) {
+    return (
+      <View style={styles.container}>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: Spacing.md }}>
+          <View style={[styles.legend, { position: 'relative', marginBottom: Spacing.md }]}>
+            <Text style={styles.legendText}>
+              {incidents.length} verified incident{incidents.length !== 1 ? 's' : ''} found
+            </Text>
+          </View>
+          {incidents.length === 0 ? (
+            <View style={styles.centerContainer}>
+              <Ionicons name="map-outline" size={64} color={colors.textTertiary} />
+              <Text style={[styles.errorText, { marginTop: Spacing.md, color: colors.textTertiary }]}>
+                No incidents with location data available
+              </Text>
+            </View>
+          ) : (
+            incidents.map((incident) => {
+              if (!incident.location.coordinates) return null;
+              return (
+                <TouchableOpacity
+                  key={incident._id}
+                  style={[
+                    {
+                      backgroundColor: colors.surface,
+                      borderWidth: 1,
+                      borderColor: colors.border,
+                      borderRadius: BorderRadius.md,
+                      padding: Spacing.md,
+                      marginBottom: Spacing.sm,
+                    },
+                  ]}
+                  onPress={() => handleMarkerPress(incident)}
+                >
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: Spacing.xs }}>
+                    <Ionicons name="location" size={20} color={colors.neonCyan} />
+                    <Text style={[Typography.body, { color: colors.textPrimary, marginLeft: Spacing.xs, flex: 1 }]}>
+                      {incident.title}
+                    </Text>
+                  </View>
+                  <Text style={[Typography.bodySmall, { color: colors.textSecondary, marginTop: Spacing.xs }]}>
+                    {incident.description.substring(0, 100)}
+                    {incident.description.length > 100 ? '...' : ''}
+                  </Text>
+                  <Text style={[Typography.caption, { color: colors.textTertiary, marginTop: Spacing.xs }]}>
+                    Lat: {incident.location.coordinates.lat.toFixed(4)}, Lng: {incident.location.coordinates.lng.toFixed(4)}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })
+          )}
+        </ScrollView>
+      </View>
+    );
+  }
+
+  // Native: Show map view
   return (
     <View style={styles.container}>
       <MapView

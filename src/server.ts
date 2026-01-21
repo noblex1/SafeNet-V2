@@ -48,12 +48,16 @@ const startServer = async (): Promise<void> => {
     // Connect to database
     await connectDatabase();
 
-    // Start listening
-    app.listen(PORT, () => {
+    // Start listening on all network interfaces (0.0.0.0) to allow mobile app connections
+    app.listen(PORT, '0.0.0.0', () => {
       logger.info(`SafeNet API server running on port ${PORT}`, {
         environment: process.env.NODE_ENV || 'development',
         port: PORT,
+        host: '0.0.0.0',
       });
+      logger.info(`Server accessible at:`);
+      logger.info(`  - http://localhost:${PORT}`);
+      logger.info(`  - http://127.0.0.1:${PORT}`);
     });
   } catch (error) {
     logger.error('Failed to start server:', error);

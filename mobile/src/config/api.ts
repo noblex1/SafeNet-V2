@@ -1,16 +1,48 @@
 /**
  * API Configuration
  * Base URL for the SafeNet backend API
- * Update this to match your backend server URL
+ * Automatically detects platform and uses appropriate URL
  */
 
-// For development - update with your actual backend URL
-// For Android emulator: use 'http://10.0.2.2:3000'
-// For iOS simulator: use 'http://localhost:3000'
-// For physical device: use your computer's IP address (e.g., 'http://192.168.1.100:3000')
-export const API_BASE_URL = __DEV__
-  ? 'http://10.221.252.34:3000' // Updated for physical device - change if your IP changes
-  : 'https://api.safenet.app'; // Production URL
+import { Platform } from 'react-native';
+
+// Get the appropriate base URL based on platform
+const getBaseURL = (): string => {
+  if (!__DEV__) {
+    return 'https://api.safenet.app'; // Production URL
+  }
+
+  // For web (Expo web), use localhost
+  if (Platform.OS === 'web') {
+    return 'http://localhost:3000';
+  }
+
+  // For Android - detect if emulator or physical device
+  if (Platform.OS === 'android') {
+    // Try to detect if running on emulator vs physical device
+    // If you're using a physical device and getting network errors,
+    // change this to: return 'http://10.16.214.34:3000';
+    // For Android emulator, use 10.0.2.2 (special IP that maps to host's localhost)
+    return 'http://10.0.2.2:3000';
+    // For physical Android device, uncomment the line below and comment the line above:
+    // return 'http://10.16.214.34:3000';
+  }
+
+  // For iOS simulator, use localhost
+  if (Platform.OS === 'ios') {
+    return 'http://localhost:3000';
+  }
+
+  // Fallback
+  return 'http://localhost:3000';
+};
+
+// NOTE: For physical devices, you may need to manually override the URL above
+// Replace 'localhost' or '10.0.2.2' with your computer's IP address
+// Current detected IP: 10.16.214.34
+// Example for physical device: return 'http://10.16.214.34:3000';
+
+export const API_BASE_URL = getBaseURL();
 
 export const API_ENDPOINTS = {
   // Auth endpoints

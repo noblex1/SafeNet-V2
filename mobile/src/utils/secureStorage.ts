@@ -1,9 +1,12 @@
 /**
  * Secure Storage Utilities
  * Handles secure storage of authentication tokens using Expo SecureStore
+ * Falls back to AsyncStorage for web platform
  */
 
+import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TOKEN_KEYS = {
   ACCESS_TOKEN: 'access_token',
@@ -15,7 +18,11 @@ const TOKEN_KEYS = {
  */
 export const storeAccessToken = async (token: string): Promise<void> => {
   try {
-    await SecureStore.setItemAsync(TOKEN_KEYS.ACCESS_TOKEN, token);
+    if (Platform.OS === 'web') {
+      await AsyncStorage.setItem(TOKEN_KEYS.ACCESS_TOKEN, token);
+    } else {
+      await SecureStore.setItemAsync(TOKEN_KEYS.ACCESS_TOKEN, token);
+    }
   } catch (error) {
     console.error('Error storing access token:', error);
     throw error;
@@ -27,7 +34,11 @@ export const storeAccessToken = async (token: string): Promise<void> => {
  */
 export const storeRefreshToken = async (token: string): Promise<void> => {
   try {
-    await SecureStore.setItemAsync(TOKEN_KEYS.REFRESH_TOKEN, token);
+    if (Platform.OS === 'web') {
+      await AsyncStorage.setItem(TOKEN_KEYS.REFRESH_TOKEN, token);
+    } else {
+      await SecureStore.setItemAsync(TOKEN_KEYS.REFRESH_TOKEN, token);
+    }
   } catch (error) {
     console.error('Error storing refresh token:', error);
     throw error;
@@ -39,7 +50,11 @@ export const storeRefreshToken = async (token: string): Promise<void> => {
  */
 export const getAccessToken = async (): Promise<string | null> => {
   try {
-    return await SecureStore.getItemAsync(TOKEN_KEYS.ACCESS_TOKEN);
+    if (Platform.OS === 'web') {
+      return await AsyncStorage.getItem(TOKEN_KEYS.ACCESS_TOKEN);
+    } else {
+      return await SecureStore.getItemAsync(TOKEN_KEYS.ACCESS_TOKEN);
+    }
   } catch (error) {
     console.error('Error getting access token:', error);
     return null;
@@ -51,7 +66,11 @@ export const getAccessToken = async (): Promise<string | null> => {
  */
 export const getRefreshToken = async (): Promise<string | null> => {
   try {
-    return await SecureStore.getItemAsync(TOKEN_KEYS.REFRESH_TOKEN);
+    if (Platform.OS === 'web') {
+      return await AsyncStorage.getItem(TOKEN_KEYS.REFRESH_TOKEN);
+    } else {
+      return await SecureStore.getItemAsync(TOKEN_KEYS.REFRESH_TOKEN);
+    }
   } catch (error) {
     console.error('Error getting refresh token:', error);
     return null;
@@ -73,10 +92,17 @@ export const storeTokens = async (tokens: { accessToken: string; refreshToken: s
  */
 export const clearTokens = async (): Promise<void> => {
   try {
-    await Promise.all([
-      SecureStore.deleteItemAsync(TOKEN_KEYS.ACCESS_TOKEN),
-      SecureStore.deleteItemAsync(TOKEN_KEYS.REFRESH_TOKEN),
-    ]);
+    if (Platform.OS === 'web') {
+      await Promise.all([
+        AsyncStorage.removeItem(TOKEN_KEYS.ACCESS_TOKEN),
+        AsyncStorage.removeItem(TOKEN_KEYS.REFRESH_TOKEN),
+      ]);
+    } else {
+      await Promise.all([
+        SecureStore.deleteItemAsync(TOKEN_KEYS.ACCESS_TOKEN),
+        SecureStore.deleteItemAsync(TOKEN_KEYS.REFRESH_TOKEN),
+      ]);
+    }
   } catch (error) {
     console.error('Error clearing tokens:', error);
   }
