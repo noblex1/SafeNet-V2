@@ -34,4 +34,11 @@ router.get(
   AuthController.getCurrentUser
 );
 
+router.patch(
+  '/profile',
+  authenticate,
+  validate(AuthController.updateProfileValidations),
+  AuthController.updateProfile
+);
+
 export default router;

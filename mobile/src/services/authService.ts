@@ -81,6 +81,21 @@ class AuthService {
 
     return response.accessToken;
   }
+
+  /**
+   * Update user profile
+   */
+  async updateProfile(data: {
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+  }): Promise<User> {
+    const response = await apiService.patch<{ user: User }>(
+      API_ENDPOINTS.AUTH.UPDATE_PROFILE,
+      data
+    );
+    return response.user;
+  }
 }
 
 export const authService = new AuthService();

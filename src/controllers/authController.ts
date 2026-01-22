@@ -142,4 +142,50 @@ export class AuthController {
       next(error);
     }
   }
+
+  static updateProfileValidations = [
+    body('firstName')
+      .optional()
+      .trim()
+      .isLength({ min: 1, max: 50 })
+      .withMessage('First name must be between 1 and 50 characters'),
+    body('lastName')
+      .optional()
+      .trim()
+      .isLength({ min: 1, max: 50 })
+      .withMessage('Last name must be between 1 and 50 characters'),
+    body('phone')
+      .optional()
+      .trim()
+      .isLength({ min: 1 })
+      .withMessage('Phone number is required'),
+  ];
+
+  static async updateProfile(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      if (!req.user) {
+        throw new CustomError('User not authenticated', 401);
+      }
+
+      const { firstName, lastName, phone } = req.body;
+      const updatedUser = await AuthService.updateProfile(req.user.userId, {
+        firstName,
+        lastName,
+        phone,
+      });
+
+      const userObject = updatedUser.toObject();
+      const { password: _, ...userWithoutPassword } = userObject;
+
+      res.status(200).json({
+        success: true,
+        message: 'Profile updated successfully',
+        data: {
+          user: userWithoutPassword,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }

@@ -68,7 +68,10 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </Text>
           <Text style={dynamicStyles.userEmail}>{user?.email}</Text>
           <Text style={dynamicStyles.userPhone}>{user?.phone}</Text>
-          <TouchableOpacity style={dynamicStyles.editButton}>
+          <TouchableOpacity
+            style={dynamicStyles.editButton}
+            onPress={() => navigation.navigate('EditProfile')}
+          >
             <Text style={dynamicStyles.editButtonText}>Edit Profile</Text>
           </TouchableOpacity>
         </View>

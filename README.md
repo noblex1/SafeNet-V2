@@ -2,6 +2,22 @@
 
 **SafeNet** is a comprehensive public safety alert platform designed to help communities report, verify, and respond to incidents such as missing persons, kidnappings, stolen vehicles, and natural disasters. The platform combines traditional web technologies with blockchain immutability to provide a secure, transparent, and trusted incident reporting system.
 
+## 📊 Current Status
+
+**Version:** 1.0.0  
+**Status:** ✅ Production-Ready  
+**Last Updated:** 2024
+
+- ✅ Backend API fully functional
+- ✅ Mobile app (iOS, Android, Web) working
+- ✅ Web admin dashboard operational
+- ✅ Smart contracts deployed on Sui Testnet
+- ✅ Dynamic API configuration (no manual IP setup needed)
+- ✅ Auto-refresh and toast notifications implemented
+- ✅ Cross-platform compatibility verified
+
+See [PROJECT_ANALYSIS.md](PROJECT_ANALYSIS.md) for detailed analysis and improvement recommendations.
+
 ## 🎯 Overview
 
 SafeNet consists of four main components:
@@ -15,10 +31,13 @@ SafeNet consists of four main components:
 
 ### For Public Users
 - 📱 **Incident Reporting** - Report incidents with location, photos, and details
-- 🔔 **Verified Alerts Feed** - View verified safety alerts from authorities
-- 🗺️ **Interactive Map View** - Visualize incidents on a map
+- 🔔 **Verified Alerts Feed** - View verified safety alerts from authorities (auto-refreshes)
+- 🗺️ **Interactive Map View** - Visualize incidents on a map (list view on web)
 - 📋 **My Reports** - Track the status of your reported incidents
 - 🔐 **Secure Authentication** - JWT-based authentication with secure token storage
+- 👁️ **Password Visibility Toggle** - Eye icon to show/hide passwords
+- 🎨 **Dark/Light Theme** - Cyberpunk-themed UI with theme switching
+- ✅ **Success Notifications** - Toast notifications for successful actions
 
 ### For Administrators & Authorities
 - ✅ **Incident Verification** - Verify, reject, or resolve reported incidents
@@ -86,11 +105,10 @@ SafeNet/
    ```
 
 2. **Configure environment variables:**
-   ```bash
-   cp .env.example .env
-   ```
    
-   Edit `.env` with your configuration:
+   Create a `.env` file in the root directory with your configuration:
+   
+   **Note:** If `.env.example` doesn't exist, create `.env` manually with the following variables:
    ```env
    MONGODB_URI=mongodb://localhost:27017/safenet
    JWT_SECRET=your-secret-key
@@ -138,21 +156,26 @@ The API will be available at `http://localhost:3000`
    npm install
    ```
 
-3. **Configure API endpoint:**
+3. **API Configuration (Automatic):**
    
-   Edit `src/config/api.ts` with your backend URL:
-   - Android emulator: `http://10.0.2.2:3000`
-   - iOS simulator: `http://localhost:3000`
-   - Physical device: `http://YOUR_IP_ADDRESS:3000`
+   The mobile app **automatically detects** the correct API endpoint based on your platform:
+   - ✅ **Android emulator**: Automatically uses `http://10.0.2.2:3000`
+   - ✅ **iOS simulator**: Automatically uses `http://localhost:3000`
+   - ✅ **Physical devices**: Automatically detects your computer's IP from Expo dev server
+   - ✅ **Web**: Automatically uses `http://localhost:3000`
+   
+   No manual configuration needed! The app uses Expo Constants to detect the dev server IP dynamically.
 
 4. **Start Expo development server:**
    ```bash
    npm start
+   # Or use offline mode if network issues: npm start -- --offline
    ```
 
 5. **Run on device/simulator:**
    - Press `i` for iOS simulator
    - Press `a` for Android emulator
+   - Press `w` for web browser
    - Scan QR code with Expo Go app on physical device
 
 ### Web Admin Dashboard Setup
@@ -197,14 +220,22 @@ The dashboard will be available at `http://localhost:5173`
    - `SUI_PACKAGE_ID` - Package ID from publish output
    - `SUI_REGISTRY_ID` - Registry object ID from initialization
 
+**Current Deployment (Testnet):**
+- Package ID: `0x08dc2a934117abd6446b3f06329c9a537f576c7df3a637395018cc37d9d7473c`
+- Network: Sui Testnet
+- See `Move.lock` for deployment details
+
 ## 📚 Documentation
 
 Each component has detailed documentation:
 
 - [Backend API Documentation](#backend-api) - API endpoints and usage
 - [Mobile App README](mobile/README.md) - Mobile app setup and features
+- [Mobile Architecture](mobile/ARCHITECTURE.md) - Mobile app architecture details
+- [Mobile Troubleshooting](mobile/TROUBLESHOOTING.md) - Common issues and solutions
 - [Web Dashboard README](web/README.md) - Admin dashboard guide
 - [Smart Contracts README](smart-contracts/README.md) - Blockchain contract documentation
+- [Project Analysis](PROJECT_ANALYSIS.md) - Comprehensive project analysis and improvement recommendations
 
 ## 🔌 Backend API
 
@@ -353,21 +384,24 @@ See [smart-contracts/README.md](smart-contracts/README.md) for detailed document
 ### Backend
 - **Runtime:** Node.js 18+
 - **Framework:** Express.js
-- **Language:** TypeScript
+- **Language:** TypeScript (strict mode)
 - **Database:** MongoDB with Mongoose
-- **Authentication:** JWT (jsonwebtoken)
-- **Security:** Helmet, CORS, bcrypt
-- **Blockchain:** Sui SDK (@mysten/sui)
+- **Authentication:** JWT (jsonwebtoken) with refresh tokens
+- **Security:** Helmet, CORS, bcrypt, express-rate-limit
+- **Blockchain:** Sui SDK (@mysten/sui v1.45.2)
 - **File Storage:** Cloudinary
 - **Logging:** Winston
+- **Server:** Listens on `0.0.0.0` for mobile device access
 
 ### Mobile
-- **Framework:** React Native (Expo)
+- **Framework:** React Native (Expo SDK 54)
 - **Language:** TypeScript
 - **Navigation:** React Navigation
-- **Maps:** React Native Maps
-- **Storage:** Expo SecureStore
-- **API Client:** Axios
+- **Maps:** React Native Maps (with web fallback)
+- **Storage:** Expo SecureStore (AsyncStorage fallback for web)
+- **API Client:** Axios with automatic token refresh
+- **Icons:** Expo Vector Icons
+- **Dynamic API Detection:** Automatic IP detection for all platforms
 
 ### Web
 - **Framework:** React 18
@@ -493,12 +527,43 @@ Common HTTP Status Codes:
 
 ISC
 
-## 🆘 Support
+## 🆘 Support & Troubleshooting
 
 For issues, questions, or contributions:
 - Check the component-specific README files for detailed documentation
-- Review the troubleshooting guides in each component
+- Review the troubleshooting guides in each component:
+  - [Mobile Troubleshooting Guide](mobile/TROUBLESHOOTING.md)
+  - [Project Analysis & Improvements](PROJECT_ANALYSIS.md)
+- Validate your environment: `node validate-env.js`
 - Open an issue on the repository
+
+### Common Issues
+
+**Mobile App Network Errors:**
+- The app now automatically detects the correct API endpoint
+- If issues persist, ensure backend is running on `0.0.0.0:3000` (not just localhost)
+- Check firewall settings if using physical devices
+
+**Expo Start Issues:**
+- If port 8081 is in use: Kill existing process or use `--offline` flag
+- Network fetch errors: Use `npx expo start --offline` to skip version checks
+
+**Backend Connection:**
+- Ensure MongoDB is running
+- Verify all environment variables are set
+- Check server logs in `logs/` directory
+
+---
+
+## 🚧 Recent Improvements
+
+- ✅ **Dynamic API Configuration** - Mobile app automatically detects correct backend IP
+- ✅ **Auto-refresh Feed** - Home screen refreshes when returning from incident submission
+- ✅ **Success Toast Notifications** - User-friendly feedback for successful actions
+- ✅ **Password Visibility Toggle** - Eye icon for password fields
+- ✅ **Web Compatibility** - Mobile app works on Expo web with proper fallbacks
+- ✅ **Improved Error Handling** - Better error messages and network error suppression
+- ✅ **TypeScript Fixes** - All type errors resolved
 
 ---
 

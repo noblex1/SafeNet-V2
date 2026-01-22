@@ -28,6 +28,7 @@ import { CommunityScreen } from '../screens/CommunityScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { NotificationsScreen } from '../screens/NotificationsScreen';
+import { EditProfileScreen } from '../screens/EditProfileScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -232,6 +233,14 @@ const MainStack = () => {
         component={ProfileScreen}
         options={{
           title: 'Profile',
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfileScreen}
+        options={{
+          title: 'Edit Profile',
           headerShown: true,
         }}
       />

@@ -264,7 +264,10 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             </Text>
             <Text style={dynamicStyles.profileLocation}>Accra, Ghana</Text>
           </View>
-          <TouchableOpacity style={dynamicStyles.editButton}>
+          <TouchableOpacity
+            style={dynamicStyles.editButton}
+            onPress={() => navigation.navigate('EditProfile')}
+          >
             <Text style={dynamicStyles.editButtonText}>Edit</Text>
           </TouchableOpacity>
         </View>

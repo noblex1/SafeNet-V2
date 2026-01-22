@@ -178,4 +178,36 @@ export class AuthService {
       throw new CustomError('Failed to retrieve user', 500);
     }
   }
+
+  static async updateProfile(
+    userId: string,
+    data: { firstName?: string; lastName?: string; phone?: string }
+  ): Promise<IUserDocument> {
+    try {
+      const user = await User.findById(userId);
+      if (!user) {
+        throw new CustomError('User not found', 404);
+      }
+
+      // Update only provided fields
+      if (data.firstName !== undefined) {
+        user.firstName = data.firstName.trim();
+      }
+      if (data.lastName !== undefined) {
+        user.lastName = data.lastName.trim();
+      }
+      if (data.phone !== undefined) {
+        user.phone = data.phone.trim();
+      }
+
+      await user.save();
+      return user as IUserDocument;
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      logger.error('Update profile error:', error);
+      throw new CustomError('Failed to update profile', 500);
+    }
+  }
 }
