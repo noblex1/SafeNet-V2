@@ -13,6 +13,8 @@ import {
   Switch,
   Alert,
   Image,
+  Modal,
+  Pressable,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
@@ -181,6 +183,221 @@ const createStyles = (colors: ReturnType<typeof getColors>) => StyleSheet.create
     backgroundColor: colors.border,
     marginLeft: Spacing.lg + 30 + Spacing.md, // Icon width + margins
   },
+  // About SafeNet Full Screen
+  aboutFullScreen: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  aboutHeader: {
+    backgroundColor: colors.primary,
+    padding: Spacing.lg,
+    paddingTop: Spacing.xxl + Spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: colors.primary,
+  },
+  aboutBackButton: {
+    marginRight: Spacing.md,
+    padding: Spacing.xs,
+  },
+  aboutCloseButton: {
+    marginLeft: Spacing.md,
+    padding: Spacing.xs,
+  },
+  aboutHeaderContent: {
+    flex: 1,
+    marginLeft: Spacing.md,
+  },
+  aboutTitle: {
+    ...Typography.h3,
+    color: colors.textInverse,
+    fontWeight: '700',
+    marginBottom: Spacing.xs / 2,
+  },
+  aboutVersion: {
+    ...Typography.bodySmall,
+    color: colors.textInverse,
+    opacity: 0.9,
+  },
+  aboutContent: {
+    flex: 1,
+  },
+  aboutContentContainer: {
+    padding: Spacing.lg,
+    paddingBottom: Spacing.xxl,
+  },
+  aboutDescription: {
+    ...Typography.bodyMedium,
+    color: colors.textPrimary,
+    lineHeight: 22,
+    marginBottom: Spacing.lg,
+  },
+  aboutFeatures: {
+    marginTop: Spacing.md,
+  },
+  aboutFeatureRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: Spacing.md,
+  },
+  aboutFeatureIcon: {
+    marginRight: Spacing.sm,
+    marginTop: 2,
+  },
+  aboutFeatureText: {
+    ...Typography.bodySmall,
+    color: colors.textSecondary,
+    flex: 1,
+    lineHeight: 20,
+  },
+  aboutHighlight: {
+    color: colors.primary,
+    fontWeight: '600',
+  },
+  aboutFooter: {
+    padding: Spacing.lg,
+    paddingTop: Spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  aboutFooterText: {
+    ...Typography.bodySmall,
+    color: colors.textTertiary,
+  },
+  aboutFooterIcon: {
+    color: colors.primary,
+  },
+  // Privacy Policy Full Screen
+  privacyFullScreen: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
+  privacyHeader: {
+    backgroundColor: colors.primary,
+    padding: Spacing.lg,
+    paddingTop: Spacing.xxl + Spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: colors.primary,
+  },
+  privacyBackButton: {
+    marginRight: Spacing.md,
+    padding: Spacing.xs,
+  },
+  privacyCloseButton: {
+    marginLeft: Spacing.md,
+    padding: Spacing.xs,
+  },
+  privacyHeaderContent: {
+    flex: 1,
+    marginLeft: Spacing.md,
+  },
+  privacyTitle: {
+    ...Typography.h3,
+    color: colors.textInverse,
+    fontWeight: '700',
+    marginBottom: Spacing.xs / 2,
+  },
+  privacySubtitle: {
+    ...Typography.bodySmall,
+    color: colors.textInverse,
+    opacity: 0.9,
+  },
+  privacyContent: {
+    flex: 1,
+  },
+  privacyContentContainer: {
+    padding: Spacing.lg,
+    paddingBottom: Spacing.xxl,
+  },
+  privacySection: {
+    marginBottom: Spacing.lg,
+  },
+  privacySectionTitle: {
+    ...Typography.h4,
+    color: colors.textPrimary,
+    fontWeight: '700',
+    marginBottom: Spacing.sm,
+    marginTop: Spacing.md,
+  },
+  privacySectionTitleFirst: {
+    ...Typography.h4,
+    color: colors.textPrimary,
+    fontWeight: '700',
+    marginBottom: Spacing.sm,
+    marginTop: 0,
+  },
+  privacyText: {
+    ...Typography.bodyMedium,
+    color: colors.textSecondary,
+    lineHeight: 22,
+    marginBottom: Spacing.md,
+  },
+  privacyList: {
+    marginLeft: Spacing.md,
+    marginBottom: Spacing.md,
+  },
+  privacyListItem: {
+    ...Typography.bodyMedium,
+    color: colors.textSecondary,
+    lineHeight: 22,
+    marginBottom: Spacing.sm,
+    flexDirection: 'row',
+  },
+  privacyBullet: {
+    color: colors.primary,
+    marginRight: Spacing.sm,
+    fontWeight: 'bold',
+  },
+  privacyHighlight: {
+    color: colors.primary,
+    fontWeight: '600',
+  },
+  privacyFooter: {
+    padding: Spacing.lg,
+    paddingTop: Spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
+  },
+  privacyFooterText: {
+    ...Typography.bodySmall,
+    color: colors.textTertiary,
+    textAlign: 'center',
+  },
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.lg,
+  },
+  modalContent: {
+    width: '100%',
+    maxWidth: 400,
+    maxHeight: '90%',
+  },
+  modalCloseButton: {
+    position: 'absolute',
+    top: Spacing.md,
+    right: Spacing.md,
+    zIndex: 10,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoutSection: {
+    padding: Spacing.lg,
+    paddingBottom: Spacing.xxl,
+  },
 });
 
 export const SettingsScreen: React.FC<SettingsScreenProps> = ({
@@ -197,6 +414,10 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   
   // General settings
   const [language, setLanguage] = useState('English');
+  
+  // Modal state
+  const [showAboutModal, setShowAboutModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
   const handleLogout = () => {
     Alert.alert(
@@ -391,12 +612,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             <SettingItem
               iconName="information-circle-outline"
               title="About SafeNet"
-              onPress={() => {
-                Alert.alert(
-                  'About SafeNet',
-                  'SafeNet v1.2.4 (Beta)\n\nA public safety alert platform for African communities.'
-                );
-              }}
+              onPress={() => setShowAboutModal(true)}
             />
             
             <View style={dynamicStyles.divider} />
@@ -404,9 +620,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
             <SettingItem
               iconName="lock-closed-outline"
               title="Privacy Policy"
-              onPress={() => {
-                Alert.alert('Privacy Policy', 'Privacy policy coming soon!');
-              }}
+              onPress={() => setShowPrivacyModal(true)}
             />
             
             <View style={dynamicStyles.divider} />
@@ -428,31 +642,263 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           />
         </View>
       </ScrollView>
+
+      {/* About SafeNet Modal */}
+      <Modal
+        visible={showAboutModal}
+        animationType="slide"
+        onRequestClose={() => setShowAboutModal(false)}
+      >
+        <View style={dynamicStyles.aboutFullScreen}>
+              <View style={dynamicStyles.aboutHeader}>
+                <TouchableOpacity
+                  style={dynamicStyles.aboutBackButton}
+                  onPress={() => setShowAboutModal(false)}
+                >
+                  <Ionicons name="arrow-back" size={24} color={colors.textInverse} />
+                </TouchableOpacity>
+                <View style={dynamicStyles.aboutHeaderContent}>
+                  <Text style={dynamicStyles.aboutTitle}>SafeNet</Text>
+                  <Text style={dynamicStyles.aboutVersion}>v1.2.4 (Beta)</Text>
+                </View>
+                <TouchableOpacity
+                  style={dynamicStyles.aboutCloseButton}
+                  onPress={() => setShowAboutModal(false)}
+                >
+                  <Ionicons name="close" size={24} color={colors.textInverse} />
+                </TouchableOpacity>
+              </View>
+              
+              <ScrollView
+                style={dynamicStyles.aboutContent}
+                contentContainerStyle={dynamicStyles.aboutContentContainer}
+                showsVerticalScrollIndicator={true}
+                scrollEnabled={true}
+                bounces={true}
+              >
+                <Text style={dynamicStyles.aboutDescription}>
+                  SafeNet is a comprehensive public safety alert platform designed to help communities report, verify, and respond to incidents such as missing persons, kidnappings, stolen vehicles, and natural disasters.
+                </Text>
+                
+                <View style={dynamicStyles.aboutFeatures}>
+                  <View style={dynamicStyles.aboutFeatureRow}>
+                    <Ionicons 
+                      name="location" 
+                      size={18} 
+                      color={colors.primary} 
+                      style={dynamicStyles.aboutFeatureIcon}
+                    />
+                    <Text style={dynamicStyles.aboutFeatureText}>
+                      <Text style={dynamicStyles.aboutHighlight}>Real-time Reporting:</Text> Report incidents with location, photos, and detailed information instantly.
+                    </Text>
+                  </View>
+                  
+                  <View style={dynamicStyles.aboutFeatureRow}>
+                    <Ionicons 
+                      name="checkmark-circle" 
+                      size={18} 
+                      color={colors.primary} 
+                      style={dynamicStyles.aboutFeatureIcon}
+                    />
+                    <Text style={dynamicStyles.aboutFeatureText}>
+                      <Text style={dynamicStyles.aboutHighlight}>Verified Alerts:</Text> View only verified safety alerts from trusted authorities in your community.
+                    </Text>
+                  </View>
+                  
+                  <View style={dynamicStyles.aboutFeatureRow}>
+                    <Ionicons 
+                      name="lock-closed" 
+                      size={18} 
+                      color={colors.primary} 
+                      style={dynamicStyles.aboutFeatureIcon}
+                    />
+                    <Text style={dynamicStyles.aboutFeatureText}>
+                      <Text style={dynamicStyles.aboutHighlight}>Blockchain Security:</Text> All verifications are recorded immutably on the Sui blockchain for transparency and trust.
+                    </Text>
+                  </View>
+                  
+                  <View style={dynamicStyles.aboutFeatureRow}>
+                    <Ionicons 
+                      name="people" 
+                      size={18} 
+                      color={colors.primary} 
+                      style={dynamicStyles.aboutFeatureIcon}
+                    />
+                    <Text style={dynamicStyles.aboutFeatureText}>
+                      <Text style={dynamicStyles.aboutHighlight}>Community-Driven:</Text> Built for African communities to enhance public safety and emergency response.
+                    </Text>
+                  </View>
+                </View>
+              </ScrollView>
+              
+              <View style={dynamicStyles.aboutFooter}>
+                <Text style={dynamicStyles.aboutFooterText}>Built by SafeNet for African communities</Text>
+              </View>
+        </View>
+      </Modal>
+
+      {/* Privacy Policy Modal */}
+      <Modal
+        visible={showPrivacyModal}
+        animationType="slide"
+        onRequestClose={() => setShowPrivacyModal(false)}
+      >
+        <View style={dynamicStyles.privacyFullScreen}>
+              <View style={dynamicStyles.privacyHeader}>
+                <TouchableOpacity
+                  style={dynamicStyles.privacyBackButton}
+                  onPress={() => setShowPrivacyModal(false)}
+                >
+                  <Ionicons name="arrow-back" size={24} color={colors.textInverse} />
+                </TouchableOpacity>
+                <View style={dynamicStyles.privacyHeaderContent}>
+                  <Text style={dynamicStyles.privacyTitle}>Privacy Policy</Text>
+                  <Text style={dynamicStyles.privacySubtitle}>Your data, your control</Text>
+                </View>
+                <TouchableOpacity
+                  style={dynamicStyles.privacyCloseButton}
+                  onPress={() => setShowPrivacyModal(false)}
+                >
+                  <Ionicons name="close" size={24} color={colors.textInverse} />
+                </TouchableOpacity>
+              </View>
+              
+              <ScrollView
+                style={dynamicStyles.privacyContent}
+                contentContainerStyle={dynamicStyles.privacyContentContainer}
+                showsVerticalScrollIndicator={true}
+                scrollEnabled={true}
+                bounces={true}
+              >
+                <View style={dynamicStyles.privacySection}>
+                  <Text style={dynamicStyles.privacyText}>
+                    At SafeNet, we are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our public safety alert platform.
+                  </Text>
+                </View>
+
+                <View style={dynamicStyles.privacySection}>
+                  <Text style={dynamicStyles.privacySectionTitleFirst}>1. Information We Collect</Text>
+                  <Text style={dynamicStyles.privacyText}>
+                    We collect information that you provide directly to us, including:
+                  </Text>
+                  <View style={dynamicStyles.privacyList}>
+                    <Text style={dynamicStyles.privacyListItem}>
+                      <Text style={dynamicStyles.privacyBullet}>•</Text> Account information (name, email, phone number)
+                    </Text>
+                    <Text style={dynamicStyles.privacyListItem}>
+                      <Text style={dynamicStyles.privacyBullet}>•</Text> Incident reports (location, description, photos)
+                    </Text>
+                    <Text style={dynamicStyles.privacyListItem}>
+                      <Text style={dynamicStyles.privacyBullet}>•</Text> Device information and usage data
+                    </Text>
+                    <Text style={dynamicStyles.privacyListItem}>
+                      <Text style={dynamicStyles.privacyBullet}>•</Text> Location data (with your permission)
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={dynamicStyles.privacySection}>
+                  <Text style={dynamicStyles.privacySectionTitle}>2. How We Use Your Information</Text>
+                  <Text style={dynamicStyles.privacyText}>
+                    We use the information we collect to:
+                  </Text>
+                  <View style={dynamicStyles.privacyList}>
+                    <Text style={dynamicStyles.privacyListItem}>
+                      <Text style={dynamicStyles.privacyBullet}>•</Text> Process and verify incident reports
+                    </Text>
+                    <Text style={dynamicStyles.privacyListItem}>
+                      <Text style={dynamicStyles.privacyBullet}>•</Text> Send you safety alerts and notifications
+                    </Text>
+                    <Text style={dynamicStyles.privacyListItem}>
+                      <Text style={dynamicStyles.privacyBullet}>•</Text> Improve our services and user experience
+                    </Text>
+                    <Text style={dynamicStyles.privacyListItem}>
+                      <Text style={dynamicStyles.privacyBullet}>•</Text> Ensure platform security and prevent fraud
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={dynamicStyles.privacySection}>
+                  <Text style={dynamicStyles.privacySectionTitle}>3. Blockchain & Data Security</Text>
+                  <Text style={dynamicStyles.privacyText}>
+                    <Text style={dynamicStyles.privacyHighlight}>Privacy-First Approach:</Text> We use blockchain technology to ensure transparency and immutability of verified incidents. However, we only store cryptographic hashes on the blockchain - no personal information or sensitive data is stored on-chain.
+                  </Text>
+                  <Text style={dynamicStyles.privacyText}>
+                    All personal data is encrypted and stored securely in our databases, accessible only to authorized personnel and systems.
+                  </Text>
+                </View>
+
+                <View style={dynamicStyles.privacySection}>
+                  <Text style={dynamicStyles.privacySectionTitle}>4. Data Sharing & Disclosure</Text>
+                  <Text style={dynamicStyles.privacyText}>
+                    We do not sell your personal information. We may share your information only in the following circumstances:
+                  </Text>
+                  <View style={dynamicStyles.privacyList}>
+                    <Text style={dynamicStyles.privacyListItem}>
+                      <Text style={dynamicStyles.privacyBullet}>•</Text> With verified authorities for incident verification and response
+                    </Text>
+                    <Text style={dynamicStyles.privacyListItem}>
+                      <Text style={dynamicStyles.privacyBullet}>•</Text> When required by law or legal process
+                    </Text>
+                    <Text style={dynamicStyles.privacyListItem}>
+                      <Text style={dynamicStyles.privacyBullet}>•</Text> To protect the rights, property, or safety of SafeNet users
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={dynamicStyles.privacySection}>
+                  <Text style={dynamicStyles.privacySectionTitle}>5. Your Rights</Text>
+                  <Text style={dynamicStyles.privacyText}>
+                    You have the right to:
+                  </Text>
+                  <View style={dynamicStyles.privacyList}>
+                    <Text style={dynamicStyles.privacyListItem}>
+                      <Text style={dynamicStyles.privacyBullet}>•</Text> Access and update your personal information
+                    </Text>
+                    <Text style={dynamicStyles.privacyListItem}>
+                      <Text style={dynamicStyles.privacyBullet}>•</Text> Delete your account and associated data
+                    </Text>
+                    <Text style={dynamicStyles.privacyListItem}>
+                      <Text style={dynamicStyles.privacyBullet}>•</Text> Opt-out of non-essential communications
+                    </Text>
+                    <Text style={dynamicStyles.privacyListItem}>
+                      <Text style={dynamicStyles.privacyBullet}>•</Text> Request a copy of your data
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={dynamicStyles.privacySection}>
+                  <Text style={dynamicStyles.privacySectionTitle}>6. Data Retention</Text>
+                  <Text style={dynamicStyles.privacyText}>
+                    We retain your personal information for as long as necessary to provide our services and comply with legal obligations. Incident reports may be retained longer for safety and verification purposes, but personal identifiers are anonymized where possible.
+                  </Text>
+                </View>
+
+                <View style={dynamicStyles.privacySection}>
+                  <Text style={dynamicStyles.privacySectionTitle}>7. Contact Us</Text>
+                  <Text style={dynamicStyles.privacyText}>
+                    If you have questions about this Privacy Policy or wish to exercise your rights, please contact us at:
+                  </Text>
+                  <Text style={[dynamicStyles.privacyText, { color: colors.primary, fontWeight: '600' }]}>
+                    privacy@safenet.app
+                  </Text>
+                </View>
+
+                <View style={dynamicStyles.privacySection}>
+                  <Text style={dynamicStyles.privacyText}>
+                    <Text style={dynamicStyles.privacyHighlight}>Last Updated:</Text> {new Date().getFullYear()}
+                  </Text>
+                </View>
+              </ScrollView>
+              
+              <View style={dynamicStyles.privacyFooter}>
+                <Text style={dynamicStyles.privacyFooterText}>
+                  Your privacy matters to us
+                </Text>
+              </View>
+        </View>
+      </Modal>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-  },
-  avatarContainer: {
-    position: 'relative',
-    marginRight: Spacing.md,
-  },
-  avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#FF9500',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  section: {
-    marginBottom: Spacing.lg,
-  },
-  logoutSection: {
-    padding: Spacing.lg,
-    paddingBottom: Spacing.xxl,
-  },
-});
