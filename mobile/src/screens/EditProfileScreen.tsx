@@ -3,7 +3,7 @@
  * Allows users to edit their profile information
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,12 @@ import {
   Platform,
   Alert,
   ToastAndroid,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Button } from '../components/Button';
@@ -58,6 +63,10 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     borderColor: colors.border,
     alignItems: 'center',
   },
+  avatarContainer: {
+    position: 'relative',
+    marginBottom: Spacing.md,
+  },
   avatar: {
     width: 100,
     height: 100,
@@ -65,12 +74,45 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: Spacing.md,
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
   },
   avatarText: {
     ...Typography.h1,
     color: colors.textInverse,
     fontWeight: '700',
+  },
+  editAvatarButton: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.neonCyan,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: colors.surface,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  uploadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   form: {
     width: '100%',
@@ -92,9 +134,11 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
 export const EditProfileScreen: React.FC<EditProfileScreenProps> = ({
   navigation,
 }) => {
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, uploadProfilePicture } = useAuth();
   const { colors } = useTheme();
   const [loading, setLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [profilePicture, setProfilePicture] = useState<string | undefined>(user?.profilePicture);
   const [formData, setFormData] = useState({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
@@ -103,6 +147,11 @@ export const EditProfileScreen: React.FC<EditProfileScreenProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const dynamicStyles = createStyles(colors);
+
+  // Update profile picture when user changes
+  useEffect(() => {
+    setProfilePicture(user?.profilePicture);
+  }, [user?.profilePicture]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -170,6 +219,55 @@ export const EditProfileScreen: React.FC<EditProfileScreenProps> = ({
     return `${first}${last}`;
   };
 
+  const pickImage = async () => {
+    try {
+      // Request permissions
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permission Denied',
+          'Camera roll permission is required to upload profile picture'
+        );
+        return;
+      }
+
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1], // Square aspect ratio for profile picture
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets && result.assets[0]) {
+        const imageUri = result.assets[0].uri;
+        setProfilePicture(imageUri);
+        
+        // Upload immediately
+        setUploadingImage(true);
+        try {
+          await uploadProfilePicture(imageUri);
+          const message = 'Profile picture updated successfully';
+          if (Platform.OS === 'android') {
+            ToastAndroid.show(message, ToastAndroid.SHORT);
+          } else {
+            Alert.alert('Success', message);
+          }
+        } catch (error: any) {
+          const errorMessage = apiService.getErrorMessage(error);
+          Alert.alert('Error', errorMessage);
+          // Revert to original picture on error
+          setProfilePicture(user?.profilePicture);
+        } finally {
+          setUploadingImage(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
+      Alert.alert('Error', 'Failed to pick image');
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       style={dynamicStyles.container}
@@ -187,10 +285,35 @@ export const EditProfileScreen: React.FC<EditProfileScreenProps> = ({
       >
         {/* Profile Avatar */}
         <View style={dynamicStyles.profileCard}>
-          <View style={dynamicStyles.avatar}>
-            <Text style={dynamicStyles.avatarText}>{getInitials()}</Text>
+          <View style={dynamicStyles.avatarContainer}>
+            <View style={dynamicStyles.avatar}>
+              {profilePicture ? (
+                <Image
+                  source={{ uri: profilePicture }}
+                  style={dynamicStyles.avatarImage}
+                  resizeMode="cover"
+                />
+              ) : (
+                <Text style={dynamicStyles.avatarText}>{getInitials()}</Text>
+              )}
+              {uploadingImage && (
+                <View style={dynamicStyles.uploadingOverlay}>
+                  <ActivityIndicator size="small" color={colors.textInverse} />
+                </View>
+              )}
+            </View>
+            <TouchableOpacity
+              style={dynamicStyles.editAvatarButton}
+              onPress={pickImage}
+              disabled={uploadingImage}
+            >
+              <Ionicons name="camera" size={16} color="#0a0a0a" />
+            </TouchableOpacity>
           </View>
-          <Text style={[Typography.bodySmall, { color: colors.textSecondary }]}>
+          <Text style={[Typography.bodySmall, { color: colors.textSecondary, marginTop: Spacing.xs }]}>
+            Tap camera icon to change photo
+          </Text>
+          <Text style={[Typography.bodySmall, { color: colors.textSecondary, marginTop: Spacing.xs }]}>
             {user?.email}
           </Text>
         </View>

@@ -23,6 +23,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
   updateProfile: (data: { firstName?: string; lastName?: string; phone?: string }) => Promise<void>;
+  uploadProfilePicture: (imageUri: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -131,6 +132,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const uploadProfilePicture = async (imageUri: string) => {
+    try {
+      const updatedUser = await authService.uploadProfilePicture(imageUri);
+      setUser(updatedUser);
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const value: AuthContextType = {
     user,
     isLoading,
@@ -140,6 +150,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     logout,
     refreshUser,
     updateProfile,
+    uploadProfilePicture,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

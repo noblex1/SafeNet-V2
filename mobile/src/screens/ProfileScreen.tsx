@@ -11,6 +11,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
@@ -58,10 +59,18 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         {/* User Info Card */}
         <View style={dynamicStyles.userCard}>
           <View style={dynamicStyles.avatar}>
-            <Text style={dynamicStyles.avatarText}>
-              {user?.firstName?.[0]?.toUpperCase() || 'U'}
-              {user?.lastName?.[0]?.toUpperCase() || ''}
-            </Text>
+            {user?.profilePicture ? (
+              <Image
+                source={{ uri: user.profilePicture }}
+                style={dynamicStyles.avatarImage}
+                resizeMode="cover"
+              />
+            ) : (
+              <Text style={dynamicStyles.avatarText}>
+                {user?.firstName?.[0]?.toUpperCase() || 'U'}
+                {user?.lastName?.[0]?.toUpperCase() || ''}
+              </Text>
+            )}
           </View>
           <Text style={dynamicStyles.userName}>
             {user?.firstName} {user?.lastName}
@@ -195,6 +204,11 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: Spacing.md,
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
   },
   avatarText: {
     ...Typography.h1,

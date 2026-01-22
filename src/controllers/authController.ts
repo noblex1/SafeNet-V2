@@ -3,6 +3,8 @@ import { body } from 'express-validator';
 import { AuthRequest } from '../middleware/auth';
 import { AuthService } from '../services/authService';
 import { CustomError } from '../middleware/errorHandler';
+import { uploadToCloudinary, deleteFromCloudinary } from '../config/cloudinary';
+import logger from '../utils/logger';
 
 export class AuthController {
   static registerValidations = [
@@ -180,6 +182,61 @@ export class AuthController {
       res.status(200).json({
         success: true,
         message: 'Profile updated successfully',
+        data: {
+          user: userWithoutPassword,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async uploadProfilePicture(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      if (!req.user) {
+        throw new CustomError('User not authenticated', 401);
+      }
+
+      if (!req.file) {
+        throw new CustomError('No image file provided', 400);
+      }
+
+      // Get current user to check for existing profile picture
+      const currentUser = await AuthService.getCurrentUser(req.user.userId);
+      const oldProfilePicture = currentUser?.profilePicture;
+
+      // Upload new profile picture to Cloudinary
+      const uploadResult = await uploadToCloudinary(
+        req.file.buffer,
+        'safenet/profiles',
+        true // isProfilePicture flag
+      );
+
+      // Update user with new profile picture URL
+      const updatedUser = await AuthService.updateProfile(req.user.userId, {
+        profilePicture: uploadResult.secure_url,
+      });
+
+      // Delete old profile picture from Cloudinary if it exists
+      if (oldProfilePicture) {
+        try {
+          // Extract public_id from old URL if possible
+          const urlParts = oldProfilePicture.split('/');
+          const publicIdWithExt = urlParts.slice(-2).join('/').split('.')[0];
+          const publicId = `safenet/profiles/${publicIdWithExt}`;
+          await deleteFromCloudinary(publicId);
+        } catch (deleteError) {
+          // Log but don't fail if deletion fails
+          logger.warn('Failed to delete old profile picture:', deleteError);
+        }
+      }
+
+      const userObject = updatedUser.toObject();
+      const { password: _, ...userWithoutPassword } = userObject;
+
+      res.status(200).json({
+        success: true,
+        message: 'Profile picture uploaded successfully',
         data: {
           user: userWithoutPassword,
         },

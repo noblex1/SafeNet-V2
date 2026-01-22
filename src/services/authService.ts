@@ -181,7 +181,7 @@ export class AuthService {
 
   static async updateProfile(
     userId: string,
-    data: { firstName?: string; lastName?: string; phone?: string }
+    data: { firstName?: string; lastName?: string; phone?: string; profilePicture?: string }
   ): Promise<IUserDocument> {
     try {
       const user = await User.findById(userId);
@@ -198,6 +198,9 @@ export class AuthService {
       }
       if (data.phone !== undefined) {
         user.phone = data.phone.trim();
+      }
+      if (data.profilePicture !== undefined) {
+        user.profilePicture = data.profilePicture;
       }
 
       await user.save();

@@ -67,6 +67,7 @@ export const API_ENDPOINTS = {
     REFRESH_TOKEN: '/api/auth/refresh-token',
     ME: '/api/auth/me',
     UPDATE_PROFILE: '/api/auth/profile',
+    UPLOAD_PROFILE_PICTURE: '/api/auth/profile/picture',
   },
   // Incident endpoints
   INCIDENTS: {

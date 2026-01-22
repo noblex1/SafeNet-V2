@@ -13,6 +13,7 @@ export interface User {
   phone: string;
   role: UserRole;
   isActive: boolean;
+  profilePicture?: string;
   createdAt?: string;
   updatedAt?: string;
 }

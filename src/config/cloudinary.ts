@@ -20,22 +20,32 @@ cloudinary.config({
  * Upload image to Cloudinary
  * @param fileBuffer - File buffer from multer
  * @param folder - Cloudinary folder path (optional)
+ * @param isProfilePicture - Whether this is a profile picture (affects transformation)
  * @returns Promise with Cloudinary upload result
  */
 export const uploadToCloudinary = async (
   fileBuffer: Buffer,
-  folder: string = 'safenet/incidents'
+  folder: string = 'safenet/incidents',
+  isProfilePicture: boolean = false
 ): Promise<{ secure_url: string; public_id: string }> => {
   return new Promise((resolve, reject) => {
+    const transformation = isProfilePicture
+      ? [
+          { width: 400, height: 400, crop: 'fill', gravity: 'face' }, // Square crop, focus on face
+          { quality: 'auto' },
+          { format: 'auto' },
+        ]
+      : [
+          { width: 1200, height: 1200, crop: 'limit' }, // Max dimensions
+          { quality: 'auto' }, // Auto quality optimization
+          { format: 'auto' }, // Auto format (webp when supported)
+        ];
+
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         folder,
         resource_type: 'image',
-        transformation: [
-          { width: 1200, height: 1200, crop: 'limit' }, // Max dimensions
-          { quality: 'auto' }, // Auto quality optimization
-          { format: 'auto' }, // Auto format (webp when supported)
-        ],
+        transformation,
       },
       (error, result) => {
         if (error) {

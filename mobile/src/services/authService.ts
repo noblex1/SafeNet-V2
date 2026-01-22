@@ -96,6 +96,31 @@ class AuthService {
     );
     return response.user;
   }
+
+  /**
+   * Upload profile picture
+   */
+  async uploadProfilePicture(imageUri: string): Promise<User> {
+    const formData = new FormData();
+    
+    // Extract filename from URI
+    const filename = imageUri.split('/').pop() || 'profile.jpg';
+    const match = /\.(\w+)$/.exec(filename);
+    const type = match ? `image/${match[1]}` : 'image/jpeg';
+
+    // @ts-ignore - FormData append with file object
+    formData.append('profilePicture', {
+      uri: imageUri,
+      type,
+      name: filename,
+    } as any);
+
+    const response = await apiService.postFormData<{ user: User }>(
+      API_ENDPOINTS.AUTH.UPLOAD_PROFILE_PICTURE,
+      formData
+    );
+    return response.user;
+  }
 }
 
 export const authService = new AuthService();

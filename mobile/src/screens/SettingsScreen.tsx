@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   Switch,
   Alert,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
@@ -66,6 +67,11 @@ const createStyles = (colors: ReturnType<typeof getColors>) => StyleSheet.create
     backgroundColor: '#FF9500',
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
   },
   avatarIcon: {
     fontSize: 28,
@@ -254,7 +260,15 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           <View style={dynamicStyles.profileCard}>
           <View style={dynamicStyles.avatarContainer}>
             <View style={dynamicStyles.avatar}>
-              <Ionicons name="person-outline" size={26} color="#0a0a0a" />
+              {user?.profilePicture ? (
+                <Image
+                  source={{ uri: user.profilePicture }}
+                  style={dynamicStyles.avatarImage}
+                  resizeMode="cover"
+                />
+              ) : (
+                <Ionicons name="person-outline" size={26} color="#0a0a0a" />
+              )}
             </View>
             <View style={dynamicStyles.onlineIndicator} />
           </View>

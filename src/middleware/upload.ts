@@ -28,5 +28,18 @@ export const upload = multer({
   },
 });
 
+// Configure multer for single profile picture (smaller size limit)
+export const uploadSingle = multer({
+  storage: multer.memoryStorage(),
+  fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB max for profile pictures
+    files: 1,
+  },
+});
+
 // Middleware for multiple images (max 5)
 export const uploadIncidentImages = upload.array('images', 5);
+
+// Middleware for single profile picture
+export const uploadProfilePicture = uploadSingle.single('profilePicture');

@@ -27,6 +27,7 @@ export interface IUser {
   phone: string;
   role: UserRole;
   isActive: boolean;
+  profilePicture?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
