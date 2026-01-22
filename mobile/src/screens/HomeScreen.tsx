@@ -14,6 +14,7 @@ import {
   TextInput,
   ScrollView,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Incident, IncidentType, IncidentStatus } from '../types';
 import { incidentService } from '../services/incidentService';
@@ -304,6 +305,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   useEffect(() => {
     loadIncidents();
   }, [loadIncidents]);
+
+  // Auto-refresh whenever user comes back to this screen (e.g., after submitting an incident)
+  useFocusEffect(
+    useCallback(() => {
+      loadIncidents();
+      return () => {};
+    }, [loadIncidents])
+  );
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);

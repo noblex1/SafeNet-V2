@@ -12,6 +12,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  ToastAndroid,
   TouchableOpacity,
   Image,
 } from 'react-native';
@@ -333,16 +334,17 @@ export const ReportIncidentScreen: React.FC<ReportIncidentScreenProps> = ({
     setLoading(true);
     try {
       await incidentService.createIncident(formData, selectedImages.length > 0 ? selectedImages : undefined);
-      Alert.alert(
-        'Success',
-        'Incident reported successfully. It will be reviewed by authorities.',
-        [
-          {
-            text: 'OK',
-            onPress: () => navigation.goBack(),
-          },
-        ]
-      );
+      const message = 'Incident reported successfully. It will be reviewed by authorities.';
+
+      // Toast (Android) / fallback alert (iOS + web)
+      if (Platform.OS === 'android') {
+        ToastAndroid.show(message, ToastAndroid.SHORT);
+      } else {
+        Alert.alert('Success', message);
+      }
+
+      // Go back immediately; Home screen will auto-refresh on focus
+      navigation.goBack();
     } catch (error: any) {
       const errorMessage = apiService.getErrorMessage(error);
       Alert.alert('Error', errorMessage);

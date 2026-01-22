@@ -5,6 +5,41 @@
  */
 
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
+
+/**
+ * Extract IP address from Expo dev server host
+ * Automatically detects the correct IP for emulators and physical devices
+ */
+const getDevServerIP = (): string => {
+  // Try multiple sources to get the dev server IP
+  const hostUri = 
+    Constants.expoConfig?.hostUri || 
+    Constants.debuggerHost ||
+    (Constants.manifest2?.extra?.expoGo as any)?.debuggerHost;
+  
+  if (hostUri) {
+    // Extract IP from hostUri (format: "192.168.1.100:8081" or "10.0.2.2:8081" or "exp://192.168.1.100:8081")
+    const cleanUri = hostUri.replace(/^exp:\/\//, '').replace(/^http:\/\//, '');
+    const ipMatch = cleanUri.match(/^([^:]+)/);
+    if (ipMatch && ipMatch[1]) {
+      const ip = ipMatch[1];
+      // Use the IP if it's not localhost (physical device)
+      if (ip !== 'localhost' && ip !== '127.0.0.1') {
+        return ip;
+      }
+    }
+  }
+
+  // Fallback based on platform
+  if (Platform.OS === 'android') {
+    // Android emulator uses special IP to access host machine
+    return '10.0.2.2';
+  }
+
+  // iOS simulator uses localhost
+  return 'localhost';
+};
 
 // Get the appropriate base URL based on platform
 const getBaseURL = (): string => {
@@ -17,30 +52,10 @@ const getBaseURL = (): string => {
     return 'http://localhost:3000';
   }
 
-  // For Android - detect if emulator or physical device
-  if (Platform.OS === 'android') {
-    // Try to detect if running on emulator vs physical device
-    // If you're using a physical device and getting network errors,
-    // change this to: return 'http://10.16.214.34:3000';
-    // For Android emulator, use 10.0.2.2 (special IP that maps to host's localhost)
-    return 'http://10.0.2.2:3000';
-    // For physical Android device, uncomment the line below and comment the line above:
-    // return 'http://10.16.214.34:3000';
-  }
-
-  // For iOS simulator, use localhost
-  if (Platform.OS === 'ios') {
-    return 'http://localhost:3000';
-  }
-
-  // Fallback
-  return 'http://localhost:3000';
+  // For native platforms, dynamically detect the dev server IP
+  const devServerIP = getDevServerIP();
+  return `http://${devServerIP}:3000`;
 };
-
-// NOTE: For physical devices, you may need to manually override the URL above
-// Replace 'localhost' or '10.0.2.2' with your computer's IP address
-// Current detected IP: 10.16.214.34
-// Example for physical device: return 'http://10.16.214.34:3000';
 
 export const API_BASE_URL = getBaseURL();
 
