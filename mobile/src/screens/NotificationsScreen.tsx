@@ -1,148 +1,27 @@
 /**
  * Notifications Screen
- * Displays user notifications
+ * Displays all real-time notifications
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNotifications } from '../context/NotificationContext';
 import { useTheme } from '../context/ThemeContext';
 import { Typography } from '../theme/typography';
 import { Spacing, BorderRadius } from '../theme/spacing';
-
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  type: 'alert' | 'update' | 'system';
-  read: boolean;
-  createdAt: string;
-}
+import { IncidentType } from '../types';
 
 interface NotificationsScreenProps {
   navigation: any;
 }
-
-export const NotificationsScreen: React.FC<NotificationsScreenProps> = ({
-  navigation,
-}) => {
-  const { colors } = useTheme();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-
-  // Mock notifications for now
-  useEffect(() => {
-    setNotifications([
-      {
-        id: '1',
-        title: 'New Alert',
-        message: 'A new incident has been verified in your area',
-        type: 'alert',
-        read: false,
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: '2',
-        title: 'Report Update',
-        message: 'Your incident report has been verified',
-        type: 'update',
-        read: false,
-        createdAt: new Date(Date.now() - 3600000).toISOString(),
-      },
-      {
-        id: '3',
-        title: 'System Update',
-        message: 'SafeNet app has been updated to version 1.0.0',
-        type: 'system',
-        read: true,
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-      },
-    ]);
-  }, []);
-
-  const getNotificationIcon = (
-    type: Notification['type']
-  ): { name: keyof typeof Ionicons.glyphMap; color: string } => {
-    switch (type) {
-      case 'alert':
-        return { name: 'alert-circle-outline', color: colors.error };
-      case 'update':
-        return { name: 'checkmark-circle-outline', color: colors.neonCyan };
-      case 'system':
-        return { name: 'information-circle-outline', color: colors.info };
-      default:
-        return { name: 'megaphone-outline', color: colors.textSecondary };
-    }
-  };
-
-  const getTimeAgo = (dateString: string): string => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-    if (diffInSeconds < 60) return 'Just now';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    return `${Math.floor(diffInSeconds / 86400)}d ago`;
-  };
-
-  const dynamicStyles = createStyles(colors);
-
-  const renderNotification = ({ item }: { item: Notification }) => {
-    const icon = getNotificationIcon(item.type);
-    return (
-      <TouchableOpacity
-        style={[dynamicStyles.notificationItem, !item.read && dynamicStyles.unread]}
-      >
-        <View style={dynamicStyles.notificationIcon}>
-          <Ionicons name={icon.name} size={22} color={icon.color} />
-        </View>
-      <View style={dynamicStyles.notificationContent}>
-        <Text style={dynamicStyles.notificationTitle}>{item.title}</Text>
-        <Text style={dynamicStyles.notificationMessage}>{item.message}</Text>
-        <Text style={dynamicStyles.notificationTime}>{getTimeAgo(item.createdAt)}</Text>
-      </View>
-      {!item.read && <View style={dynamicStyles.unreadDot} />}
-      </TouchableOpacity>
-    );
-  };
-
-  return (
-    <View style={dynamicStyles.container}>
-      <View style={dynamicStyles.header}>
-        <Text style={dynamicStyles.headerTitle}>Notifications</Text>
-        {notifications.filter((n) => !n.read).length > 0 && (
-          <View style={dynamicStyles.badge}>
-            <Text style={dynamicStyles.badgeText}>
-              {notifications.filter((n) => !n.read).length}
-            </Text>
-          </View>
-        )}
-      </View>
-
-      <FlatList
-        data={notifications}
-        keyExtractor={(item) => item.id}
-        renderItem={renderNotification}
-        contentContainerStyle={dynamicStyles.listContent}
-        ListEmptyComponent={
-          <View style={dynamicStyles.emptyContainer}>
-            <Ionicons name="notifications-outline" size={56} color={colors.textTertiary} />
-            <Text style={dynamicStyles.emptyText}>No notifications</Text>
-            <Text style={dynamicStyles.emptySubtext}>
-              You're all caught up! New alerts will appear here.
-            </Text>
-          </View>
-        }
-      />
-    </View>
-  );
-};
 
 const createStyles = (colors: ReturnType<typeof import('../theme/colors').getColors>) => StyleSheet.create({
   container: {
@@ -160,49 +39,55 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     borderBottomColor: colors.border,
   },
   headerTitle: {
-    ...Typography.h2,
+    ...Typography.h1,
     color: colors.textPrimary,
   },
-  badge: {
-    backgroundColor: colors.error,
-    borderRadius: BorderRadius.full,
-    minWidth: 24,
-    height: 24,
+  headerActions: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+  },
+  actionButton: {
+    padding: Spacing.xs,
+  },
+  emptyContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: Spacing.sm,
+    padding: Spacing.xxl,
   },
-  badgeText: {
-    ...Typography.caption,
-    color: colors.textInverse,
-    fontWeight: '700',
+  emptyIcon: {
+    marginBottom: Spacing.lg,
   },
-  listContent: {
-    padding: Spacing.lg,
+  emptyText: {
+    ...Typography.bodyMedium,
+    color: colors.textSecondary,
+    textAlign: 'center',
   },
   notificationItem: {
-    flexDirection: 'row',
     backgroundColor: colors.surface,
+    marginHorizontal: Spacing.lg,
+    marginVertical: Spacing.xs,
+    padding: Spacing.lg,
     borderRadius: BorderRadius.md,
-    padding: Spacing.md,
-    marginBottom: Spacing.md,
     borderWidth: 1,
     borderColor: colors.border,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
   },
-  unread: {
-    backgroundColor: colors.primaryLight + '20',
-    borderColor: colors.primary,
+  notificationItemUnread: {
+    borderLeftWidth: 4,
+    borderLeftColor: colors.primary,
+    backgroundColor: colors.surfaceElevated,
   },
   notificationIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.primaryLight,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.primary + '20',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.md,
   },
-  iconText: {},
   notificationContent: {
     flex: 1,
   },
@@ -210,7 +95,7 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     ...Typography.bodyMedium,
     color: colors.textPrimary,
     fontWeight: '600',
-    marginBottom: Spacing.xs,
+    marginBottom: Spacing.xs / 2,
   },
   notificationMessage: {
     ...Typography.bodySmall,
@@ -221,29 +106,131 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     ...Typography.caption,
     color: colors.textTertiary,
   },
-  unreadDot: {
+  notificationUnreadDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
     backgroundColor: colors.primary,
-    alignSelf: 'center',
-    marginLeft: Spacing.sm,
+    marginTop: Spacing.xs,
   },
-  emptyContainer: {
-    padding: Spacing.xxxl * 2,
-    alignItems: 'center',
+  markAllReadButton: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.sm,
+    backgroundColor: colors.primary,
   },
-  emptyIcon: {
-    marginBottom: Spacing.lg,
-  },
-  emptyText: {
-    ...Typography.h3,
-    color: colors.textPrimary,
-    marginBottom: Spacing.sm,
-  },
-  emptySubtext: {
+  markAllReadText: {
     ...Typography.bodySmall,
-    color: colors.textSecondary,
-    textAlign: 'center',
+    color: colors.textInverse,
+    fontWeight: '600',
   },
 });
+
+const getNotificationIcon = (type: string): keyof typeof Ionicons.glyphMap => {
+  switch (type) {
+    case 'incident_verified':
+      return 'checkmark-circle';
+    case 'incident_created':
+      return 'alert-circle';
+    case 'incident_status_updated':
+      return 'information-circle';
+    default:
+      return 'notifications';
+  }
+};
+
+const formatTime = (timestamp: Date): string => {
+  const now = new Date();
+  const diff = now.getTime() - timestamp.getTime();
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+
+  if (minutes < 1) return 'Just now';
+  if (minutes < 60) return `${minutes}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  if (days < 7) return `${days}d ago`;
+  return timestamp.toLocaleDateString();
+};
+
+export const NotificationsScreen: React.FC<NotificationsScreenProps> = ({ navigation }) => {
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+  const { colors } = useTheme();
+  const dynamicStyles = createStyles(colors);
+
+  const handleNotificationPress = (notification: any) => {
+    // Mark as read when tapped
+    if (!notification.read) {
+      markAsRead(notification.id);
+    }
+
+    // Navigate to incident detail if available
+    if (notification.incident?._id) {
+      navigation.navigate('IncidentDetail', { incidentId: notification.incident._id });
+    }
+  };
+
+  const renderNotification = ({ item }: { item: any }) => {
+    const iconName = getNotificationIcon(item.type);
+    const isUnread = !item.read;
+
+    return (
+      <TouchableOpacity
+        style={[dynamicStyles.notificationItem, isUnread && dynamicStyles.notificationItemUnread]}
+        onPress={() => handleNotificationPress(item)}
+        activeOpacity={0.7}
+      >
+        <View style={dynamicStyles.notificationIcon}>
+          <Ionicons name={iconName} size={20} color={colors.primary} />
+        </View>
+        <View style={dynamicStyles.notificationContent}>
+          <Text style={dynamicStyles.notificationTitle}>{item.title}</Text>
+          <Text style={dynamicStyles.notificationMessage}>{item.message}</Text>
+          <Text style={dynamicStyles.notificationTime}>{formatTime(item.timestamp)}</Text>
+        </View>
+        {isUnread && <View style={dynamicStyles.notificationUnreadDot} />}
+      </TouchableOpacity>
+    );
+  };
+
+  return (
+    <View style={dynamicStyles.container}>
+      <View style={dynamicStyles.header}>
+        <Text style={dynamicStyles.headerTitle}>Notifications</Text>
+        <View style={dynamicStyles.headerActions}>
+          {unreadCount > 0 && (
+            <TouchableOpacity
+              style={dynamicStyles.markAllReadButton}
+              onPress={markAllAsRead}
+            >
+              <Text style={dynamicStyles.markAllReadText}>Mark all read</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+
+      {notifications.length === 0 ? (
+        <View style={dynamicStyles.emptyContainer}>
+          <Ionicons
+            name="notifications-off-outline"
+            size={64}
+            color={colors.textTertiary}
+            style={dynamicStyles.emptyIcon}
+          />
+          <Text style={dynamicStyles.emptyText}>No notifications yet</Text>
+          <Text style={[dynamicStyles.emptyText, { marginTop: Spacing.xs }]}>
+            You'll see real-time alerts here when incidents are verified
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={notifications}
+          renderItem={renderNotification}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ paddingVertical: Spacing.sm }}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
+    </View>
+  );
+};

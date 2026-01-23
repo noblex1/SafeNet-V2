@@ -9,6 +9,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ErrorBoundary } from './src/utils/errorBoundary';
 import { ThemeProvider, useTheme } from './src/context/ThemeContext';
 import { AuthProvider } from './src/context/AuthContext';
+import { NotificationProvider } from './src/context/NotificationContext';
 import { AppNavigator } from './src/navigation/AppNavigator';
 
 // Inner component to access theme for StatusBar
@@ -29,7 +30,9 @@ export default function App() {
       <SafeAreaProvider>
         <ThemeProvider>
           <AuthProvider>
-            <AppContent />
+            <NotificationProvider>
+              <AppContent />
+            </NotificationProvider>
           </AuthProvider>
         </ThemeProvider>
       </SafeAreaProvider>

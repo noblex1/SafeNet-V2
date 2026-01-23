@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { Incident, IncidentStatus, IncidentType } from '../types';
 import { incidentService } from '../services/incidentService';
 import { apiService } from '../services/api';
+import { useNotifications } from '../context/NotificationContext';
 
 const STATUS_LABELS: Record<IncidentStatus, string> = {
   [IncidentStatus.PENDING]: 'Pending',
@@ -30,6 +31,7 @@ const TYPE_LABELS: Record<IncidentType, string> = {
 };
 
 export const Dashboard = () => {
+  const { notifications } = useNotifications();
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -79,6 +81,17 @@ export const Dashboard = () => {
   useEffect(() => {
     void loadIncidents();
   }, [loadIncidents]);
+
+  // Refresh incidents when a new incident is created (from notifications)
+  useEffect(() => {
+    const newIncidentNotification = notifications.find(
+      (n) => n.type === 'incident_created' && !n.read
+    );
+    if (newIncidentNotification) {
+      // Reload incidents to show the new one
+      void loadIncidents();
+    }
+  }, [notifications, loadIncidents]);
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters({ ...filters, [key]: value, page: 1 });

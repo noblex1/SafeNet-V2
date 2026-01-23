@@ -22,6 +22,7 @@ import { IncidentCard } from '../components/IncidentCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { apiService } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
+import { useNotifications } from '../context/NotificationContext';
 import { Typography } from '../theme/typography';
 import { Spacing, BorderRadius } from '../theme/spacing';
 import { FilterModal, FilterOptions } from '../components/FilterModal';
@@ -91,6 +92,27 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
     height: 36,
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: -2,
+    right: -2,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: '#ef4444',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+    borderWidth: 2,
+    borderColor: colors.surface,
+  },
+  notificationBadgeText: {
+    ...Typography.caption,
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 10,
   },
   // Tab Navigation - Glass effect
   tabContainer: {
@@ -275,6 +297,7 @@ const createStyles = (colors: ReturnType<typeof import('../theme/colors').getCol
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const { colors } = useTheme();
+  const { unreadCount } = useNotifications();
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -406,6 +429,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             onPress={() => navigation.navigate('Notifications')}
           >
             <Ionicons name="notifications-outline" size={22} color={colors.textPrimary} />
+            {unreadCount > 0 && (
+              <View style={dynamicStyles.notificationBadge}>
+                <Text style={dynamicStyles.notificationBadgeText}>
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </Text>
+              </View>
+            )}
           </TouchableOpacity>
           <TouchableOpacity
             style={dynamicStyles.iconButton}

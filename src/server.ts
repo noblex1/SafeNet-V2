@@ -3,15 +3,18 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import dotenv from 'dotenv';
+import { createServer } from 'http';
 import { connectDatabase } from './config/database';
 import routes from './routes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import { initializeSocket } from './config/socket';
 import logger from './utils/logger';
 
 // Load environment variables
 dotenv.config();
 
 const app: Application = express();
+const httpServer = createServer(app);
 const PORT: number = parseInt(process.env.PORT || '3000', 10);
 
 // Security middleware
@@ -48,8 +51,11 @@ const startServer = async (): Promise<void> => {
     // Connect to database
     await connectDatabase();
 
+    // Initialize Socket.IO
+    initializeSocket(httpServer);
+
     // Start listening on all network interfaces (0.0.0.0) to allow mobile app connections
-    app.listen(PORT, '0.0.0.0', () => {
+    httpServer.listen(PORT, '0.0.0.0', () => {
       logger.info(`SafeNet API server running on port ${PORT}`, {
         environment: process.env.NODE_ENV || 'development',
         port: PORT,
@@ -58,6 +64,7 @@ const startServer = async (): Promise<void> => {
       logger.info(`Server accessible at:`);
       logger.info(`  - http://localhost:${PORT}`);
       logger.info(`  - http://127.0.0.1:${PORT}`);
+      logger.info(`Socket.IO server initialized`);
     });
   } catch (error) {
     logger.error('Failed to start server:', error);

@@ -4,6 +4,7 @@ import { IncidentType, IncidentStatus } from '../types';
 import { CustomError } from '../middleware/errorHandler';
 import { generateIncidentHash } from '../utils/crypto';
 import { BlockchainService } from './blockchainService';
+import { emitIncidentCreated, emitIncidentStatusUpdated } from '../config/socket';
 import logger from '../utils/logger';
 
 interface CreateIncidentData {
@@ -185,6 +186,11 @@ export class IncidentService {
       }
 
       await incident.save();
+
+      // Emit Socket.IO notification for status update
+      // Convert Mongoose document to plain object for Socket.IO
+      const incidentData = incident.toObject ? incident.toObject() : incident;
+      emitIncidentStatusUpdated(incidentData, data.verifiedBy);
 
       // Update blockchain with new status
       if (incident.blockchainRecordId) {
